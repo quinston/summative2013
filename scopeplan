@@ -1,0 +1,27 @@
+Goal: A simulation of colonies of various lifeforms. 
+
+Lifeforms will have
+- hunger and/or thirst, which must be satisfied
+
+Animal (roughly speaking, things that move) lifeforms will have:
+- gender, which determines reproductive compatibility
+- location
+- lists of in-group lifeforms and out-group lifeforms, which affect reproductive compatibility as well as hostility
+- depravity, or mental state, which will affect behaviour
+- communication of information
+- communication of disease
+- food gathering
+
+Plant (static) lifeforms will have:
+- regeneration
+- asexual reproduction
+
+To facilitate the communication of attributes, an Attribute abstract class will probably be needed. 
+It will have a method that applies the effect of the Attribute on the owner. 
+It will have a copy constructor. 
+
+In the environment, on the ground, there will be just water and grass. 
+
+As for weather:
+Rain will expand water bodies and water grass.
+Sun will shrink water bodies and dry grass, and also exacerbate animal thirst.
