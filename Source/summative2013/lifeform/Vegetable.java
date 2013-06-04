@@ -1,3 +1,5 @@
+package summative2013.lifeform;
+
 
 /**
  * Parent class of immobile food generating autotrophic benevolent food chain

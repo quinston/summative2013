@@ -1,3 +1,5 @@
+package summative2013.lifeform;
+
 
 import java.awt.Point;
 
