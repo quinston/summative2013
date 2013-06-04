@@ -24,6 +24,3 @@ public class Summative extends JPanel {
                 frame.setVisible(true);
     }
 }
-
-public class Lifeform{
-}
