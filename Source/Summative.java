@@ -20,10 +20,7 @@ public class Summative extends JPanel {
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(frame);
         frame.add(new Summative());
-        
-                frame.setVisible(true);
-    }
-}
 
-public class Lifeform{
+        frame.setVisible(true);
+    }
 }
