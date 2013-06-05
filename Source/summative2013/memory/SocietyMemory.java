@@ -1,6 +1,7 @@
 package summative2013.memory;
 
 import summative2013.lifeform.Animal;
+import java.util.Random;
 /**
  * A memory that describes relationships with other Animals
  * @author quincy
@@ -33,7 +34,7 @@ public class SocietyMemory extends Memory {
 	 */
 	@Override
 	public void corrupt() {
-		
+		score += ((Math.random() - 0.5) * CORRUPTION_DELTA);
 	}
 	
 	public final int CORRUPTION_DELTA = 3;
