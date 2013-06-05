@@ -11,7 +11,14 @@ public class Summative extends JPanel {
     public Summative() {
         Lifeform.summative = this;
         HashMap locToLife = new HashMap();
+        HashMap locToTerrain = new HashMap();
     }
+    
+    public enum Terrain {
+
+        LAND, SEA
+
+        );
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
