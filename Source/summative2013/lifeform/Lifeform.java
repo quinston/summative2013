@@ -1,3 +1,5 @@
+package summative2013.lifeform;
+
 
 import java.awt.Point;
 
@@ -45,6 +47,6 @@ public class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-    public Act() {
+    public void Act() {
     }
 }
