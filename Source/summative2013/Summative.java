@@ -1,13 +1,16 @@
-
+package summative2013.lifeform;
 
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
 
 public class Summative extends JPanel {
 
     public Summative() {
+        Lifeform.summative = this;
+        HashMap locToLife = new HashMap();
     }
 
     public static void main(String[] args) {
@@ -23,8 +26,6 @@ public class Summative extends JPanel {
         gd.setFullScreenWindow(frame);
         frame.add(new Summative());
 
-        
-                frame.setVisible(true);
-
+        frame.setVisible(true);
     }
 }

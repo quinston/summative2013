@@ -1,4 +1,6 @@
+package summative2013.memory;
 
+import summative2013.lifeform.Animal;
 /**
  * A memory that describes relationships with other Animals
  * @author quincy

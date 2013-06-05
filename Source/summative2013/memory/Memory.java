@@ -1,3 +1,5 @@
+package summative2013.memory;
+import summative2013.lifeform.Animal;
 
 /**
  * A base class for everything an animal will know

@@ -1,5 +1,4 @@
-
-
+package summative2013.lifeform;
 
 import java.awt.Point;
 
@@ -9,6 +8,10 @@ import java.awt.Point;
  * @author 322303413
  */
 public class Lifeform {
+    /**
+     * Store the panel
+     */
+    public static Summative summative; 
 
     /**
      * Thirst, from 0-99
@@ -47,6 +50,12 @@ public class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-    public void Act() {
+    public void act() {
+    }
+    
+    /**
+     * Suicide
+     */
+    public void suicide(){
     }
 }

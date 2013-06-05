@@ -1,8 +1,9 @@
-
-
+package summative2013.lifeform;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import summative2013.memory.Memory;
+import summative2013.phenomena.Disease;
 
 /**
  * Parent class of all animal moving lifeform living creatures
@@ -56,4 +57,12 @@ public class Animal extends Lifeform {
      * Stores how diseased plague leprosy shun contagion SARS level of multiple
      */
     private ArrayList<Disease> disease;
+
+    public Animal() {
+        hunger = 50;
+        gender = Gender.MALE;
+        depravity = 0;
+        knowledge = new ArrayList<Memory>();
+        disease = new ArrayList<Disease>();
+    }
 }
