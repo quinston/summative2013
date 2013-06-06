@@ -1,6 +1,7 @@
 package summative2013.lifeform;
 
 import java.awt.Point;
+import summative2013.Summative;
 
 /**
  * Default living class parent ancestor
