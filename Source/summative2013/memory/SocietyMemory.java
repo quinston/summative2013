@@ -22,7 +22,6 @@ public class SocietyMemory extends Memory {
 	private int score;
 	/**
 	 * Updates the in-group and out-group lists of the target Animal.
-	 * Precondition: l is an Animal object
 	 * @param l Animal to affect
 	 */
 	public void affect(Animal l) {
@@ -36,6 +35,12 @@ public class SocietyMemory extends Memory {
 	public void corrupt() {
 		score += ((Math.random() - 0.5) * CORRUPTION_DELTA);
 	}
+	/**
+	 * Maximum corruption value
+	 */
+	private final int CORRUPTION_DELTA = 3;
 	
-	public final int CORRUPTION_DELTA = 3;
+	public boolean isForgotten() {
+		return object == null;
+	}
 }

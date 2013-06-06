@@ -1,9 +1,10 @@
-package summative2013.lifeform;
+package summative2013;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import summative2013.lifeform.Lifeform;
 
 public class Summative extends JPanel {
 
