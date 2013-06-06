@@ -1,23 +1,30 @@
 package summative2013;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Graphics;
+import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import summative2013.lifeform.Lifeform;
 
 public class Summative extends JPanel {
 
-    private HashMap locToLife;
-    private HashMap locToTerrain;
-
+    private static GraphicsEnvironment ge;
+    private static GraphicsDevice gd;
+    private HashMap<Point,Lifeform> locToLife;
+    private HashMap<Point,Terrain> locToTerrain;
     /**
      * Default constr
      */
     public Summative() {
         Lifeform.summative = this;
-        locToLife = new HashMap();
-        locToTerrain = new HashMap();
+        locToLife = new HashMap<Point,Lifeform>();
+        locToTerrain = new HashMap<Point,Terrain>();
+        setSize(gd.getFullScreenWindow().getSize());
     }
 
     //Terrain making
@@ -34,14 +41,31 @@ public class Summative extends JPanel {
         frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(frame);
-        frame.add(new Summative());
-
+        Summative s = new Summative();
+        frame.add(s);
+        
+        s.locToTerrain.put(new Point(0,0),Terrain.LAND);
+        s.doMapGen(new Point(0,0),10);
+        
+        s.repaint();
         frame.setVisible(true);
     }
-
+    public void doMapGen(Point p,int i){
+        if(i>=0){
+            for(int x = p.x-1;x<=p.x+1;x++){
+                for(int y = p.y-1;y<=p.y+1;y++){
+                    Point genPoint = new Point(x,y);
+                    if((x!=p.x||y!=p.y)&&!locToTerrain.containsKey(new Point(x,y)))
+                        mapGen(genPoint);
+                    doMapGen(genPoint,i-1);
+                }
+            }
+        }
+        repaint();
+    }
     //Map generator
     public void mapGen(Point point) {
         int lands = 0, seas = 0;
@@ -82,6 +106,21 @@ public class Summative extends JPanel {
             } else {
                 locToTerrain.put(point, Terrain.SEA);
             }
+        }
+    }
+        @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        drawTerrain(g);
+    }
+    public void drawTerrain(Graphics g){
+        for(Entry<Point, Terrain> e:locToTerrain.entrySet()){
+            Point p = e.getKey();
+            if(e.getValue() ==Terrain.LAND)
+                g.setColor(Color.MAGENTA);
+            else if(e.getValue() == Terrain.SEA)
+                g.setColor(Color.BLUE);
+            g.fillRect(p.x*10,p.y*10,10,10);
         }
     }
 }
