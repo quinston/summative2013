@@ -8,7 +8,7 @@ import summative2013.Summative;
  *
  * @author 322303413
  */
-public class Lifeform {
+public abstract class Lifeform {
     /**
      * Store the panel
      */
@@ -51,8 +51,7 @@ public class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-    public void act() {
-    }
+    public abstract void act();
     
     /**
      * Suicide
