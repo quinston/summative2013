@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import summative2013.phenomena.Weather.WEATHER;
 
 /**
  * Parent class of immobile food generating autotrophic benevolent food chain
@@ -56,16 +57,16 @@ public class Vegetable extends Lifeform {
     /**
      * Changes variables depending on weather
      */
-    public void act() {
-        if (weather == Weather.SUN) {
+    public void act(WEATHER weather) {
+        if (weather == WEATHER.SUN) {
             regenCounter = regenCounter - 2;
             sun = sun + 5;
             thirst = thirst + 2;
-        } else if (weather == Weather.RAIN) {
+        } else if (weather == WEATHER.RAIN) {
             regenCounter = regenCounter - 1;
             thirst = thirst - 5;
             sun = sun - 2;
-        } else if (weather == Weather.CLOUD) {
+        } else if (weather == WEATHER.CLOUD) {
             regenCounter = regenCounter - 1;
             thirst = thirst + 1;
             sun = sun - 1;

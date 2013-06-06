@@ -3,12 +3,18 @@ package summative2013.lifeform;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import summative2013.lifeform.Lifeform.WEATHER;
+import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel {
 
     private HashMap locToLife;
     private HashMap locToTerrain;
+    private ArrayList<Weather> activeWeather;
 
     /**
      * Default constr
@@ -81,6 +87,33 @@ public class Summative extends JPanel {
             } else {
                 locToTerrain.put(point, Terrain.SEA);
             }
+        }
+    }
+
+    public void advance() {
+        Iterator it = locToLife.entrySet().iterator();
+        while (it.hasNext()) {
+
+            Map.Entry pairs = (Map.Entry) it.next();
+
+            WEATHER current = WEATHER.CLOUD;
+
+            for (Weather w : activeWeather) {
+                if (w.getArea().contains((pairs.getKey()))) {
+                    if (current != WEATHER.RAIN) {
+                        if (w.getType() == WEATHER.RAIN) {
+                            current = WEATHER.RAIN;
+                        } else if (w.getType() == WEATHER.SUN) {
+                            current = WEATHER.SUN;
+                        } else {
+                            current = WEATHER.CLOUD;
+                        }
+                    }
+                }
+            }
+
+            pairs.getValue().act(current);
+            it.remove(); // avoids a ConcurrentModificationException
         }
     }
 }

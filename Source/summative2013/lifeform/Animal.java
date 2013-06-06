@@ -20,14 +20,14 @@ public class Animal extends Lifeform {
     /**
      * Creates the gender enum thing
      */
-    public enum Gender {
+    public enum GENDER {
 
         MALE, FEMALE
     };
     /**
      * Stores gender
      */
-    private Gender gender;
+    private GENDER gender;
     /**
      * Store the friends happy no fighting membership club
      */
@@ -60,7 +60,7 @@ public class Animal extends Lifeform {
 
     public Animal() {
         hunger = 50;
-        gender = Gender.MALE;
+        gender = GENDER.MALE;
         depravity = 0;
         knowledge = new ArrayList<Memory>();
         disease = new ArrayList<Disease>();

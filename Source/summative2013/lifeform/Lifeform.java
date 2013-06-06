@@ -1,6 +1,7 @@
 package summative2013.lifeform;
 
 import java.awt.Point;
+import summative2013.phenomena.Weather.WEATHER;
 
 /**
  * Default living class parent ancestor
@@ -23,16 +24,9 @@ public class Lifeform {
     protected Point location;
 
     /**
-     * Creates a weather enum thing
-     */
-    protected enum Weather {
-
-        RAIN, SUN, CLOUD
-    };
-    /**
      * Stores the current weather
      */
-    protected Weather weather;
+    protected WEATHER weather;
     /**
      * Is it alive?
      */
@@ -50,7 +44,7 @@ public class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-    public void act() {
+    public void act(WEATHER weather) {
     }
     
     /**
