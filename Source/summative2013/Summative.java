@@ -112,7 +112,7 @@ public class Summative extends JPanel {
         super.paintComponent(g);
         drawTerrain(g);
     }
-    public synchronized void drawTerrain(Graphics g){
+    public  void drawTerrain(Graphics g){
         for(Entry<Point, Terrain> e:locToTerrain.entrySet()){
             Point p = e.getKey();
             if(e.getValue() ==Terrain.LAND)
