@@ -53,7 +53,7 @@ public class Summative extends JPanel {
         s.repaint();
         frame.setVisible(true);
     }
-    public void doMapGen(Point p,int i){
+    public synchronized void doMapGen(Point p,int i){
         if(i>=0){
             for(int x = p.x-1;x<=p.x+1;x++){
                 for(int y = p.y-1;y<=p.y+1;y++){
@@ -64,10 +64,9 @@ public class Summative extends JPanel {
                 }
             }
         }
-        repaint();
     }
     //Map generator
-    public void mapGen(Point point) {
+    public synchronized void mapGen(Point point) {
         int lands = 0, seas = 0;
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -113,7 +112,7 @@ public class Summative extends JPanel {
         super.paintComponent(g);
         drawTerrain(g);
     }
-    public void drawTerrain(Graphics g){
+    public synchronized void drawTerrain(Graphics g){
         for(Entry<Point, Terrain> e:locToTerrain.entrySet()){
             Point p = e.getKey();
             if(e.getValue() ==Terrain.LAND)
