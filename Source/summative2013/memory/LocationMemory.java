@@ -25,26 +25,20 @@ public class LocationMemory extends Memory {
 	 */
 	private Summative.Terrain terrain;
 	/**
-	 * Maximum corruption value
-	 */
-	private final int CORRUPTION_DELTA = 3;
-	/**
 	 * Increases or decreases both coordinates by a random amount in 
 	 * [-CORRUPTION_DELTA, CORRUPTION_DELTA]
 	 */
 	public void corrupt() {
-		location.x += (Math.random() - 0.5) * CORRUPTION_DELTA;
-		location.y += (Math.random() - 0.5) * CORRUPTION_DELTA;
+		location.x  = corruptNumber(location.x);
+		location.y =corruptNumber(location.y);
 		
-		if (Math.random() < 0.01) {
-			
-		}
+		tryForget();
 	}
 	/**
 	 * ?
-	 * @param l  The animal to affect, probably the owner of this memory
+	 * @param a  The animal to affect, probably the owner of this memory
 	 */
-	public void affect(Animal l) {
+	public void affect(Animal a) {
 		
 	}
 	
@@ -54,5 +48,9 @@ public class LocationMemory extends Memory {
 	 */
 	public boolean isForgotten() {
 		return terrain == null;
+	}
+	
+	protected void forget() {
+		terrain = null;
 	}
 }

@@ -10,6 +10,7 @@ public class SocietyMemory extends Memory {
 	public SocietyMemory(Animal object, int score) {
 		this.object = object;
 		this.score = score;
+		
 	}
 	/**
 	 * Target of this relationship
@@ -22,9 +23,9 @@ public class SocietyMemory extends Memory {
 	private int score;
 	/**
 	 * Updates the in-group and out-group lists of the target Animal.
-	 * @param l Animal to affect
+	 * @param a Animal to affect
 	 */
-	public void affect(Animal l) {
+	public void affect(Animal a) {
 		
 	}
 	/**
@@ -33,12 +34,15 @@ public class SocietyMemory extends Memory {
 	 */
 	@Override
 	public void corrupt() {
-		score += ((Math.random() - 0.5) * CORRUPTION_DELTA);
+		score = corruptNumber(score);
+		tryForget();
 	}
-	/**
-	 * Maximum corruption value
-	 */
-	private final int CORRUPTION_DELTA = 3;
+	
+	protected void forget() {
+		object = null;
+	}
+
+
 	
 	public boolean isForgotten() {
 		return object == null;

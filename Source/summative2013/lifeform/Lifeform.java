@@ -1,10 +1,7 @@
 package summative2013.lifeform;
 
 import java.awt.Point;
-<<<<<<< HEAD
-=======
 import summative2013.phenomena.Weather.WEATHER;
->>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
 import summative2013.Summative;
 
 /**
@@ -12,12 +9,9 @@ import summative2013.Summative;
  *
  * @author 322303413
  */
-<<<<<<< HEAD
-public abstract class Lifeform {
-=======
-public class Lifeform {
 
->>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
+public abstract class Lifeform {
+
     /**
      * Store the panel
      */
@@ -51,14 +45,9 @@ public class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-<<<<<<< HEAD
-    public abstract void act();
+    public abstract void act(WEATHER w);
     
-=======
-    public void act(WEATHER weather) {
-    }
 
->>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
     /**
      * Suicide
      */
