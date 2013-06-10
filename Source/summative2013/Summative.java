@@ -1,19 +1,27 @@
-package summative2013.lifeform;
+package summative2013;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Graphics;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import summative2013.lifeform.Lifeform.WEATHER;
+import java.util.Map.Entry;
+import summative2013.lifeform.Lifeform;
 import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel {
 
-    private HashMap locToLife;
-    private HashMap locToTerrain;
+    private static GraphicsEnvironment ge;
+    private static GraphicsDevice gd;
+    private HashMap<Point, Lifeform> locToLife;
+    private HashMap<Point, Terrain> locToTerrain;
+    private Object lock = new Object();
     private ArrayList<Weather> activeWeather;
 
     /**
@@ -21,8 +29,9 @@ public class Summative extends JPanel {
      */
     public Summative() {
         Lifeform.summative = this;
-        locToLife = new HashMap();
-        locToTerrain = new HashMap();
+        locToLife = new HashMap<Point, Lifeform>();
+        locToTerrain = new HashMap<Point, Terrain>();
+        setSize(gd.getFullScreenWindow().getSize());
     }
 
     //Terrain making
@@ -39,24 +48,45 @@ public class Summative extends JPanel {
         frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(frame);
-        frame.add(new Summative());
+        Summative s = new Summative();
+        frame.add(s);
 
+        s.locToTerrain.put(new Point(0, 0), Terrain.LAND);
+        s.doMapGen(new Point(0, 0), 10);
+
+        s.repaint();
         frame.setVisible(true);
     }
 
+    public void doMapGen(Point p, int i) {
+        if (i >= 0) {
+            for (int x = p.x - 1; x <= p.x + 1; x++) {
+                for (int y = p.y - 1; y <= p.y + 1; y++) {
+                    Point genPoint = new Point(x, y);
+                    if ((x != p.x || y != p.y) && !locToTerrain.containsKey(new Point(x, y))) {
+                        mapGen(genPoint);
+                    }
+                    doMapGen(genPoint, i - 1);
+                }
+            }
+        }
+    }
     //Map generator
+
     public void mapGen(Point point) {
         int lands = 0, seas = 0;
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
-                if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.LAND) {
-                    lands = lands + 1;
-                } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.SEA) {
-                    seas = seas + 1;
-                } else {
+                synchronized (lock) {
+                    if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.LAND) {
+                        lands++;
+                    } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.SEA) {
+                        seas++;
+                    } else {
+                    }
                 }
             }
         }
@@ -94,26 +124,45 @@ public class Summative extends JPanel {
         Iterator it = locToLife.entrySet().iterator();
         while (it.hasNext()) {
 
-            Map.Entry pairs = (Map.Entry) it.next();
+            Map.Entry<Point, Lifeform> pairs = (Map.Entry) it.next();
 
-            WEATHER current = WEATHER.CLOUD;
+            Weather.WEATHER current = Weather.WEATHER.CLOUD;
 
             for (Weather w : activeWeather) {
                 if (w.getArea().contains((pairs.getKey()))) {
-                    if (current != WEATHER.RAIN) {
-                        if (w.getType() == WEATHER.RAIN) {
-                            current = WEATHER.RAIN;
-                        } else if (w.getType() == WEATHER.SUN) {
-                            current = WEATHER.SUN;
+                    if (current != Weather.WEATHER.RAIN) {
+                        if (w.getType() == Weather.WEATHER.RAIN) {
+                            current = Weather.WEATHER.RAIN;
+                        } else if (w.getType() == Weather.WEATHER.SUN) {
+                            current = Weather.WEATHER.SUN;
                         } else {
-                            current = WEATHER.CLOUD;
+                            current = Weather.WEATHER.CLOUD;
                         }
                     }
                 }
             }
-
             pairs.getValue().act(current);
             it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawTerrain(g);
+    }
+
+    public void drawTerrain(Graphics g) {
+        synchronized (lock) {
+            for (Entry<Point, Terrain> e : locToTerrain.entrySet()) {
+                Point p = e.getKey();
+                if (e.getValue() == Terrain.LAND) {
+                    g.setColor(Color.MAGENTA);
+                } else if (e.getValue() == Terrain.SEA) {
+                    g.setColor(Color.BLUE);
+                }
+                g.fillRect(p.x * 10, p.y * 10, 10, 10);
+            }
         }
     }
 }

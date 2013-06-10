@@ -16,4 +16,9 @@ public abstract class Memory {
 	 * @param a Target animal
 	 */
 	public abstract void affect(Animal a);
+	/**
+	 * Checks if this memory can be deleted since it is useless
+	 * @return Whether this memory is ready for deletion
+	 */
+	public abstract boolean isForgotten();
 }

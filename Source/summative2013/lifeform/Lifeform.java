@@ -2,6 +2,7 @@ package summative2013.lifeform;
 
 import java.awt.Point;
 import summative2013.phenomena.Weather.WEATHER;
+import summative2013.Summative;
 
 /**
  * Default living class parent ancestor
@@ -9,11 +10,11 @@ import summative2013.phenomena.Weather.WEATHER;
  * @author 322303413
  */
 public class Lifeform {
+
     /**
      * Store the panel
      */
-    public static Summative summative; 
-
+    public static Summative summative;
     /**
      * Thirst, from 0-99
      */
@@ -22,7 +23,6 @@ public class Lifeform {
      * Stores position on grid
      */
     protected Point location;
-
     /**
      * Stores the current weather
      */
@@ -46,10 +46,10 @@ public class Lifeform {
      */
     public void act(WEATHER weather) {
     }
-    
+
     /**
      * Suicide
      */
-    public void suicide(){
+    public void suicide() {
     }
 }
