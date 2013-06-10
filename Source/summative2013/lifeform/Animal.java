@@ -15,7 +15,7 @@ public class Animal extends Lifeform {
     /**
      * Stores hunger level, from 0-99
      */
-    private int hunger;
+    protected int hunger;
 
     /**
      * Creates the gender enum thing
@@ -27,36 +27,36 @@ public class Animal extends Lifeform {
     /**
      * Stores gender
      */
-    private GENDER gender;
+    protected GENDER gender;
     /**
      * Store the friends happy no fighting membership club
      */
-    private ArrayList inGroup;
+    protected ArrayList inGroup;
     /**
      * Stores the angry enemies murder hatred villain gang
      */
-    private ArrayList outGroup;
+    protected ArrayList outGroup;
     /**
      * Stores the location the animal is currently moving to
      */
-    private Point destination;
+    protected Point destination;
     /**
      * Stores how messed up that animal losing its mind crazies asylum bar level
      */
-    private int depravity;
+    protected int depravity;
     /**
      * Stores past memories and regrets and nostalgic moments in the sun of
      * childhood glorious
      */
-    private ArrayList<Memory> knowledge;
+    protected ArrayList<Memory> knowledge;
     /**
      * Stores eating food delicious untermensch inferior prey animals
      */
-    private ArrayList<Animal> preyList;
+    protected ArrayList<Lifeform> preyList;
     /**
      * Stores how diseased plague leprosy shun contagion SARS level of multiple
      */
-    private ArrayList<Disease> disease;
+    protected ArrayList<Disease> disease;
 
     public Animal() {
         hunger = 50;
@@ -64,5 +64,35 @@ public class Animal extends Lifeform {
         depravity = 0;
         knowledge = new ArrayList<Memory>();
         disease = new ArrayList<Disease>();
+    }
+    
+    /**
+     * Finds the closest prey
+     */
+    public void findFood(ArrayList<Lifeform> list) {
+        ArrayList<Point> foodList = new ArrayList<Point>();
+        food = null;
+        for (Lifeform l : list) {
+            for (Lifeform m : preyList) {
+                if (l.getClass().equals(m.getClass())) {
+                    foodList.add(l.location);
+                }
+            }
+        }
+        if (foodList.size() > 0) {
+            food = foodList.get(0);
+            for (Point p : foodList) {
+                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(food.x - location.x) + Math.abs(food.y - location.y)) {
+                    food = p;
+                }
+            }
+        }
+    }
+    
+    public void setDestination(){
+        if(thirst>=hunger)
+            destination = water;
+        else
+            destination = food;
     }
 }
