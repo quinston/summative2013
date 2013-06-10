@@ -1,6 +1,10 @@
 package summative2013.lifeform;
 
 import java.awt.Point;
+<<<<<<< HEAD
+=======
+import summative2013.phenomena.Weather.WEATHER;
+>>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
 import summative2013.Summative;
 
 /**
@@ -8,12 +12,16 @@ import summative2013.Summative;
  *
  * @author 322303413
  */
+<<<<<<< HEAD
 public abstract class Lifeform {
+=======
+public class Lifeform {
+
+>>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
     /**
      * Store the panel
      */
-    public static Summative summative; 
-
+    public static Summative summative;
     /**
      * Thirst, from 0-99
      */
@@ -22,18 +30,10 @@ public abstract class Lifeform {
      * Stores position on grid
      */
     protected Point location;
-
-    /**
-     * Creates a weather enum thing
-     */
-    protected enum Weather {
-
-        RAIN, SUN, CLOUD
-    };
     /**
      * Stores the current weather
      */
-    protected Weather weather;
+    protected WEATHER weather;
     /**
      * Is it alive?
      */
@@ -51,11 +51,17 @@ public abstract class Lifeform {
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
+<<<<<<< HEAD
     public abstract void act();
     
+=======
+    public void act(WEATHER weather) {
+    }
+
+>>>>>>> 74c1ecf928fe20a8934e78820227d71802031979
     /**
      * Suicide
      */
-    public void suicide(){
+    public void suicide() {
     }
 }
