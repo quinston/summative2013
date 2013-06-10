@@ -17,6 +17,7 @@ public class Summative extends JPanel {
     private static GraphicsDevice gd;
     private HashMap<Point,Lifeform> locToLife;
     private HashMap<Point,Terrain> locToTerrain;
+    private Object lock = new Object();
     /**
      * Default constr
      */
@@ -53,7 +54,8 @@ public class Summative extends JPanel {
         s.repaint();
         frame.setVisible(true);
     }
-    public synchronized void doMapGen(Point p,int i){
+    
+    public void doMapGen(Point p,int i){
         if(i>=0){
             for(int x = p.x-1;x<=p.x+1;x++){
                 for(int y = p.y-1;y<=p.y+1;y++){
@@ -66,15 +68,17 @@ public class Summative extends JPanel {
         }
     }
     //Map generator
-    public synchronized void mapGen(Point point) {
+    public void mapGen(Point point) {
         int lands = 0, seas = 0;
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
-                if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.LAND) {
-                    lands = lands + 1;
-                } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.SEA) {
-                    seas = seas + 1;
-                } else {
+                synchronized(lock){
+                    if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.LAND) {
+                        lands++;
+                    } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.SEA) {
+                        seas++;
+                    } else {
+                    }
                 }
             }
         }
@@ -113,13 +117,15 @@ public class Summative extends JPanel {
         drawTerrain(g);
     }
     public  void drawTerrain(Graphics g){
-        for(Entry<Point, Terrain> e:locToTerrain.entrySet()){
-            Point p = e.getKey();
-            if(e.getValue() ==Terrain.LAND)
-                g.setColor(Color.MAGENTA);
-            else if(e.getValue() == Terrain.SEA)
-                g.setColor(Color.BLUE);
-            g.fillRect(p.x*10,p.y*10,10,10);
+        synchronized(lock){
+            for(Entry<Point, Terrain> e:locToTerrain.entrySet()){
+                Point p = e.getKey();
+                if(e.getValue() ==Terrain.LAND)
+                    g.setColor(Color.MAGENTA);
+                else if(e.getValue() == Terrain.SEA)
+                    g.setColor(Color.BLUE);
+                g.fillRect(p.x*10,p.y*10,10,10);
+            }
         }
     }
 }
