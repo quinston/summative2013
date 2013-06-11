@@ -10,7 +10,7 @@ import summative2013.phenomena.Disease;
  *
  * @author 322303413
  */
-public class Animal extends Lifeform {
+public abstract class Animal extends Lifeform {
 
     /**
      * Stores hunger level, from 0-99
