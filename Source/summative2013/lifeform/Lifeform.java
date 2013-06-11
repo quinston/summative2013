@@ -75,5 +75,5 @@ public class Lifeform {
      */
     public void suicide() {
         summative.assistedSuicide(location);
-    }  
+    }
 }

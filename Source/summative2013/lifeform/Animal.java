@@ -6,6 +6,7 @@ import summative2013.Summative;
 import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
 import summative2013.phenomena.Disease;
+import summative2013.phenomena.Weather.WEATHER;
 
 /**
  * Parent class of all animal moving lifeform living creatures
@@ -25,6 +26,14 @@ public class Animal extends Lifeform {
     public enum GENDER {
 
         MALE, FEMALE
+    };
+
+    /**
+     * Some kind of direction variable
+     */
+    public enum DIRECTION {
+
+        NORTH, SOUTH, EAST, WEST, CENTER
     };
     /**
      * Stores gender
@@ -138,5 +147,36 @@ public class Animal extends Lifeform {
         } else {
             destination = food;
         }
+    }
+
+    public DIRECTION getDirection(Point p) {
+        if (p.x == location.x && p.y == location.y) {
+            return DIRECTION.CENTER;
+        } else if (Math.abs(p.x - location.x) > Math.abs(p.y - location.y)) {
+            if (p.x > location.x) {
+                return DIRECTION.EAST;
+            } else {
+                return DIRECTION.WEST;
+            }
+        } else if (p.y > location.y) {
+            return DIRECTION.NORTH;
+        } else {
+            return DIRECTION.SOUTH;
+        }
+    }
+
+    @Override
+    public void act(WEATHER Weather) {
+        if (getDirection(destination) == DIRECTION.NORTH) {
+            location.y = location.y + 1;
+        } else if (getDirection(destination) == DIRECTION.SOUTH) {
+            location.y = location.y - 1;
+        } else if (getDirection(destination) == DIRECTION.WEST) {
+            location.x = location.x - 1;
+        } else if (getDirection(destination) == DIRECTION.EAST) {
+            location.x = location.x + 1;
+        } else {
+        }
+        
     }
 }
