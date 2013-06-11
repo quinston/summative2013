@@ -71,7 +71,7 @@ public class Summative extends JPanel implements KeyListener {
         gd.setFullScreenWindow(frame);//makes full screen
         Summative s = new Summative();
         frame.add(s);
-
+        s.repaint();
         s.requestFocusInWindow();//keyListener activated
         frame.setVisible(true);
     }
