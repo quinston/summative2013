@@ -2,6 +2,8 @@ package summative2013.lifeform;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import summative2013.Summative;
+import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
 import summative2013.phenomena.Disease;
 
@@ -65,7 +67,48 @@ public class Animal extends Lifeform {
         knowledge = new ArrayList<Memory>();
         disease = new ArrayList<Disease>();
     }
-    
+
+    /**
+     * Refreshes to store all the nearby lifeforms
+     */
+    public void findNearbyLife() {
+        nearbyLife = new ArrayList<Lifeform>();
+        for (int x = -sight; x <= sight; x++) {
+            for (int y = -sight; y <= sight; y++) {
+                if (Math.abs(x) + Math.abs(y) <= sight) {
+                    if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
+                        nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Refreshes nearby terrain
+     */
+    public void findWater() {
+        ArrayList<Point> waterList = new ArrayList<Point>();
+        water = null;
+        for (int x = -sight; x <= sight; x++) {
+            for (int y = -sight; y <= sight; y++) {
+                if (Math.abs(x) + Math.abs(y) <= sight) {
+                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == Summative.TERRAIN.SEA) {
+                        waterList.add(new Point(location.x + x, location.y + y));
+                    }
+                }
+            }
+        }
+        if (waterList.size() > 0) {
+            water = waterList.get(0);
+            for (Point p : waterList) {
+                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(water.x - location.x) + Math.abs(water.y - location.y)) {
+                    water = p;
+                }
+            }
+        }
+    }
+
     /**
      * Finds the closest prey
      */
@@ -88,11 +131,12 @@ public class Animal extends Lifeform {
             }
         }
     }
-    
-    public void setDestination(){
-        if(thirst>=hunger)
+
+    public void setDestination() {
+        if (thirst >= hunger) {
             destination = water;
-        else
+        } else {
             destination = food;
+        }
     }
 }

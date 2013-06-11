@@ -75,46 +75,5 @@ public class Lifeform {
      */
     public void suicide() {
         summative.assistedSuicide(location);
-    }
-
-    /**
-     * Refreshes to store all the nearby lifeforms
-     */
-    public void findNearbyLife() {
-        nearbyLife = new ArrayList<Lifeform>();
-        for (int x = -sight; x <= sight; x++) {
-            for (int y = -sight; y <= sight; y++) {
-                if (Math.abs(x) + Math.abs(y) <= sight) {
-                    if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
-                        nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Refreshes nearby terrain
-     */
-    public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<Point>();
-        water = null;
-        for (int x = -sight; x <= sight; x++) {
-            for (int y = -sight; y <= sight; y++) {
-                if (Math.abs(x) + Math.abs(y) <= sight) {
-                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == TERRAIN.SEA) {
-                        waterList.add(new Point(location.x + x, location.y + y));
-                    }
-                }
-            }
-        }
-        if (waterList.size() > 0) {
-            water = waterList.get(0);
-            for (Point p : waterList) {
-                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(water.x - location.x) + Math.abs(water.y - location.y)) {
-                    water = p;
-                }
-            }
-        }
-    }
+    }  
 }
