@@ -214,5 +214,6 @@ public class Animal extends Lifeform {
                 }
             }
         }
+        setDestination();
     }
 }
