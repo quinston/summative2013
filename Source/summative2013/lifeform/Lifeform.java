@@ -54,7 +54,11 @@ public class Lifeform {
      * Stores nearest prey
      */
     protected Point food;
-
+    /**
+     * Is it an animal
+     */
+protected boolean mobile;
+    
     /**
      * Default constructor, gives no thirst, (0,0) location
      */
@@ -76,4 +80,10 @@ public class Lifeform {
     public void suicide() {
         summative.assistedSuicide(location);
     }
+    
+    /**
+     * Returns mobility
+     */
+    public boolean getMobile()
+    {return mobile;}
 }

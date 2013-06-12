@@ -3,6 +3,7 @@ package summative2013.lifeform;
 import java.awt.Point;
 import java.util.ArrayList;
 import summative2013.Summative;
+import summative2013.Summative.TERRAIN;
 import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
 import summative2013.phenomena.Disease;
@@ -165,6 +166,26 @@ public class Animal extends Lifeform {
         }
     }
 
+    public GENDER getGender() {
+        return gender;
+    }
+
+    public boolean isPrey(Lifeform l) {
+        for (Lifeform life : preyList) {
+            if (life.getClass().equals(l.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canMate(Animal l) {
+        if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void act(WEATHER Weather) {
         if (getDirection(destination) == DIRECTION.NORTH) {
@@ -177,6 +198,21 @@ public class Animal extends Lifeform {
             location.x = location.x + 1;
         } else {
         }
-        
+        if (Math.abs(destination.x - location.x) <= 1 && Math.abs(destination.y - location.y) <= 1
+                && Math.abs(destination.x - location.x) + Math.abs(destination.y - location.y) < 2) {
+            {
+                if (summative.terrainGet(destination) == TERRAIN.SEA) {
+                    thirst = thirst - 30;
+                } else if (isPrey(summative.lifeGet(destination))) {
+                    hunger = hunger - 30;
+                    summative.lifeGet(destination).suicide();
+                } else if (summative.lifeGet(destination).getMobile()) {
+                    if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
+                    {
+                        
+                    }
+                }
+            }
+        }
     }
 }
