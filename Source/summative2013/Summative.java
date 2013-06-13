@@ -183,4 +183,10 @@ public class Summative extends JPanel {
     public TERRAIN terrainGet(Point location) {
         return locToTerrain.get(location);
     }
+    
+    //Adds in a new baby animal kinda thing
+    public void add(Point p, Lifeform l)
+    {
+        locToLife.put(p, l);
+    }
 }

@@ -57,6 +57,26 @@ public class Animal extends Lifeform {
      */
     protected int depravity;
     /**
+     * The nearby organisms
+     */
+    protected ArrayList<Lifeform> nearbyLife;
+    /**
+     * The closest water
+     */
+    protected Point water;
+    /**
+     * Stores vision range
+     */
+    protected int sight;
+    /**
+     * Stores nearest prey
+     */
+    protected Point food;
+    /**
+     * stores the nearest mate
+     */
+    protected Point mate;
+    /**
      * Stores past memories and regrets and nostalgic moments in the sun of
      * childhood glorious
      */
@@ -142,8 +162,29 @@ public class Animal extends Lifeform {
         }
     }
 
+    public void findMate(ArrayList<Lifeform> list) {
+        ArrayList<Point> mateList = new ArrayList<Point>();
+        mate = null;
+        for (Lifeform l : list) {
+            if (l.getClass().equals(this.getClass())) {
+                mateList.add(l.location);
+            }
+        }
+
+        if (mateList.size() > 0) {
+            mate = mateList.get(0);
+            for (Point p : mateList) {
+                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
+                    mate = p;
+                }
+            }
+        }
+    }
+
     public void setDestination() {
-        if (thirst >= hunger) {
+        if (thirst < 50 && hunger < 50) {
+            destination = mate;
+        } else if (thirst >= hunger) {
             destination = water;
         } else {
             destination = food;
@@ -186,8 +227,31 @@ public class Animal extends Lifeform {
         return false;
     }
 
+    public Point nearEmpty() {
+        Point temp;
+        ArrayList<Point> available = new ArrayList<Point>();
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                temp = new Point(location.x + x, location.y + y);
+                if (summative.lifeGet(temp) == null && (summative.terrainGet(temp)) == TERRAIN.LAND) {
+                    available.add(temp);
+                }
+            }
+        }
+        return available.get((int) (Math.random() * available.size()));
+    }
+
+    public void reproduce() {
+    }
+
     @Override
     public void act(WEATHER Weather) {
+        findNearbyLife();
+        findWater();
+        findFood(nearbyLife);
+        findMate(nearbyLife);
+        setDestination();
+
         if (getDirection(destination) == DIRECTION.NORTH) {
             location.y = location.y + 1;
         } else if (getDirection(destination) == DIRECTION.SOUTH) {
@@ -202,18 +266,18 @@ public class Animal extends Lifeform {
                 && Math.abs(destination.x - location.x) + Math.abs(destination.y - location.y) < 2) {
             {
                 if (summative.terrainGet(destination) == TERRAIN.SEA) {
-                    thirst = thirst - 30;
+                    thirst = 0;
                 } else if (isPrey(summative.lifeGet(destination))) {
                     hunger = hunger - 30;
                     summative.lifeGet(destination).suicide();
                 } else if (summative.lifeGet(destination).getMobile()) {
                     if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
                     {
-                        
+                        hunger = hunger + 30;
+                        reproduce();
                     }
                 }
             }
         }
-        setDestination();
     }
 }

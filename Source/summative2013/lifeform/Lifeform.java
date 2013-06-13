@@ -39,22 +39,6 @@ public class Lifeform {
      */
     protected Image icon;
     /**
-     * The nearby organisms
-     */
-    protected ArrayList<Lifeform> nearbyLife;
-    /**
-     * The closest water
-     */
-    protected Point water;
-    /**
-     * Stores vision range
-     */
-    protected int sight;
-    /**
-     * Stores nearest prey
-     */
-    protected Point food;
-    /**
      * Is it an animal
      */
 protected boolean mobile;
