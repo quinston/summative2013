@@ -17,6 +17,20 @@ public abstract class Animal extends Lifeform {
      */
     private int hunger;
 
+	/**
+	 * @return the inGroup
+	 */
+	public ArrayList getInGroup() {
+		return inGroup;
+	}
+
+	/**
+	 * @return the outGroup
+	 */
+	public ArrayList getOutGroup() {
+		return outGroup;
+	}
+
     /**
      * Creates the gender enum thing
      */
