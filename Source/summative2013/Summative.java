@@ -120,13 +120,13 @@ public class Summative extends JPanel implements KeyListener {
                 locToTerrain.put(point, Terrain.SEA);//less likely to have sea
             }
         } else if (lands > seas && seas > 0) {//if more land, more likely to have land, creates landmass
-            if (Math.random() < .95) {
+            if (Math.random() < .8 + .05*lands) {
                 locToTerrain.put(point, Terrain.LAND);
             } else {
                 locToTerrain.put(point, Terrain.SEA);
             }
         } else if (seas > lands && lands > 0) {//if more see, more likely to have sea, creates lakes, bodies of water
-            if (Math.random() < 0.95) {
+            if (Math.random() < .8 + .05*seas) {
                 locToTerrain.put(point, Terrain.SEA);
             } else {
                 locToTerrain.put(point, Terrain.LAND);
