@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import summative2013.memory.Memory;
 import summative2013.phenomena.Disease;
+import java.util.LinkedList;
 
 /**
  * Parent class of all animal moving lifeform living creatures
@@ -20,14 +21,14 @@ public abstract class Animal extends Lifeform {
 	/**
 	 * @return the inGroup
 	 */
-	public ArrayList getInGroup() {
+	public LinkedList<Animal> getInGroup() {
 		return inGroup;
 	}
 
 	/**
 	 * @return the outGroup
 	 */
-	public ArrayList getOutGroup() {
+	public LinkedList<Animal> getOutGroup() {
 		return outGroup;
 	}
 
@@ -45,11 +46,11 @@ public abstract class Animal extends Lifeform {
     /**
      * Store the friends happy no fighting membership club
      */
-    private ArrayList inGroup;
+    private LinkedList<Animal> inGroup;
     /**
      * Stores the angry enemies murder hatred villain gang
      */
-    private ArrayList outGroup;
+    private LinkedList<Animal> outGroup;
     /**
      * Stores the location the animal is currently moving to
      */
