@@ -1,5 +1,8 @@
 package summative2013.memory;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Collections;
 import summative2013.lifeform.Animal;
 import java.util.Random;
 /**
@@ -26,7 +29,26 @@ public class SocietyMemory extends Memory {
 	 * @param a Animal to affect
 	 */
 	public void affect(Animal a) {
+		LinkedList<Animal> inGroup = a.getInGroup(),
+		outGroup = a.getOutGroup();
+				
+		if (score > 0) {
+			if (inGroup.indexOf(object) == -1) {
+				//Collections.swap(inGroup, inGroup.indexOf(object), Math.max(inGroup.indexOf(object) - score, 0));
+				inGroup.add(object);
+			}
+		}
+		else if (score < 0) {
+			if (outGroup.indexOf(object) == -1) {
+				outGroup.add(object);
+			}
+		}
 		
+		
+
+		
+		Collections.swap(outGroup, inGroup.indexOf(object), 
+				Math.max(outGroup.indexOf(object) - score, 0));
 	}
 	/**
 	 * Increases or decreases the score by a random amount in 
