@@ -35,7 +35,7 @@ public class LocationMemory extends Memory {
 		tryForget();
 	}
 	/**
-	 * ?
+	 * Probably doesn't affect the animal directly.
 	 * @param a  The animal to affect, probably the owner of this memory
 	 */
 	public void affect(Animal a) {
