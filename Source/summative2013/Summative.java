@@ -39,13 +39,13 @@ public class Summative extends JPanel implements KeyListener {
         locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
         setSize(gd.getFullScreenWindow().getSize());//fullscreen the panel
         screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth()/10, getHeight()/10);//sets up our screen rectangle to define our screen
-        for (int i = -1 * screen.x; i <= screen.x+screen.width; i++) {
-            for (int j = -1 * screen.y; j <= screen.y+screen.height; j++) {
+        for (int i =screen.x; i <= screen.x+screen.width; i++) {
+            for (int j =screen.y; j <= screen.y+screen.height; j++) {
                 mapGen(new Point(i, j));//generate initial point
             }
         }
+        repaint();
         setFocusable(true);//allows us to actually use the keylistener
-        requestFocusInWindow();
         addKeyListener(this);//makes keys do something
     }
 

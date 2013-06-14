@@ -23,7 +23,7 @@ public class LocationMemory extends Memory {
 	/**  
 	 * Terrain at location
 	 */
-	private Summative.Terrain terrain;
+	private Summative.TERRAIN terrain;
 	/**
 	 * Increases or decreases both coordinates by a random amount in 
 	 * [-CORRUPTION_DELTA, CORRUPTION_DELTA]

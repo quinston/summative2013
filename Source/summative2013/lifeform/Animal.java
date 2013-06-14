@@ -297,7 +297,7 @@ public abstract class Animal extends Lifeform {
                             temp.changeCurrent(-1);
                         }
                     } else if (isPrey(summative.grassGet(destination))) {
-                        errorerrorerrorerrorerror
+                        //errorerrorerrorerrorerror
                     } else {
                         summative.assistedSuicide(destination);
                     }
