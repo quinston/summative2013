@@ -38,9 +38,9 @@ public class Summative extends JPanel implements KeyListener {
         locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
         locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
         setSize(gd.getFullScreenWindow().getSize());//fullscreen the panel
-        screen = new Rectangle(-1 * getWidth() / 2, -1 * getHeight() / 2, getWidth(), getHeight());//sets up our screen rectangle to define our screen
-        for (int i = -1 * getWidth() / 20; i <= getWidth() / 20; i++) {
-            for (int j = -1 * getHeight() / 20; j <= getHeight() / 20; j++) {
+        screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth()/10, getHeight()/10);//sets up our screen rectangle to define our screen
+        for (int i = -1 * screen.x; i <= screen.x+screen.width; i++) {
+            for (int j = -1 * screen.y; j <= screen.y+screen.height; j++) {
                 mapGen(new Point(i, j));//generate initial point
             }
         }
@@ -153,28 +153,40 @@ public class Summative extends JPanel implements KeyListener {
     //moves the whole system ahead
 
     public void advance() {
-        Iterator it = locToLife.entrySet().iterator();
-        while (it.hasNext()) {
+        for(Weather w:activeWeather){
+            Iterator lifeIt = locToLife.entrySet().iterator();
+            while (lifeIt.hasNext()) {
 
-            Map.Entry<Point, Lifeform> pairs = (Map.Entry) it.next();
+                Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
 
-            Weather.WEATHER current = Weather.WEATHER.CLOUD;
-
-            for (Weather w : activeWeather) {
-                if (w.getArea().contains((pairs.getKey()))) {
-                    if (current != Weather.WEATHER.RAIN) {
-                        if (w.getType() == Weather.WEATHER.RAIN) {
-                            current = Weather.WEATHER.RAIN;
-                        } else if (w.getType() == Weather.WEATHER.SUN) {
-                            current = Weather.WEATHER.SUN;
-                        } else {
-                            current = Weather.WEATHER.CLOUD;
+                if (w.getArea().contains(pairs.getKey())) {//if we are on the weather
+                    pairs.getValue().act(w.getType());//act based on weather
+                }
+            }
+            Iterator terIt = locToTerrain.entrySet().iterator();
+            HashMap<Point,TERRAIN> temp = new HashMap<Point,TERRAIN>();
+            while(terIt.hasNext()){
+                Map.Entry<Point, TERRAIN> pairs = (Map.Entry)terIt.next();
+                if(w.getArea().contains(pairs.getKey())){
+                    if(w.getType() == Weather.WEATHER.RAIN&&pairs.getValue() == TERRAIN.SEA){
+                        //radiate water
+                        Point[] points = {new Point(pairs.getKey().x,pairs.getKey().y), new Point (pairs.getKey().x-1,pairs.getKey().y), new Point(pairs.getKey().x+1,pairs.getKey().y),new Point(pairs.getKey().x,pairs.getKey().y-1),new Point(pairs.getKey().x,pairs.getKey().y+1)};
+                        for(Point p:points){
+                            temp.put(p,TERRAIN.SEA);
+                        }
+                    }
+                    if(w.getType() == Weather.WEATHER.SUN &&pairs.getValue() == TERRAIN.LAND){
+                        //radiate land
+                        Point[] points = {new Point(pairs.getKey().x,pairs.getKey().y), new Point (pairs.getKey().x-1,pairs.getKey().y), new Point(pairs.getKey().x+1,pairs.getKey().y),new Point(pairs.getKey().x,pairs.getKey().y-1),new Point(pairs.getKey().x,pairs.getKey().y+1)};
+                        for(Point p:points){
+                            temp.put(p,TERRAIN.LAND);
                         }
                     }
                 }
             }
-            pairs.getValue().act(current);
-            it.remove(); // avoids a ConcurrentModificationException
+            for(Map.Entry<Point, TERRAIN> m:temp.entrySet()){
+                locToTerrain.put(m.getKey(),m.getValue());
+            }
         }
     }
 
@@ -196,16 +208,13 @@ public class Summative extends JPanel implements KeyListener {
      */
     public void drawTerrain(Graphics g) {
         synchronized (lock) {
-            for (int i = screen.x / 10; i < (screen.x + screen.width) / 10; i++) {
-                for (int j = screen.y / 10; j < (screen.y + screen.height) / 10; j++) {
-                    if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
-                    {
+            for(int i = screen.x;i<screen.x+screen.width;i++){
+                for(int j = screen.y;j<screen.y+screen.height;j++){
+                    if(locToTerrain.get(new Point(i,j))==TERRAIN.LAND)//if land, draw green
                         g.setColor(Color.GREEN);
-                    } else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
-                    {
+                    else if (locToTerrain.get(new Point(i,j))==TERRAIN.SEA)//if sea draw blue
                         g.setColor(Color.BLUE);
-                    }
-                    g.fillRect(i * 10 - screen.x, j * 10 - screen.y, 10, 10);//draw the block
+                    g.fillRect((i - screen.x)*10,(j - screen.y)*10,10,10);//draw the block
                 }
             }
         }
@@ -307,42 +316,36 @@ public class Summative extends JPanel implements KeyListener {
     /**
      * Generates more map as it becomes visible to the user
      */
-    public void updateMap() {
-        for (int i = screen.x / 10; i <= (screen.x + screen.width) / 10; i++) {//runs through x values
-            for (int j = screen.y / 10; j <= (screen.y + screen.height) / 10; j++) {//runs through y values
-                if (!locToTerrain.containsKey(new Point(i, j)))//do we have a point there?
-                {
-                    mapGen(new Point(i, j));//create point in that map
-                }
+    public void updateMap(){
+        for(int i = screen.x;i<=screen.x+screen.width;i++){//runs through x values
+            for(int j = screen.y;j<=screen.y+screen.height;j++){//runs through y values
+                if(!locToTerrain.containsKey(new Point(i,j)))//do we have a point there?
+                    mapGen(new Point(i,j));//create point in that map
             }
         }
     }
-
     /**
      * Moves the perspective towards the right
      */
     public void moveRight() {
-        screen.translate(10, 0);//moves the perspective
+        screen.translate(1, 0);//moves the perspective
     }
-
     /**
      * Moves the perspective to the left
      */
     public void moveLeft() {
-        screen.translate(-10, 0);//moves "camera"
+        screen.translate(-1, 0);//moves "camera"
     }
-
     /**
      * Moves the perspective upwards
      */
     public void moveUp() {
-        screen.translate(0, -10);//moves viewpoint
+        screen.translate(0, -1);//moves viewpoint
     }
-
     /**
      * Moves the perspective downward
      */
     public void moveDown() {
-        screen.translate(0, 10);//moves centre of field of view
+        screen.translate(0, 1);//moves centre of field of view
     }
 }
