@@ -12,7 +12,8 @@ import summative2013.Summative.TERRAIN;
  *
  * @author 322303413
  */
-public class Lifeform {
+
+public abstract class Lifeform {
 
     /**
      * Store the panel
@@ -55,8 +56,8 @@ protected boolean mobile;
     /**
      * Acts, is dummy in Lifeform, implemented further down
      */
-    public void act(WEATHER weather) {
-    }
+    public abstract void act(WEATHER w);
+    
 
     /**
      * Suicide

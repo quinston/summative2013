@@ -8,18 +8,33 @@ import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
 import summative2013.phenomena.Disease;
 import summative2013.phenomena.Weather.WEATHER;
+import java.util.LinkedList;
 
 /**
  * Parent class of all animal moving lifeform living creatures
  *
  * @author 322303413
  */
-public class Animal extends Lifeform {
+public abstract class Animal extends Lifeform {
 
     /**
      * Stores hunger level, from 0-99
      */
     protected int hunger;
+
+	/**
+	 * @return the inGroup
+	 */
+	public LinkedList<Animal> getInGroup() {
+		return inGroup;
+	}
+
+	/**
+	 * @return the outGroup
+	 */
+	public LinkedList<Animal> getOutGroup() {
+		return outGroup;
+	}
 
     /**
      * Creates the gender enum thing

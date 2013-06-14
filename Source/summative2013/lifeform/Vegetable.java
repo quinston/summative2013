@@ -48,7 +48,7 @@ public class Vegetable extends Lifeform {
     /**
      * Will regenerate all the food and then reset the counter
      */
-    protected void Regenerate() {
+    protected void regenerate() {
         current = capacity;
         regenCounter = regenTime;
     }
