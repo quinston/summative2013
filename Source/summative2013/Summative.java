@@ -37,7 +37,7 @@ public class Summative extends JPanel implements KeyListener {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
         locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
         locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
-        setSize(gd.getFullScreenWindow().getSize());//fullscreen the panel
+        setSize(frame.getSize());//fullscreen the panel
         screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth()/10, getHeight()/10);//sets up our screen rectangle to define our screen
         for (int i = screen.x; i <= screen.x+screen.width; i++) {
             for (int j = screen.y; j <= screen.y+screen.height; j++) {
@@ -75,8 +75,6 @@ public class Summative extends JPanel implements KeyListener {
         gd.setFullScreenWindow(frame);//makes full screen
         Summative s = new Summative();
         frame.add(s);
-        s.locToTerrain.put(new Point(0, 0), TERRAIN.LAND);
-        s.doMapGen(new Point(0, 0), 10);
         s.repaint();
         s.requestFocusInWindow();//keyListener activated
         frame.setVisible(true);
@@ -149,7 +147,6 @@ public class Summative extends JPanel implements KeyListener {
                 locToTerrain.put(point, TERRAIN.SEA);
             }
         }
-        repaint();
     }
     /**
      * advances the map one iteration
@@ -200,7 +197,6 @@ public class Summative extends JPanel implements KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.fillRect(0,0,100,100);
         drawTerrain(g);//draws the terrain of the map
     }
 
