@@ -135,7 +135,7 @@ public class Summative extends JPanel implements KeyListener {
             } else {
                 locToTerrain.put(point, TERRAIN.LAND);
             }
-            //Mostly sea, but some land, generate more land
+            //Mostly sea, but some land, generate more
         } else if (seas > lands && lands > 0) {
             if (Math.random() < 0.95) {
                 locToTerrain.put(point, TERRAIN.LAND);
@@ -202,7 +202,7 @@ public class Summative extends JPanel implements KeyListener {
     }
 
     /**
-     * Draws terrain, Green for lane, Blue for sea
+     * Draws terrain, Green for land, Blue for sea
      *
      * @param g The graphics object to draw on
      */
@@ -269,6 +269,8 @@ public class Summative extends JPanel implements KeyListener {
             upPressed = true;//check off that up has been pressed
         } else if (keyCode == KeyEvent.VK_DOWN) {
             downPressed = true;//check off that down has been pressed
+        } else if (keyCode == KeyEvent.VK_ESCAPE){
+            frame.dispose();
         }
         if (rightPressed) {
             moveRight();
