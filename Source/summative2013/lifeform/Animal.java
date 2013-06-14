@@ -22,19 +22,19 @@ public abstract class Animal extends Lifeform {
      */
     protected int hunger;
 
-	/**
-	 * @return the inGroup
-	 */
-	public LinkedList<Animal> getInGroup() {
-		return inGroup;
-	}
+    /**
+     * @return the inGroup
+     */
+    public LinkedList<Animal> getInGroup() {
+        return inGroup;
+    }
 
-	/**
-	 * @return the outGroup
-	 */
-	public LinkedList<Animal> getOutGroup() {
-		return outGroup;
-	}
+    /**
+     * @return the outGroup
+     */
+    public LinkedList<Animal> getOutGroup() {
+        return outGroup;
+    }
 
     /**
      * Creates the gender enum thing
@@ -58,11 +58,11 @@ public abstract class Animal extends Lifeform {
     /**
      * Store the friends happy no fighting membership club
      */
-    protected ArrayList inGroup;
+    protected LinkedList inGroup;
     /**
      * Stores the angry enemies murder hatred villain gang
      */
-    protected ArrayList outGroup;
+    protected LinkedList outGroup;
     /**
      * Stores the location the animal is currently moving to
      */

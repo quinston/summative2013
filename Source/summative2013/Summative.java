@@ -22,7 +22,7 @@ public class Summative extends JPanel implements KeyListener {
     private static GraphicsEnvironment ge;
     private static GraphicsDevice gd;
     private HashMap<Point, Lifeform> locToLife;
-    private HashMap<Point, Terrain> locToTerrain;
+    private HashMap<Point, TERRAIN> locToTerrain;
     private final Object lock = new Object();
     private ArrayList<Weather> activeWeather;
     private static JFrame frame;
@@ -36,7 +36,7 @@ public class Summative extends JPanel implements KeyListener {
     public Summative() {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
         locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
-        locToTerrain = new HashMap<Point, Terrain>();//initializes our point, terrain hashmap
+        locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
         setSize(gd.getFullScreenWindow().getSize());//fullscreen the panel
         screen = new Rectangle(-1 * getWidth() / 2, -1 * getHeight() / 2, getWidth(), getHeight());//sets up our screen rectangle to define our screen
         for (int i = -1 * getWidth() / 20; i <= getWidth() / 20; i++) {
@@ -52,7 +52,7 @@ public class Summative extends JPanel implements KeyListener {
     /**
      * Types of terrain available
      */
-    public enum Terrain {
+    public enum TERRAIN {
 
         LAND, SEA
     };
@@ -113,9 +113,9 @@ public class Summative extends JPanel implements KeyListener {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 synchronized (lock) {
-                    if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.LAND) {
+                    if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
                         lands++;//add a land for each land within the 3x3 surrounding the block
-                    } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == Terrain.SEA) {
+                    } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
                         seas++;//add a sea for each sea within the 3x3 surrounding block
                     }
                 }
@@ -198,10 +198,10 @@ public class Summative extends JPanel implements KeyListener {
         synchronized (lock) {
             for (int i = screen.x / 10; i < (screen.x + screen.width) / 10; i++) {
                 for (int j = screen.y / 10; j < (screen.y + screen.height) / 10; j++) {
-                    if (locToTerrain.get(new Point(i, j)) == Terrain.LAND)//if land, draw green
+                    if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
                     {
                         g.setColor(Color.GREEN);
-                    } else if (locToTerrain.get(new Point(i, j)) == Terrain.SEA)//if sea draw blue
+                    } else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
                     {
                         g.setColor(Color.BLUE);
                     }
