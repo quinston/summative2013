@@ -196,6 +196,15 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    public boolean isPrey(Lifeform l) {
+        for (Lifeform life : preyList) {
+            if (life.getClass().equals(l.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setDestination() {
         if (thirst < 50 && hunger < 50) {
             destination = mate;
@@ -226,15 +235,6 @@ public abstract class Animal extends Lifeform {
         return gender;
     }
 
-    public boolean isPrey(Lifeform l) {
-        for (Lifeform life : preyList) {
-            if (life.getClass().equals(l.getClass())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean canMate(Animal l) {
         if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
             return true;
@@ -259,23 +259,6 @@ public abstract class Animal extends Lifeform {
         } else {
             return false;
         }
-    }
-
-    public Point nearEmpty() {
-        Point temp;
-        ArrayList<Point> available = new ArrayList<Point>();
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                temp = new Point(location.x + x, location.y + y);
-                if (summative.lifeGet(temp) == null && (summative.terrainGet(temp)) == TERRAIN.LAND) {
-                    available.add(temp);
-                }
-            }
-        }
-        return available.get((int) (Math.random() * available.size()));
-    }
-
-    public void reproduce() {
     }
 
     @Override
@@ -308,11 +291,13 @@ public abstract class Animal extends Lifeform {
                     hunger = hunger - 30;
                     if (summative.lifeGet(destination).getClass().equals(new Tree().getClass())) {
                         Tree temp = (Tree) (summative.lifeGet(destination));
-                        if (temp.getCapacity() <= 0) {
+                        if (temp.getCurrent() <= 0) {
                             temp.changeHealth(-50);
                         } else {
-                            temp.changeCapacity(-1);
+                            temp.changeCurrent(-1);
                         }
+                    } else if (isPrey(summative.grassGet(destination))) {
+                        errorerrorerrorerrorerror
                     } else {
                         summative.assistedSuicide(destination);
                     }

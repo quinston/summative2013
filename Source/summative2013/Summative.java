@@ -229,6 +229,7 @@ public class Summative extends JPanel implements KeyListener {
     //Adds in a new baby animal kinda thing
     public void add(Point p, Lifeform l) {
         locToLife.put(p, l);
+        l.setLocation(p);
     }
 
     /**

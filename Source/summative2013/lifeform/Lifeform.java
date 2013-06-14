@@ -12,7 +12,6 @@ import summative2013.Summative.TERRAIN;
  *
  * @author 322303413
  */
-
 public abstract class Lifeform {
 
     /**
@@ -42,8 +41,8 @@ public abstract class Lifeform {
     /**
      * Is it an animal
      */
-protected boolean mobile;
-    
+    protected boolean mobile;
+
     /**
      * Default constructor, gives no thirst, (0,0) location
      */
@@ -57,7 +56,6 @@ protected boolean mobile;
      * Acts, is dummy in Lifeform, implemented further down
      */
     public abstract void act(WEATHER w);
-    
 
     /**
      * Suicide
@@ -65,10 +63,36 @@ protected boolean mobile;
     public void suicide() {
         summative.assistedSuicide(location);
     }
-    
+
     /**
      * Returns mobility
      */
-    public boolean getMobile()
-    {return mobile;}
+    public boolean getMobile() {
+        return mobile;
+    }
+
+    public void setLocation(Point p) {
+        location = p;
+    }
+
+    public Point nearEmpty() {
+        Point temp;
+        ArrayList<Point> available = new ArrayList<Point>();
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                temp = new Point(location.x + x, location.y + y);
+                if (summative.lifeGet(temp) == null && (summative.terrainGet(temp)) == TERRAIN.LAND) {
+                    available.add(temp);
+                }
+            }
+        }
+        if (available.size() > 0) {
+            return available.get((int) (Math.random() * available.size()));
+        } else {
+            return null;
+        }
+    }
+
+    public void reproduce() {
+    }
 }

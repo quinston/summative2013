@@ -6,9 +6,9 @@ import static summative2013.lifeform.Lifeform.summative;
  *
  * @author 322303413
  */
-public class Cattle extends Animal {
+public class Bunny extends Animal {
 
-    public Cattle() {
+    public Bunny() {
         preyList.add(new Grass());
     }
 
@@ -17,7 +17,7 @@ public class Cattle extends Animal {
         if (nearEmpty() == null) {
             hunger = hunger - 30;
         } else {
-            summative.add(nearEmpty(), new Cattle());
+            summative.add(nearEmpty(), new Bunny());
         }
     }
 }

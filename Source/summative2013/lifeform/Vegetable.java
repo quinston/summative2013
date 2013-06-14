@@ -91,11 +91,11 @@ public class Vegetable extends Lifeform {
         health = health + change;
     }
 
-    public void changeCapacity(int change) {
-        capacity = capacity + change;
+    public void changeCurrent(int change) {
+        current = current + change;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public int getCurrent() {
+        return current;
     }
 }
