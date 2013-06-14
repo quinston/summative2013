@@ -39,13 +39,13 @@ public class Summative extends JPanel implements KeyListener {
         locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
         setSize(gd.getFullScreenWindow().getSize());//fullscreen the panel
         screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth()/10, getHeight()/10);//sets up our screen rectangle to define our screen
-        for (int i =screen.x; i <= screen.x+screen.width; i++) {
-            for (int j =screen.y; j <= screen.y+screen.height; j++) {
+        for (int i = screen.x; i <= screen.x+screen.width; i++) {
+            for (int j = screen.y; j <= screen.y+screen.height; j++) {
                 mapGen(new Point(i, j));//generate initial point
             }
         }
-        repaint();
         setFocusable(true);//allows us to actually use the keylistener
+        requestFocusInWindow();
         addKeyListener(this);//makes keys do something
     }
 
@@ -135,7 +135,7 @@ public class Summative extends JPanel implements KeyListener {
             } else {
                 locToTerrain.put(point, TERRAIN.LAND);
             }
-            //Mostly sea, but some land, generate more
+            //Mostly sea, but some land, generate more land
         } else if (seas > lands && lands > 0) {
             if (Math.random() < 0.95) {
                 locToTerrain.put(point, TERRAIN.LAND);
@@ -149,9 +149,11 @@ public class Summative extends JPanel implements KeyListener {
                 locToTerrain.put(point, TERRAIN.SEA);
             }
         }
+        repaint();
     }
-    //moves the whole system ahead
-
+    /**
+     * advances the map one iteration
+     */
     public void advance() {
         for(Weather w:activeWeather){
             Iterator lifeIt = locToLife.entrySet().iterator();
@@ -198,11 +200,12 @@ public class Summative extends JPanel implements KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.fillRect(0,0,100,100);
         drawTerrain(g);//draws the terrain of the map
     }
 
     /**
-     * Draws terrain, Green for land, Blue for sea
+     * Draws terrain, Green for lane, Blue for sea
      *
      * @param g The graphics object to draw on
      */
@@ -215,32 +218,43 @@ public class Summative extends JPanel implements KeyListener {
                     else if (locToTerrain.get(new Point(i,j))==TERRAIN.SEA)//if sea draw blue
                         g.setColor(Color.BLUE);
                     g.fillRect((i - screen.x)*10,(j - screen.y)*10,10,10);//draw the block
+                    System.out.println("Drew a rectangle at "+(i-screen.x)*10+","+(j-screen.y)*10);
                 }
             }
         }
     }
-
-    //The lifeforms call this to kill themselves
+    /**
+     * Kills the lifeform at a point
+     * @param location the point that has the lifeform there
+     */
     public void assistedSuicide(Point location) {
         locToLife.remove(location);
     }
-
-    //Sends over the object in the hashmap
+    /**
+     * Returns the lifeform at a given point
+     * @param location the point that's lifeform is being checked
+     * @return The lifeform at point location
+     */
     public Lifeform lifeGet(Point location) {
         return locToLife.get(location);
     }
-
-    //Sends over the object in the hashmap
+    /**
+     * Returns the type of terrain at a given point
+     * @param location The point at which the terrain is desired
+     * @return the type of terrain at location
+     */
     public TERRAIN terrainGet(Point location) {
         return locToTerrain.get(location);
     }
-
-    //Adds in a new baby animal kinda thing
+    /**
+     * Adds in a new baby animal
+     * @param p where the baby animal will be placed
+     * @param l the baby animal
+     */
     public void add(Point p, Lifeform l) {
         locToLife.put(p, l);
         l.setLocation(p);
     }
-
     /**
      * Unused method
      *
@@ -250,7 +264,6 @@ public class Summative extends JPanel implements KeyListener {
     public void keyTyped(KeyEvent e) {
         e.consume();
     }
-
     /**
      * Checks which of the arrow keys have been hit and moves the perspective
      * accordingly
@@ -288,7 +301,6 @@ public class Summative extends JPanel implements KeyListener {
         repaint();
 
     }
-
     /**
      * Stores when the arrow keys have been released
      *
@@ -314,7 +326,6 @@ public class Summative extends JPanel implements KeyListener {
             downPressed = false;
         }
     }
-
     /**
      * Generates more map as it becomes visible to the user
      */
