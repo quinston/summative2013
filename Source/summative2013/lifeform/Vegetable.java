@@ -79,6 +79,12 @@ public class Vegetable extends Lifeform {
         } else if (health < 0) {
             alive = false;
         }
+
+        if (health < 0) {
+            summative.assistedSuicide(location);
+        } else {
+            health = health + 5;
+        }
     }
 
     public void changeHealth(int change) {
@@ -87,5 +93,9 @@ public class Vegetable extends Lifeform {
 
     public void changeCapacity(int change) {
         capacity = capacity + change;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 }

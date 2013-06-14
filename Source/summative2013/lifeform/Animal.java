@@ -242,6 +242,25 @@ public abstract class Animal extends Lifeform {
         return false;
     }
 
+    public boolean drowning() {
+        int drownery = 0;
+
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                if (Math.abs(x) + Math.abs(y) <= 1) {
+                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == TERRAIN.SEA) {
+                        drownery = drownery + 1;
+                    }
+                }
+            }
+        }
+        if (drownery == 5) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Point nearEmpty() {
         Point temp;
         ArrayList<Point> available = new ArrayList<Point>();
@@ -267,6 +286,9 @@ public abstract class Animal extends Lifeform {
         findMate(nearbyLife);
         setDestination();
 
+        hunger = hunger + 5;
+        thirst = thirst + 5;
+
         if (getDirection(destination) == DIRECTION.NORTH) {
             location.y = location.y + 1;
         } else if (getDirection(destination) == DIRECTION.SOUTH) {
@@ -284,7 +306,16 @@ public abstract class Animal extends Lifeform {
                     thirst = 0;
                 } else if (isPrey(summative.lifeGet(destination))) {
                     hunger = hunger - 30;
-                    summative.lifeGet(destination).suicide();
+                    if (summative.lifeGet(destination).getClass().equals(new Tree().getClass())) {
+                        Tree temp = (Tree) (summative.lifeGet(destination));
+                        if (temp.getCapacity() <= 0) {
+                            temp.changeHealth(-50);
+                        } else {
+                            temp.changeCapacity(-1);
+                        }
+                    } else {
+                        summative.assistedSuicide(destination);
+                    }
                 } else if (summative.lifeGet(destination).getMobile()) {
                     if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
                     {
@@ -293,6 +324,11 @@ public abstract class Animal extends Lifeform {
                     }
                 }
             }
+        }
+        if (hunger > 100 || thirst > 100) {
+            suicide();
+        } else if (drowning()) {
+            suicide();
         }
     }
 }
