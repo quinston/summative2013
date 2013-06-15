@@ -109,14 +109,26 @@ public class Vegetable extends Lifeform {
         }
     }
 
+    /**
+     * Changes the health
+     * @param change 
+     */
     public void changeHealth(int change) {
         health = health + change;
     }
 
+    /**
+     * Changes the current fruit or what have you
+     * @param change 
+     */
     public void changeCurrent(int change) {
         current = current + change;
     }
 
+    /**
+     * Returns the current fruit
+     * @return 
+     */
     public int getCurrent() {
         return current;
     }

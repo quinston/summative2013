@@ -1,5 +1,7 @@
 package summative2013.lifeform;
 
+import static summative2013.lifeform.Lifeform.summative;
+
 
 /**
  * Tree
@@ -19,5 +21,13 @@ public class Tree extends Vegetable {
         current = capacity;
         maxHealth=100;
         reproTime=50;
+    }
+    
+    @Override
+    public void reproduce() {
+        if (nearEmpty() == null) {
+        } else {
+            summative.add(nearEmpty(), new Tree());
+        }
     }
 }

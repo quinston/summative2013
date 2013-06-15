@@ -65,16 +65,24 @@ public abstract class Lifeform {
     }
 
     /**
-     * Returns mobility
+     * Returns mobility, i.e. whether is animal
      */
     public boolean getMobile() {
         return mobile;
     }
 
+    /**
+     * Sets the location of the lifeform
+     * @param p 
+     */
     public void setLocation(Point p) {
         location = p;
     }
 
+    /**
+     * Finds all empty nearby spaces
+     * @return 
+     */
     public Point nearEmpty() {
         Point temp;
         ArrayList<Point> available = new ArrayList<Point>();
@@ -93,6 +101,14 @@ public abstract class Lifeform {
         }
     }
 
+    /**
+     * Produces a new lifeform, overridden in most of the classes
+     */
     public void reproduce() {
     }
+    
+    /**
+     * Draws the lifeform using its specified icon
+     */
+    public void draw(){}
 }

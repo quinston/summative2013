@@ -24,7 +24,10 @@ public class Grass extends Vegetable {
         maxHealth = 1;
         reproTime = 5;
     }
-
+    /**
+     * Special grass edition of nearEmpty, checks only whether there's grass
+     * @return 
+     */
     @Override
     public Point nearEmpty() {
         Point temp;
@@ -44,6 +47,9 @@ public class Grass extends Vegetable {
         }
     }
 
+    /**
+     * Grass reproduction
+     */
     @Override
     public void reproduce() {
         if (nearEmpty() == null) {

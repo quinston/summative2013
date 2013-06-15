@@ -124,9 +124,7 @@ public abstract class Animal extends Lifeform {
                     if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
                         nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
                     } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
-                        {
-                            nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
-                        }
+                        nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
                     }
                 }
             }
@@ -181,6 +179,11 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    /**
+     * Finds the nearest mate
+     *
+     * @param list
+     */
     public void findMate(ArrayList<Lifeform> list) {
         ArrayList<Point> mateList = new ArrayList<>();
         mate = null;
@@ -199,7 +202,12 @@ public abstract class Animal extends Lifeform {
             }
         }
     }
-
+    
+    /**
+     * Checks if the lifeform is prey
+     * @param l
+     * @return 
+     */
     public boolean isPrey(Lifeform l) {
         for (Lifeform life : preyList) {
             if (life.getClass().equals(l.getClass())) {
@@ -209,6 +217,9 @@ public abstract class Animal extends Lifeform {
         return false;
     }
 
+    /**
+     * Sets the destination of the animal
+     */
     public void setDestination() {
         if (thirst < 50 && hunger < 50) {
             destination = mate;
@@ -219,6 +230,11 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    /**
+     * Gives the direction in which the point is located relative to the animal
+     * @param p
+     * @return 
+     */
     public DIRECTION getDirection(Point p) {
         if (p.x == location.x && p.y == location.y) {
             return DIRECTION.CENTER;
@@ -235,10 +251,19 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    /**
+     * Returns the animal's gender
+     * @return 
+     */
     public GENDER getGender() {
         return gender;
     }
 
+    /**
+     * Returns whether the animal can mate with the specified lifeform
+     * @param l
+     * @return 
+     */
     public boolean canMate(Animal l) {
         if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
             return true;
@@ -246,6 +271,10 @@ public abstract class Animal extends Lifeform {
         return false;
     }
 
+    /**
+     * Returns whether or not the animal is drowning
+     * @return 
+     */
     public boolean drowning() {
         int drownery = 0;
 
@@ -265,6 +294,10 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    /**
+     * The acting method
+     * @param Weather 
+     */
     @Override
     public void act(WEATHER Weather) {
         findNearbyLife();
