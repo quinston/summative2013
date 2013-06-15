@@ -132,16 +132,16 @@ public class Summative extends JPanel implements KeyListener {
             //Mostly land, but some sea, generate more sea
         } else if (lands > seas && seas > 0) {
             if (Math.random() < .95) {
-                locToTerrain.put(point, TERRAIN.SEA);
-            } else {
                 locToTerrain.put(point, TERRAIN.LAND);
+            } else {
+                locToTerrain.put(point, TERRAIN.SEA);
             }
             //Mostly sea, but some land, generate more land
         } else if (seas > lands && lands > 0) {
             if (Math.random() < 0.95) {
-                locToTerrain.put(point, TERRAIN.LAND);
-            } else {
                 locToTerrain.put(point, TERRAIN.SEA);
+            } else {
+                locToTerrain.put(point, TERRAIN.LAND);
             }
         } else {
             if (Math.random() < 0.5) {
@@ -217,7 +217,6 @@ public class Summative extends JPanel implements KeyListener {
                     else if (locToTerrain.get(new Point(i,j))==TERRAIN.SEA)//if sea draw blue
                         g.setColor(Color.BLUE);
                     g.fillRect((i - screen.x)*10,(j - screen.y)*10,10,10);//draw the block
-                    System.out.println("Drew a rectangle at "+(i-screen.x)*10+","+(j-screen.y)*10);
                 }
             }
         }
