@@ -109,15 +109,15 @@ public abstract class Animal extends Lifeform {
         hunger = 50;
         gender = GENDER.MALE;
         depravity = 0;
-        knowledge = new ArrayList<>();
-        disease = new ArrayList<>();
+        knowledge = new ArrayList<Memory>();
+        disease = new ArrayList<Disease>();
     }
 
     /**
      * Refreshes to store all the nearby lifeforms
      */
     public void findNearbyLife() {
-        nearbyLife = new ArrayList<>();
+        nearbyLife = new ArrayList<Lifeform>();
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
@@ -135,7 +135,7 @@ public abstract class Animal extends Lifeform {
      * Refreshes nearby terrain
      */
     public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<>();
+        ArrayList<Point> waterList = new ArrayList<Point>();
         water = null;
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
@@ -160,7 +160,7 @@ public abstract class Animal extends Lifeform {
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<>();
+        ArrayList<Point> foodList = new ArrayList<Point>();
         food = null;
         for (Lifeform l : list) {
             for (Lifeform m : preyList) {
@@ -185,7 +185,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<>();
+        ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass())) {
