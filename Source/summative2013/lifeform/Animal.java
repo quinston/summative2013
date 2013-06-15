@@ -165,7 +165,7 @@ public abstract class Animal extends Lifeform {
         for (Lifeform l : list) {
             for (Lifeform m : preyList) {
                 if (l.getClass().equals(m.getClass())) {
-                    if (l.getClass().equals((new Tree()).getClass()) || l.getClass().equals(new Grass().getClass())) {
+                    if (l instanceof Tree || l instanceof Grass) {
                         Vegetable temp = (Vegetable) l;
                         if (temp.getCurrent() > 0) {
                             foodList.add(l.location);
@@ -185,7 +185,7 @@ public abstract class Animal extends Lifeform {
             for (Lifeform l : list) {
                 for (Lifeform m : preyList) {
                     if (l.getClass().equals(m.getClass())) {
-                        if (l.getClass().equals((new Tree()).getClass()) || l.getClass().equals(new Grass().getClass())) {
+                        if (l instanceof Tree || l instanceof Grass) {
                             foodList.add(l.location);
                         }
                     }
@@ -203,7 +203,7 @@ public abstract class Animal extends Lifeform {
         ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
-            if (l.getClass().equals(this.getClass())) {
+            if (l.getClass().equals(getClass())) {
                 mateList.add(l.location);
             }
         }
@@ -347,7 +347,7 @@ public abstract class Animal extends Lifeform {
                     thirst = 0;
                 } else if (isPrey(summative.lifeGet(destination))) {
                     hunger = hunger - 30;
-                    if (summative.lifeGet(destination).getClass().equals(new Tree().getClass())) {
+                    if (summative.lifeGet(destination) instanceof Tree) {
                         Tree temp = (Tree) (summative.lifeGet(destination));
                         if (temp.getCurrent() <= 0) {
                             temp.changeHealth(-50);
