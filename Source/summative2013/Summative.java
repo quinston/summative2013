@@ -59,6 +59,10 @@ public class Summative extends JPanel implements KeyListener {
 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
+		activeWeather.add(new summative2013.phenomena.Drought(a));
+		
+		a = new Area(new Rectangle(-30,-60,20,69));
+		a.add(new Area(new Ellipse2D.Double(-90,-90,70,70)));
 		activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
 		try {
@@ -218,7 +222,11 @@ public class Summative extends JPanel implements KeyListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		drawTerrain(g);//draws the terrain of the map
+
+		synchronized (lock) {
+			drawTerrain(g);//draws the terrain of the map
+			drawWeather(g);
+		}
 	}
 
 	/**
@@ -227,18 +235,16 @@ public class Summative extends JPanel implements KeyListener {
 	 * @param g The graphics object to draw on
 	 */
 	public void drawTerrain(Graphics g) {
-		synchronized (lock) {
-			for (int i = screen.x; i < screen.x + screen.width; i++) {
-				for (int j = screen.y; j < screen.y + screen.height; j++) {
-					if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
-					{
-						g.setColor(Color.GREEN);
-					} else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
-					{
-						g.setColor(Color.BLUE);
-					}
-					g.fillRect((i - screen.x) * 10, (j - screen.y) * 10, 10, 10);//draw the block
+		for (int i = screen.x; i < screen.x + screen.width; i++) {
+			for (int j = screen.y; j < screen.y + screen.height; j++) {
+				if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
+				{
+					g.setColor(Color.GREEN);
+				} else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
+				{
+					g.setColor(Color.BLUE);
 				}
+				g.fillRect((i - screen.x) * 10, (j - screen.y) * 10, 10, 10);//draw the block
 			}
 		}
 	}
@@ -412,23 +418,30 @@ public class Summative extends JPanel implements KeyListener {
 		for (Weather w : activeWeather) {
 			Area a = w.getArea();
 			Rectangle r = a.getBounds();
-			for (int i = screen.x / 10; i < (screen.x + screen.width) / 10; ++i) {
-				for (int j = screen.y / 10; j < (screen.y + screen.height) / 10; ++j) {
+			Weather.WEATHER type = w.getType();
+
+			for (int i = screen.x; i < screen.x + screen.width; i++) {
+				for (int j = screen.y; j < screen.y + screen.height; j++) {
 					if (a.contains(i, j)) {
-						g.setColor(new Color(0, 0, 0, 204));
-						g.fillRect(i * 10 - screen.x, j * 10 - screen.y, 10, 10);
+						switch (type) {
+							case RAIN:
+								g.setColor(new Color(0, 0, 0, 204));
+								break;
+							case SUN:
+								g.setColor(new Color(255, 206, 0, 204));
+								break;
+						}
+						g.fillRect((i - screen.x) * 10, (j - screen.y) * 10, 10, 10);
 					}
 				}
 			}
 
-			g.setColor(Color.red);
-			g.drawRect(r.x, r.y, r.width, r.height);
-
 			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
 					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				g.drawImage(sprites.get("rain"), (int) r.getCenterX() * 10 - screen.x,
-						(int) r.getCenterY() * 10 - screen.y,
-						16, 16, null);
+				System.out.println(w.toString());
+				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
+						(int) (r.getCenterY() - screen.y) * 10,
+						64, 64, null);
 			}
 		}
 
@@ -442,8 +455,11 @@ public class Summative extends JPanel implements KeyListener {
 		sprites = new HashMap<String, Image>();
 		Class c = getClass();
 
-		sprites.put("rain", ImageIO.read(
+		sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
 				c.getResource("images/weather-showers-scattered.png")));
+
+		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
+				c.getResource("images/weather-clear.png")));
 
 	}
 	private HashMap<String, Image> sprites;
