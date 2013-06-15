@@ -165,7 +165,12 @@ public abstract class Animal extends Lifeform {
         for (Lifeform l : list) {
             for (Lifeform m : preyList) {
                 if (l.getClass().equals(m.getClass())) {
-                    foodList.add(l.location);
+                    if (l.getClass().equals((new Tree()).getClass()) || l.getClass().equals(new Grass().getClass())) {
+                        Vegetable temp = (Vegetable) l;
+                        if (temp.getCurrent() > 0) {
+                            foodList.add(l.location);
+                        }
+                    }
                 }
             }
         }
@@ -174,6 +179,16 @@ public abstract class Animal extends Lifeform {
             for (Point p : foodList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(food.x - location.x) + Math.abs(food.y - location.y)) {
                     food = p;
+                }
+            }
+        } else {
+            for (Lifeform l : list) {
+                for (Lifeform m : preyList) {
+                    if (l.getClass().equals(m.getClass())) {
+                        if (l.getClass().equals((new Tree()).getClass()) || l.getClass().equals(new Grass().getClass())) {
+                            foodList.add(l.location);
+                        }
+                    }
                 }
             }
         }
@@ -202,11 +217,12 @@ public abstract class Animal extends Lifeform {
             }
         }
     }
-    
+
     /**
      * Checks if the lifeform is prey
+     *
      * @param l
-     * @return 
+     * @return
      */
     public boolean isPrey(Lifeform l) {
         for (Lifeform life : preyList) {
@@ -232,8 +248,9 @@ public abstract class Animal extends Lifeform {
 
     /**
      * Gives the direction in which the point is located relative to the animal
+     *
      * @param p
-     * @return 
+     * @return
      */
     public DIRECTION getDirection(Point p) {
         if (p.x == location.x && p.y == location.y) {
@@ -253,7 +270,8 @@ public abstract class Animal extends Lifeform {
 
     /**
      * Returns the animal's gender
-     * @return 
+     *
+     * @return
      */
     public GENDER getGender() {
         return gender;
@@ -261,8 +279,9 @@ public abstract class Animal extends Lifeform {
 
     /**
      * Returns whether the animal can mate with the specified lifeform
+     *
      * @param l
-     * @return 
+     * @return
      */
     public boolean canMate(Animal l) {
         if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
@@ -273,7 +292,8 @@ public abstract class Animal extends Lifeform {
 
     /**
      * Returns whether or not the animal is drowning
-     * @return 
+     *
+     * @return
      */
     public boolean drowning() {
         int drownery = 0;
@@ -296,7 +316,8 @@ public abstract class Animal extends Lifeform {
 
     /**
      * The acting method
-     * @param Weather 
+     *
+     * @param Weather
      */
     @Override
     public void act(WEATHER Weather) {
