@@ -465,9 +465,10 @@ public class Summative extends JPanel implements KeyListener {
 
 			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
 					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				g.drawImage(sprites.get(type.toString()), 
-						(int) (r.getCenterX() - screen.x) * gridSize,
-						(int) (r.getCenterY() - screen.y) * gridSize,
+				System.out.println(w.toString());
+				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
+						(int) (r.getCenterY() - screen.y) * 10,
+
 						64, 64, null);
 			}
 		}
@@ -490,6 +491,7 @@ public class Summative extends JPanel implements KeyListener {
 
 		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
 				c.getResource("images/weather-clear.png")));
+
 		
 		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
 				c.getResource("images/waste.png")));
