@@ -109,20 +109,24 @@ public abstract class Animal extends Lifeform {
         hunger = 50;
         gender = GENDER.MALE;
         depravity = 0;
-        knowledge = new ArrayList<Memory>();
-        disease = new ArrayList<Disease>();
+        knowledge = new ArrayList<>();
+        disease = new ArrayList<>();
     }
 
     /**
      * Refreshes to store all the nearby lifeforms
      */
     public void findNearbyLife() {
-        nearbyLife = new ArrayList<Lifeform>();
+        nearbyLife = new ArrayList<>();
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
                     if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
                         nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
+                    } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
+                        {
+                            nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
+                        }
                     }
                 }
             }
@@ -133,7 +137,7 @@ public abstract class Animal extends Lifeform {
      * Refreshes nearby terrain
      */
     public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<Point>();
+        ArrayList<Point> waterList = new ArrayList<>();
         water = null;
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
@@ -158,7 +162,7 @@ public abstract class Animal extends Lifeform {
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<Point>();
+        ArrayList<Point> foodList = new ArrayList<>();
         food = null;
         for (Lifeform l : list) {
             for (Lifeform m : preyList) {
@@ -178,7 +182,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<Point>();
+        ArrayList<Point> mateList = new ArrayList<>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass())) {
@@ -297,7 +301,12 @@ public abstract class Animal extends Lifeform {
                             temp.changeCurrent(-1);
                         }
                     } else if (isPrey(summative.grassGet(destination))) {
-                        //errorerrorerrorerrorerror
+                        Grass tempg = summative.grassGet(destination);
+                        if (tempg.getCurrent() <= 0) {
+                            tempg.changeHealth(-50);
+                        } else {
+                            tempg.changeCurrent(-1);
+                        }
                     } else {
                         summative.assistedSuicide(destination);
                     }

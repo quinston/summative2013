@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import summative2013.lifeform.Grass;
 import summative2013.lifeform.Lifeform;
 import summative2013.phenomena.Weather;
 
@@ -22,6 +23,7 @@ public class Summative extends JPanel implements KeyListener {
     private static GraphicsEnvironment ge;
     private static GraphicsDevice gd;
     private HashMap<Point, Lifeform> locToLife;
+    private HashMap<Point, Grass> locToGrass;
     private HashMap<Point, TERRAIN> locToTerrain;
     private final Object lock = new Object();
     private ArrayList<Weather> activeWeather;
@@ -37,6 +39,7 @@ public class Summative extends JPanel implements KeyListener {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
         locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
         locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
+        locToGrass = new HashMap<Point,Grass>();
         setSize(frame.getSize());//fullscreen the panel
         screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth()/10, getHeight()/10);//sets up our screen rectangle to define our screen
         for (int i = screen.x; i <= screen.x+screen.width; i++) {
@@ -241,6 +244,14 @@ public class Summative extends JPanel implements KeyListener {
      */
     public TERRAIN terrainGet(Point location) {
         return locToTerrain.get(location);
+    }
+    /**
+     * Returns the grass at that location
+     * @param location
+     * @return 
+     */
+    public Grass grassGet(Point location){
+        return locToGrass.get(location);
     }
     /**
      * Adds in a new baby animal

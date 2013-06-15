@@ -15,6 +15,10 @@ public class Vegetable extends Lifeform {
      */
     protected int health;
     /**
+     * Maximum amount of healthy
+     */
+    protected int maxHealth;
+    /**
      * Stores amount of happy life sustaining UV solar fusion glory praise the
      * sun required for life
      */
@@ -35,6 +39,10 @@ public class Vegetable extends Lifeform {
      * Stores amount of food currently on plant
      */
     protected int current;
+    /**
+     * How long the plant requires to reproduce
+     */
+    protected int reproTime;
 
     /**
      * Default
@@ -62,14 +70,17 @@ public class Vegetable extends Lifeform {
             regenCounter = regenCounter - 2;
             sun = sun + 5;
             thirst = thirst + 2;
+            reproTime = reproTime - 2;
         } else if (weather == WEATHER.RAIN) {
             regenCounter = regenCounter - 1;
             thirst = thirst - 5;
             sun = sun - 2;
+            reproTime = reproTime - 2;
         } else if (weather == WEATHER.CLOUD) {
             regenCounter = regenCounter - 1;
             thirst = thirst + 1;
             sun = sun - 1;
+            reproTime = reproTime - 1;
         }
 
         if (sun < 0) {
@@ -81,9 +92,20 @@ public class Vegetable extends Lifeform {
         }
 
         if (health < 0) {
-            summative.assistedSuicide(location);
+            alive = false;
         } else {
             health = health + 5;
+            if (health > maxHealth) {
+                health = maxHealth;
+            }
+        }
+
+        if (reproTime <= 0) {
+            reproduce();
+        }
+
+        if (alive = false) {
+            suicide();
         }
     }
 

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import summative2013.Summative;
 import static summative2013.lifeform.Lifeform.summative;
 
-
 /**
  * Grass
  *
@@ -22,8 +21,10 @@ public class Grass extends Vegetable {
         regenCounter = regenTime;
         capacity = 1;
         current = capacity;
+        maxHealth = 1;
+        reproTime = 5;
     }
-    
+
     @Override
     public Point nearEmpty() {
         Point temp;
@@ -42,7 +43,7 @@ public class Grass extends Vegetable {
             return null;
         }
     }
-    
+
     @Override
     public void reproduce() {
         if (nearEmpty() == null) {

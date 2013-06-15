@@ -17,5 +17,7 @@ public class Tree extends Vegetable {
         regenCounter = regenTime;
         capacity = 5;
         current = capacity;
+        maxHealth=100;
+        reproTime=50;
     }
 }
