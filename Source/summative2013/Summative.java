@@ -59,8 +59,7 @@ public class Summative extends JPanel implements KeyListener {
 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
-		activeWeather.add(new summative2013.phenomena.Drizzle(
-				a));
+		activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
 		try {
 			loadSprites();
