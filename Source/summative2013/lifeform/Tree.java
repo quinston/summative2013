@@ -1,5 +1,7 @@
 package summative2013.lifeform;
 
+import summative2013.SpriteAssigner;
+import java.awt.Image;
 import static summative2013.lifeform.Lifeform.summative;
 
 
@@ -30,4 +32,8 @@ public class Tree extends Vegetable {
             summative.add(nearEmpty(), new Tree());
         }
     }
+	
+	public Image getSprite() {
+		return SpriteAssigner.getSpriteOf(this);
+	}
 }

@@ -8,7 +8,7 @@ import summative2013.phenomena.Weather.WEATHER;
  *
  * @author 322303413
  */
-public class Vegetable extends Lifeform {
+public abstract class Vegetable extends Lifeform {
 
     /**
      * Stores current level of being eaten regenerates over time dies at 0

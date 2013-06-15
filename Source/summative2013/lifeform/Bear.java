@@ -1,5 +1,7 @@
 package summative2013.lifeform;
 
+import java.awt.Image;
+import summative2013.SpriteAssigner;
 import static summative2013.lifeform.Lifeform.summative;
 
 /**
@@ -9,6 +11,7 @@ import static summative2013.lifeform.Lifeform.summative;
 public class Bear extends Animal {
 
     public Bear() {
+		super();
         preyList.add(new Tree());
         preyList.add(new Cattle());
     }
@@ -21,4 +24,8 @@ public class Bear extends Animal {
             summative.add(nearEmpty(), new Bear());
         }
     }
+	
+	public Image getSprite() {
+		return SpriteAssigner.getSpriteOf(this);
+	}
 }
