@@ -237,14 +237,8 @@ public class Summative extends JPanel implements KeyListener {
 	public void drawTerrain(Graphics g) {
 		for (int i = screen.x; i < screen.x + screen.width; i++) {
 			for (int j = screen.y; j < screen.y + screen.height; j++) {
-				if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
-				{
-					g.setColor(Color.GREEN);
-				} else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
-				{
-					g.setColor(Color.BLUE);
-				}
-				g.fillRect((i - screen.x) * 10, (j - screen.y) * 10, 10, 10);//draw the block
+				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
+						(i - screen.x) * 10, (j - screen.y) * 10,10,10,null);
 			}
 		}
 	}
@@ -438,8 +432,7 @@ public class Summative extends JPanel implements KeyListener {
 
 			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
 					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				System.out.println(w.toString());
-				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
+				g.drawImage(sprites.get(type.toString()), (int) (r.getCenterX() - screen.x) * 10,
 						(int) (r.getCenterY() - screen.y) * 10,
 						64, 64, null);
 			}
@@ -460,6 +453,12 @@ public class Summative extends JPanel implements KeyListener {
 
 		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
 				c.getResource("images/weather-clear.png")));
+		
+		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
+				c.getResource("images/grassy.png")));
+		
+		sprites.put(TERRAIN.SEA.toString(),ImageIO.read(
+				c.getResource("images/sea.png")));
 
 	}
 	private HashMap<String, Image> sprites;
