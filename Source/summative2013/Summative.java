@@ -36,9 +36,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private HashMap<Point, TERRAIN> locToTerrain;
 	private final Object lock = new Object();
 	private ArrayList<Weather> activeWeather;
+        private ArrayList<String> events;
 	private static JFrame frame;
-	private Rectangle screen;
-	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false;
+	private Rectangle screen, logButton;
+	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;;
 	private final int gridSize = 10;
         private String mouseOnLife = "";
         private Point mouse = new Point();
@@ -81,7 +82,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		addKeyListener(this);//makes keys do something
                 addMouseListener(this);
                 addMouseMotionListener(this);
-
+                
+                logButton = new Rectangle(getWidth()-200, getHeight()-40, 200, 40);
+                events = new ArrayList<String>();
+                events.add("Bear at 10,10 banged bear at 20,20");
+                events.add("Bunny at 20,20 banged bunny at 30,30");
+                events.add("Cow at 30,30 banged Cow at 40,40");
+                
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
 		activeWeather.add(new summative2013.phenomena.Drought(a));
@@ -103,8 +110,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public enum TERRAIN {
 
 		LAND, SEA
-	};
-
+	}
 	/**
 	 * The Driver method to run the program
 	 *
@@ -127,7 +133,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		s.requestFocusInWindow();//keyListener activated
 		frame.setVisible(true);
 	}
-
 	/**
 	 * Generates a map that radiates out from an initial point, not used anymore
 	 *
@@ -148,7 +153,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		}
 	}
-
 	/**
 	 * Generates what type of land should be at the point
 	 *
@@ -196,7 +200,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		}
 	}
-
 	/**
 	 * advances the map one iteration
 	 */
@@ -238,7 +241,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                     }
             }
 	}
-
 	/**
 	 * draws the graphics on the screen
 	 *
@@ -247,15 +249,18 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
-		synchronized (lock) {
-			drawTerrain(g);//draws the terrain of the map
-			drawLifeforms(g);
-			drawWeather(g);
-                        drawHUD(g);
-		}
+                if(!logOpen){
+                    synchronized (lock) {
+                            drawTerrain(g);//draws the terrain of the map
+                            drawLifeforms(g);
+                            drawWeather(g);
+                            drawHUD(g);
+                    }
+                }
+                else{
+                    drawLog(g);
+                }
 	}
-
 	/**
 	 * Draws terrain, Green for lane, Blue for sea
 	 *
@@ -314,6 +319,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
             g.drawString(numDays+" days have passed since the beginning of time", getWidth()-420, getHeight()-100);
             if(mouseOnLife != "")
                 g.drawString("The mouse is over a "+mouseOnLife+" at point "+mouse.x+","+mouse.y, getWidth()-420, getHeight()-60);
+            
+            g.setColor(Color.BLUE);
+            g.fillRoundRect(logButton.x-10, logButton.y-10, logButton.width+20, logButton.height+20, 10, 10);
+            g.setColor(Color.WHITE);
+            g.fillRect(logButton.x, logButton.y, logButton.width, logButton.height);
+            g.setColor(Color.BLACK);
+            g.drawString("Open log", logButton.x+20, logButton.y+logButton.height - 10);
                         
         }
         /**
@@ -371,7 +383,27 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 	}
-
+        /**
+         * Draws a log of what has happened so far
+         * @param g the graphics object to draw on
+         */
+        public void drawLog(Graphics g){
+            g.setColor(Color.WHITE);
+            g.fillRect(0,0,getWidth(),getHeight());
+            g.setColor(Color.BLACK);
+            g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,20));
+            g.drawString("Log of what has happened", 100, 40);
+            for(int i = events.size()-1;i>=0;i--){
+                g.drawString(events.get(i), 100, 40+(events.size()-i)*40);
+            }
+        }
+        /**
+         * Adds a string to be added to the log of events
+         * @param s The string representing what happened
+         */
+        public void addToLog(String s){
+            events.add(s);
+        }
 	/**
 	 * Kills the lifeform at a point
 	 * @param location the point that has the lifeform there
@@ -379,7 +411,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public void assistedSuicide(Point location) {
 		locToLife.remove(location);
 	}
-
 	/**
 	 * Returns the lifeform at a given point
 	 * @param location the point that's lifeform is being checked
@@ -388,7 +419,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Lifeform lifeGet(Point location) {
 		return locToLife.get(location);
 	}
-
 	/**
 	 * Returns the type of terrain at a given point
 	 * @param location The point at which the terrain is desired
@@ -397,16 +427,14 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public TERRAIN terrainGet(Point location) {
 		return locToTerrain.get(location);
 	}
-
 	/**
 	 * Returns the grass at that location
-	 * @param location
-	 * @return 
+	 * @param location the point at which we are looking for grass
+	 * @return The grass object at that point
 	 */
 	public Grass grassGet(Point location) {
 		return locToGrass.get(location);
 	}
-
 	/**
 	 * Adds in a new baby animal
 	 * @param p where the baby animal will be placed
@@ -426,7 +454,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 else if(l instanceof Tree)
                     treeCount++;
 	}
-
 	/**
 	 * Unused method
 	 *
@@ -436,7 +463,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public void keyTyped(KeyEvent e) {
 		e.consume();
 	}
-
 	/**
 	 * Checks which of the arrow keys have been hit and moves the perspective
 	 * accordingly
@@ -455,9 +481,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			upPressed = true;//check off that up has been pressed
 		} else if (keyCode == KeyEvent.VK_DOWN) {
 			downPressed = true;//check off that down has been pressed
-		} else if (keyCode == KeyEvent.VK_ESCAPE) {
+		} else if (keyCode == KeyEvent.VK_ESCAPE&&!logOpen) {
 			frame.dispose();
-		}
+		} else if(keyCode == KeyEvent.VK_ESCAPE){
+                    logOpen = false;
+                }
 		if (rightPressed) {
 			moveRight();
 		}
@@ -474,7 +502,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		repaint();
 
 	}
-
 	/**
 	 * Stores when the arrow keys have been released
 	 *
@@ -500,7 +527,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			downPressed = false;
 		}
 	}
-
 	/**
 	 * Generates more map as it becomes visible to the user
 	 */
@@ -514,43 +540,43 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		}
 	}
-
 	/**
 	 * Moves the perspective towards the right
 	 */
 	public void moveRight() {
 		screen.translate(1, 0);//moves the perspective
 	}
-
 	/**
 	 * Moves the perspective to the left
 	 */
 	public void moveLeft() {
 		screen.translate(-1, 0);//moves "camera"
 	}
-
 	/**
 	 * Moves the perspective upwards
 	 */
 	public void moveUp() {
 		screen.translate(0, -1);//moves viewpoint
 	}
-
 	/**
 	 * Moves the perspective downward
 	 */
 	public void moveDown() {
 		screen.translate(0, 1);//moves centre of field of view
 	}
-
-
+        /**
+         * Called when the mouse is dragged
+         * @param e 
+         */
         @Override
         public void mouseDragged(MouseEvent e) {
         }
-
+        /**
+         * Checks where the mouse is and prints if there is a lifeform there
+         * @param e The MouseEvent from moving the mouse
+         */
         @Override
         public void mouseMoved(MouseEvent e) {
-            //System.out.println("mouseMoved");
             mouse =new Point(e.getPoint().x/10 + screen.x, e.getPoint().y/10 + screen.y);
             if(locToLife.containsKey(mouse)){
                 Lifeform l = locToLife.get(mouse);
@@ -570,23 +596,41 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 mouseOnLife = "";
             repaint();
         }
-
+        /**
+         * Checks to see if you clicked in one of the "button" rectangles, acts accordingle
+         * @param e the MouseEvent from clicking
+         */
         @Override
         public void mouseClicked(MouseEvent e) {
+            if(logButton.contains(e.getPoint())){
+                logOpen = true;
+            }
         }
-
+        /**
+         * Called when the mouse is pressed down
+         * @param e The MouseEvent fired by pressing the mouse
+         */
         @Override
         public void mousePressed(MouseEvent e) {
         }
-
+        /**
+         * Called when the mouse is released
+         * @param e The MouseEvent fired by releasing the mouse
+         */
         @Override
         public void mouseReleased(MouseEvent e) {
         }
-
+        /**
+         * Called when the mouse enters the screen
+         * @param e The MouseEvent when the mouse enters the screen
+         */
         @Override
         public void mouseEntered(MouseEvent e) {
         }
-
+        /**
+         * Called when the mouse exits the screen
+         * @param e The MouseEvent fired when the mouse exits
+         */
         @Override
         public void mouseExited(MouseEvent e) {
         }
