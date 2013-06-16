@@ -41,6 +41,7 @@ public class Summative extends JPanel implements KeyListener {
 	private Rectangle screen;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false;
 	private final int gridSize = 10;
+        private int bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -50,12 +51,19 @@ public class Summative extends JPanel implements KeyListener {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
 		locToLife.put(new Point(0,0), new Bear());
+                bearCount++;
 		locToLife.put(new Point(0,10), new Bunny());
+                bunnyCount++;
 		locToLife.put(new Point(0,20), new Cattle());
+                cattleCount++;
 		locToLife.put(new Point(60,20), new Grass());
+                grassCount++;
 		locToLife.put(new Point(70,20), new Grass());
+                grassCount++;
 		locToLife.put(new Point(80,20), new Grass());
+                grassCount++;
 		locToLife.put(new Point(30,30), new Tree());
+                treeCount++;
 		
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
@@ -266,9 +274,36 @@ public class Summative extends JPanel implements KeyListener {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(getWidth()-580, getHeight()-180, 580, 180);
             g.setColor(Color.BLACK);
+            
+            //draw grid to hold frequency table of lifeforms
+            g.drawRect(getWidth()-560, getHeight() - 160, 130, 120);
+            g.drawLine(getWidth()-560, getHeight()-140, getWidth()-430, getHeight()-140);
+            g.drawLine(getWidth()-560, getHeight()-120, getWidth()-430, getHeight()-120);
+            g.drawLine(getWidth()-560, getHeight()-100, getWidth()-430, getHeight()-100);
+            g.drawLine(getWidth()-560, getHeight()-80, getWidth()-430, getHeight()-80);
+            g.drawLine(getWidth()-560, getHeight()-60, getWidth()-430, getHeight()-60);
+            g.drawLine(getWidth()-500, getHeight()-160, getWidth()-500, getHeight()-40);
+            g.setFont(new Font(Font.SERIF, Font.BOLD, 12));
+            g.drawString("Lifeform", getWidth()-550, getHeight()-145);
+            g.drawString("Frequency", getWidth()-490, getHeight()-145);
+            
+            //fill grid with types of lifeforms
+            g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 12));
+            g.drawString("Bunny", getWidth()-550, getHeight()-125);
+            g.drawString("Bear", getWidth()-550, getHeight()-105);
+            g.drawString("Cattle", getWidth()-550, getHeight()-85);
+            g.drawString("Grass", getWidth()-550, getHeight()-65);
+            g.drawString("Trees", getWidth()-550, getHeight()-45);
+            
+            //fill grid with frequencies
+            g.drawString(""+bunnyCount, getWidth()-490, getHeight()-125);
+            g.drawString(""+bearCount, getWidth()-490, getHeight()-105);
+            g.drawString(""+cattleCount, getWidth()-490, getHeight()-85);
+            g.drawString(""+grassCount, getWidth()-490, getHeight()-65);
+            g.drawString(""+treeCount, getWidth()-490, getHeight()-45);
+            
             g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,25));
-            g.drawString("There are "+locToLife.size()+" animals alive.",getWidth()-560, getHeight()-160);
-            g.drawString("You are centred at "+(screen.x+screen.width/2)+"," +(screen.y+screen.height/2),getWidth()-560, getHeight()-140);
+            g.drawString("You are centred at "+(screen.x+screen.width/2)+"," +(screen.y+screen.height/2),getWidth()-420, getHeight()-140);
         }
 	public void drawLifeforms(Graphics g) {  
 		for (Iterator<Map.Entry<Point, Lifeform>> iter 
@@ -328,6 +363,16 @@ public class Summative extends JPanel implements KeyListener {
 	public void add(Point p, Lifeform l) {
 		locToLife.put(p, l);
 		l.setLocation(p);
+                if(l instanceof Bear)
+                    bearCount++;
+                else if (l instanceof Bunny)
+                    bunnyCount++;
+                else if(l instanceof Cattle)
+                    cattleCount++;
+                else if (l instanceof Grass)
+                    grassCount++;
+                else if(l instanceof Tree)
+                    treeCount++;
 	}
 
 	/**

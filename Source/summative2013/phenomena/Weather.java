@@ -20,7 +20,7 @@ public class Weather {
      */
     public enum WEATHER {
 
-        RAIN, SUN, CLOUD
+        RAIN, SUN, CLOUD, NIGHT
     };
 
     public Weather(int x, int y, int size) {
