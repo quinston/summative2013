@@ -83,10 +83,8 @@ public abstract class Vegetable extends Lifeform {
             sun = sun - 1;
             reproTime = reproTime - 1;
         } else if (weather == WEATHER.NIGHT) {
-            regenCounter = regenCounter - 1;
             thirst = thirst + 1;
             sun = sun - 1;
-            reproTime = reproTime - 2;
         }
 
         if (summative.terrainGet(location) == TERRAIN.SEA) {
