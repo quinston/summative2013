@@ -3,6 +3,7 @@ package summative2013.phenomena;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -47,12 +48,13 @@ public class Weather {
 		return area.contains(p);
 	}
 	
-	public void translate(int x, int y) {
+	public void translate(double x, double y) {
 		area.transform(AffineTransform.getTranslateInstance(x,y));
 	}
 	
 	public Point getCentre() {
-		return new Point((int) area.getBounds().getCenterX(),
-				(int) area.getBounds().getCenterY());
+		Rectangle r = area.getBounds();
+		return new Point((int) r.getCenterX(),
+				(int) r.getCenterY());
 	}
 }

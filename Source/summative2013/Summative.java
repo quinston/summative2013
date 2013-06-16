@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import summative2013.lifeform.Grass;
 import summative2013.lifeform.Lifeform;
 import summative2013.lifeform.Tree;
 import summative2013.phenomena.Weather;
-
 
 public class Summative extends JPanel implements KeyListener {
 
@@ -86,6 +86,20 @@ public class Summative extends JPanel implements KeyListener {
 			System.out.println("Failed to load images.");
 			System.exit(-1);
 		}
+
+		//Paint thread
+		(new Thread(new Runnable() {
+
+			public void run() {
+				while (true) {
+					if (System.currentTimeMillis() - refFrame > 16) {
+						pushWeather();
+						repaint();
+						refFrame = System.currentTimeMillis();
+					}
+				}
+			}
+		})).start();
 	}
 
 	/**
@@ -115,15 +129,7 @@ public class Summative extends JPanel implements KeyListener {
 		final Summative s = new Summative();
 		frame.add(s);
 
-		//Paint thread
-		(new Thread(new Runnable() {
 
-			public void run() {
-				while (true) {
-					s.repaint();
-				}
-			}
-		})).start();
 
 		s.requestFocusInWindow();//keyListener activated
 		frame.setVisible(true);
@@ -159,41 +165,59 @@ public class Summative extends JPanel implements KeyListener {
 		int lands = 0, seas = 0;//count adjacent land, sea
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
-				synchronized (lock) {
-					if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
-						lands++;//add a land for each land within the 3x3 surrounding the block
-					} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
-						seas++;//add a sea for each sea within the 3x3 surrounding block
-					}
+				if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
+					lands++;//add a land for each land within the 3x3 surrounding the block
+				} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
+					seas++;//add a sea for each sea within the 3x3 surrounding block
 				}
 			}
+
 		}
+
 		//Only land, have a small chance to generate a sea block
+
+
 		if (seas == 0) {
 			if (Math.random() < .95) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 			//Mostly land, but some sea, generate more sea
 		} else if (lands > seas && seas > 0) {
 			if (Math.random() < .95) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 			//Mostly sea, but some land, generate more land
 		} else if (seas > lands && lands > 0) {
 			if (Math.random() < 0.95) {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			}
 		} else {
 			if (Math.random() < 0.5) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 		}
 	}
@@ -202,6 +226,8 @@ public class Summative extends JPanel implements KeyListener {
 	 * advances the map one iteration
 	 */
 	public void advance() {
+		
+		pushWeather();
 		for (Weather w : activeWeather) {
 			Iterator lifeIt = locToLife.entrySet().iterator();
 			while (lifeIt.hasNext()) {
@@ -233,8 +259,10 @@ public class Summative extends JPanel implements KeyListener {
 					}
 				}
 			}
-			for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-				locToTerrain.put(m.getKey(), m.getValue());
+			synchronized (lock) {
+				for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+					locToTerrain.put(m.getKey(), m.getValue());
+				}
 			}
 		}
 	}
@@ -476,8 +504,8 @@ public class Summative extends JPanel implements KeyListener {
 			if (screen.x <= centre.x && centre.x < screen.x + screen.width
 					&& screen.y <= centre.y && centre.y < screen.y + screen.height) {
 				g.drawImage(sprites.get(w.getType().toString()),
-						(int) (centre.y - screen.x) * 10,
-						(int) (centre.y - screen.y) * 10,
+						(int) (centre.x - screen.x) * gridSize,
+						(int) (centre.y - screen.y) * gridSize,
 						64, 64, null);
 			}
 		}
@@ -498,6 +526,9 @@ public class Summative extends JPanel implements KeyListener {
 		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
 				c.getResource("images/weather-clear.png")));
 
+		sprites.put(Weather.WEATHER.CLOUD.toString(), ImageIO.read(
+				c.getResource("images/weather-overcast.png")));
+
 
 		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
 				c.getResource("images/waste.png")));
@@ -517,6 +548,7 @@ public class Summative extends JPanel implements KeyListener {
 				c.getResource("images/185.png")));
 		sprites.put("vegetable", ImageIO.read(
 				c.getResource("images/420.png")));
+
 
 	}
 	private HashMap<String, Image> sprites;
@@ -545,13 +577,13 @@ public class Summative extends JPanel implements KeyListener {
 		}
 		return ret;
 	}
-	
+
 	public void pushWeather() {
-		for (Weather w: activeWeather) {
-			w.translate(-3,3);
+		for (Weather w : activeWeather) {
+			w.translate(hourlyWind.x, hourlyWind.y);
 		}
 	}
-	
 	private long dayLengthMillis = 30000;
-	private Point wind = new Point(-3,3);
+	private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
+	private long refFrame = System.currentTimeMillis();
 }
