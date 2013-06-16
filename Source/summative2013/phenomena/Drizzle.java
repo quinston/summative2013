@@ -10,12 +10,13 @@ public class Drizzle extends Weather {
 
     public Drizzle(int x, int y, int size) {
         super(x, y, size);
+		type = WEATHER.RAIN;
     }
 	
 	public Drizzle(Area area){
 		super(area);
+		type = WEATHER.RAIN;
 
 	}
 	
-	protected WEATHER type = WEATHER.RAIN;
 }

@@ -111,6 +111,7 @@ public abstract class Animal extends Lifeform {
         depravity = 0;
         knowledge = new ArrayList<Memory>();
         disease = new ArrayList<Disease>();
+		preyList = new ArrayList<Lifeform>();
     }
 
     /**

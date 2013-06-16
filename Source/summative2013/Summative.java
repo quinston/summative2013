@@ -19,8 +19,12 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import summative2013.lifeform.Bear;
+import summative2013.lifeform.Bunny;
+import summative2013.lifeform.Cattle;
 import summative2013.lifeform.Grass;
 import summative2013.lifeform.Lifeform;
+import summative2013.lifeform.Tree;
 import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel implements KeyListener {
@@ -35,6 +39,7 @@ public class Summative extends JPanel implements KeyListener {
 	private static JFrame frame;
 	private Rectangle screen;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false;
+	private final int gridSize = 10;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -43,11 +48,20 @@ public class Summative extends JPanel implements KeyListener {
 	public Summative() {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
+		locToLife.put(new Point(0,0), new Bear());
+		locToLife.put(new Point(0,10), new Bunny());
+		locToLife.put(new Point(0,20), new Cattle());
+		locToLife.put(new Point(60,20), new Grass());
+		locToLife.put(new Point(70,20), new Grass());
+		locToLife.put(new Point(80,20), new Grass());
+		locToLife.put(new Point(30,30), new Tree());
+		
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
 		setSize(frame.getSize());//fullscreen the panel
-		screen = new Rectangle(-1 * getWidth() / 20, -1 * getHeight() / 20, getWidth() / 10, getHeight() / 10);//sets up our screen rectangle to define our screen
+		screen = new Rectangle(-1 * getWidth() / (2*gridSize), -1 * getHeight() / (2*gridSize), 
+				getWidth() / gridSize, getHeight() / gridSize);//sets up our screen rectangle to define our screen
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {
 			for (int j = screen.y; j <= screen.y + screen.height; j++) {
 				mapGen(new Point(i, j));//generate initial point
@@ -59,6 +73,10 @@ public class Summative extends JPanel implements KeyListener {
 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
+		activeWeather.add(new summative2013.phenomena.Drought(a));
+		
+		a = new Area(new Rectangle(-30,-60,20,69));
+		a.add(new Area(new Ellipse2D.Double(-90,-90,70,70)));
 		activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
 		try {
@@ -218,7 +236,12 @@ public class Summative extends JPanel implements KeyListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		drawTerrain(g);//draws the terrain of the map
+
+		synchronized (lock) {
+			drawTerrain(g);//draws the terrain of the map
+			drawLifeforms(g);
+			drawWeather(g);
+		}
 	}
 
 	/**
@@ -227,18 +250,26 @@ public class Summative extends JPanel implements KeyListener {
 	 * @param g The graphics object to draw on
 	 */
 	public void drawTerrain(Graphics g) {
-		synchronized (lock) {
-			for (int i = screen.x; i < screen.x + screen.width; i++) {
-				for (int j = screen.y; j < screen.y + screen.height; j++) {
-					if (locToTerrain.get(new Point(i, j)) == TERRAIN.LAND)//if land, draw green
-					{
-						g.setColor(Color.GREEN);
-					} else if (locToTerrain.get(new Point(i, j)) == TERRAIN.SEA)//if sea draw blue
-					{
-						g.setColor(Color.BLUE);
-					}
-					g.fillRect((i - screen.x) * 10, (j - screen.y) * 10, 10, 10);//draw the block
-				}
+		for (int i = screen.x; i < screen.x + screen.width; i++) {
+			for (int j = screen.y; j < screen.y + screen.height; j++) {
+				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
+						(i - screen.x) * gridSize, (j - screen.y) * gridSize,
+						gridSize,gridSize,null);
+			}
+		}
+	}
+	
+	public void drawLifeforms(Graphics g) {  
+		for (Iterator<Map.Entry<Point, Lifeform>> iter 
+				= locToLife.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry<Point, Lifeform> pair = iter.next();
+			if (screen.contains(pair.getKey())) {
+				// Draw the sprites so that its centre is at the centre
+				// of the grid square
+				Image sprite = pair.getValue().getSprite();
+				int x = (pair.getKey().x - screen.x) * gridSize + gridSize/2 - sprite.getWidth(null)/2;
+				int y = (pair.getKey().y - screen.y) * gridSize + gridSize/2 - sprite.getWidth(null)/2;
+				g.drawImage(sprite, x, y, null);
 			}
 		}
 	}
@@ -412,27 +443,39 @@ public class Summative extends JPanel implements KeyListener {
 		for (Weather w : activeWeather) {
 			Area a = w.getArea();
 			Rectangle r = a.getBounds();
-			for (int i = screen.x / 10; i < (screen.x + screen.width) / 10; ++i) {
-				for (int j = screen.y / 10; j < (screen.y + screen.height) / 10; ++j) {
+			Weather.WEATHER type = w.getType();
+
+			for (int i = screen.x; i < screen.x + screen.width; i++) {
+				for (int j = screen.y; j < screen.y + screen.height; j++) {
 					if (a.contains(i, j)) {
-						g.setColor(new Color(0, 0, 0, 204));
-						g.fillRect(i * 10 - screen.x, j * 10 - screen.y, 10, 10);
+						switch (type) {
+							case RAIN:
+								g.setColor(new Color(0, 0, 0, 204));
+								break;
+							case SUN:
+								g.setColor(new Color(255, 206, 0, 204));
+								break;
+						}
+						g.fillRect((i - screen.x) * gridSize, 
+								(j - screen.y) * gridSize, 
+								gridSize, gridSize);
 					}
 				}
 			}
 
-			g.setColor(Color.red);
-			g.drawRect(r.x, r.y, r.width, r.height);
-
 			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
 					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				g.drawImage(sprites.get("rain"), (int) r.getCenterX() * 10 - screen.x,
-						(int) r.getCenterY() * 10 - screen.y,
-						16, 16, null);
+				System.out.println(w.toString());
+				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
+						(int) (r.getCenterY() - screen.y) * 10,
+
+						64, 64, null);
 			}
 		}
 
 	}
+	
+	
 
 	/**
 	 * Loads the images into a hash map
@@ -440,10 +483,34 @@ public class Summative extends JPanel implements KeyListener {
 	 */
 	public void loadSprites() throws IOException {
 		sprites = new HashMap<String, Image>();
+		SpriteAssigner.sprites = sprites;
 		Class c = getClass();
 
-		sprites.put("rain", ImageIO.read(
+		sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
 				c.getResource("images/weather-showers-scattered.png")));
+
+		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
+				c.getResource("images/weather-clear.png")));
+
+		
+		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
+				c.getResource("images/waste.png")));
+		
+		sprites.put(TERRAIN.SEA.toString(),ImageIO.read(
+				c.getResource("images/sea.png")));
+		
+		sprites.put("bear", ImageIO.read(
+				c.getResource("images/216.png")));
+		sprites.put("bunny", ImageIO.read(
+				c.getResource("images/427.png")));
+		sprites.put("cattle", ImageIO.read(
+				c.getResource("images/128.png")));
+		sprites.put("grass", ImageIO.read(
+				c.getResource("images/grassy.png")));
+		sprites.put("tree", ImageIO.read(
+				c.getResource("images/185.png")));
+		sprites.put("vegetable", ImageIO.read(
+				c.getResource("images/420.png")));
 
 	}
 	private HashMap<String, Image> sprites;

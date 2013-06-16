@@ -108,7 +108,10 @@ public abstract class Lifeform {
     }
     
     /**
-     * Draws the lifeform using its specified icon
+     * Returns the lifeform's sprite. Should be overriden in child classes
+	 * with the body:
+	 * 
+	 * return SpriteAssigner.getSpriteOf(this);
      */
-    public void draw(){}
+    public abstract Image getSprite();
 }
