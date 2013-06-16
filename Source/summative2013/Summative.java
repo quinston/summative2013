@@ -85,9 +85,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 
                 logButton = new Rectangle(getWidth()-200, getHeight()-40, 200, 40);
                 events = new ArrayList<String>();
-                events.add("Bear at 10,10 banged bear at 20,20");
-                events.add("Bunny at 20,20 banged bunny at 30,30");
-                events.add("Cow at 30,30 banged Cow at 40,40");
+                events.add("Test0");
+                events.add("Test1");
+                events.add("Test2");
                 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
