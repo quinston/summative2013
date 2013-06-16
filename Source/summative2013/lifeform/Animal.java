@@ -171,8 +171,10 @@ public abstract class Animal extends Lifeform {
         ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
-            if (l.getClass().equals(getClass())) {
-                mateList.add(l.location);
+            if (l.getMobile()) {
+                if (canMate((Animal) l)) {
+                    mateList.add(l.location);
+                }
             }
         }
 
@@ -293,7 +295,6 @@ public abstract class Animal extends Lifeform {
         findWater();
         findFood(nearbyLife);
         findMate(nearbyLife);
-        setDestination();
 
         hunger = hunger + 5;
         thirst = thirst + 5;
@@ -315,8 +316,10 @@ public abstract class Animal extends Lifeform {
                 {
                     if (summative.terrainGet(destination) == TERRAIN.SEA) {
                         thirst = 0;
+                        setDestination();
                     } else if (isPrey(summative.lifeGet(destination))) {
                         hunger = hunger - 30;
+                        setDestination();
                         if (summative.lifeGet(destination) instanceof Tree) {
                             Tree temp = (Tree) (summative.lifeGet(destination));
                             if (temp.getCurrent() <= 0) {
@@ -335,11 +338,9 @@ public abstract class Animal extends Lifeform {
                             summative.assistedSuicide(destination);
                         }
                     } else if (summative.lifeGet(destination).getMobile()) {
-                        if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
-                        {
-                            hunger = hunger + 30;
-                            reproduce();
-                        }
+                        hunger = hunger + 30;
+                        reproduce();
+                        setDestination();
                     }
                 }
             }
