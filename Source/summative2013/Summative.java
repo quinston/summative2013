@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Area;
@@ -261,11 +262,13 @@ public class Summative extends JPanel implements KeyListener {
 	}
 	public void drawHUD(Graphics g){
             g.setColor(Color.BLUE);
-            g.fillRect(getWidth()-600, getHeight()-200, 600, 200);
-            g.setColor(Color.WHITE);
+            g.fillRoundRect(getWidth()-600, getHeight()-200, 620, 220, 20, 20);
+            g.setColor(Color.LIGHT_GRAY);
             g.fillRect(getWidth()-580, getHeight()-180, 580, 180);
             g.setColor(Color.BLACK);
-            g.drawString("There are "+locToLife.size()+" animals alive\nThere are "+locToGrass.size()+" patches of grass",getWidth()-560, getHeight()-160);
+            g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,25));
+            g.drawString("There are "+locToLife.size()+" animals alive.",getWidth()-560, getHeight()-160);
+            g.drawString("You are centred at "+(screen.x+screen.width/2)+"," +(screen.y+screen.height/2),getWidth()-560, getHeight()-140);
         }
 	public void drawLifeforms(Graphics g) {  
 		for (Iterator<Map.Entry<Point, Lifeform>> iter 
