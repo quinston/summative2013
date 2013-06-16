@@ -89,6 +89,13 @@ public abstract class Lifeform {
     }
 
     /**
+     * Returns the location
+     */
+    public Point getLocation() {
+        return location;
+    }
+
+    /**
      * Finds all empty nearby spaces
      *
      * @return

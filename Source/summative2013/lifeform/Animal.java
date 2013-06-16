@@ -84,6 +84,10 @@ public abstract class Animal extends Lifeform {
      */
     protected Point mate;
     /**
+     * The closest potential victim
+     */
+    protected Point murder;
+    /**
      * Stores past memories and regrets and nostalgic moments in the sun of
      * childhood glorious
      */
@@ -168,7 +172,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<Point>();
+        ArrayList<Point> mateList = new ArrayList<>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -183,6 +187,24 @@ public abstract class Animal extends Lifeform {
             for (Point p : mateList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
                     mate = p;
+                }
+            }
+        }
+    }
+
+    public void findVictim(ArrayList<Lifeform> list) {
+        ArrayList<Point> hitList = new ArrayList<>();
+        murder = null;
+        for (Lifeform l : list) {
+            if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {
+                hitList.add(l.location);
+            }
+        }
+        if (hitList.size() > 0) {
+            murder = hitList.get(0);
+            for (Point p : hitList) {
+                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
+                    murder = p;
                 }
             }
         }
@@ -207,9 +229,13 @@ public abstract class Animal extends Lifeform {
      * Sets the destination of the animal
      */
     public void setDestination() {
-        if (thirst < 50 && hunger < 50) {
-            destination = mate;
-        } else if (thirst >= hunger) {
+        if (thirst < 50 && hunger < 50 && mate != null) {
+            if (Math.random() < .5) {
+                destination = mate;
+            } else {
+                destination = murder;
+            }
+        } else if (thirst >= hunger && water != null) {
             destination = water;
         } else {
             destination = food;
@@ -261,6 +287,17 @@ public abstract class Animal extends Lifeform {
     }
 
     /**
+     * Can this animal walk there? That is, is it empty?
+     */
+    public boolean canWalk(Point p) {
+        if (summative.lifeGet(p) == null && summative.terrainGet(p) != TERRAIN.SEA) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Returns whether or not the animal is drowning
      *
      * @return
@@ -299,25 +336,83 @@ public abstract class Animal extends Lifeform {
         hunger = hunger + 5;
         thirst = thirst + 5;
 
+        if (hunger > 80 || thirst > 80) {
+            setDestination();
+        }
+
         if (Weather == WEATHER.NIGHT) {
         } else {
-            if (getDirection(destination) == DIRECTION.NORTH) {
-                location.y = location.y + 1;
+            if (getDirection(destination) == DIRECTION.NORTH || destination == null) {
+                Point temp = new Point(location.x, location.y + 1);
+                if (canWalk(temp)) {
+                    summative.move(temp, this);
+                }
             } else if (getDirection(destination) == DIRECTION.SOUTH) {
-                location.y = location.y - 1;
+                Point temp = new Point(location.x, location.y - 1);
+                if (canWalk(temp)) {
+                    summative.move(temp, this);
+                }
             } else if (getDirection(destination) == DIRECTION.WEST) {
-                location.x = location.x - 1;
+                Point temp = new Point(location.x - 1, location.y);
+                if (canWalk(temp)) {
+                    summative.move(temp, this);
+                }
             } else if (getDirection(destination) == DIRECTION.EAST) {
-                location.x = location.x + 1;
+                Point temp = new Point(location.x + 1, location.y);
+                if (canWalk(temp)) {
+                    summative.move(temp, this);
+                }
             } else {
+                Point tempN = new Point(location.x, location.y + 1);
+                Point tempS = new Point(location.x, location.y - 1);
+                Point tempW = new Point(location.x - 1, location.y);
+                Point tempE = new Point(location.x + 1, location.y);
+                boolean walked = false;
+                boolean N = true;
+                boolean W = true;
+                boolean S = true;
+                boolean E = true;
+                int counter = 0;
+                while (!walked) {
+                    double x = Math.random();
+                    if (x < 0.25 && canWalk(tempN)) {
+                        summative.move(tempN, this);
+                        walked = true;
+                    } else if (N && !canWalk(tempN)) {
+                        N = false;
+                        counter = counter + 1;
+                    } else if (x < 0.5 && canWalk(tempS)) {
+                        summative.move(tempS, this);
+                        walked = true;
+                    } else if (S && !canWalk(tempS)) {
+                        S = false;
+                        counter = counter + 1;
+                    } else if (x < 0.75 && canWalk(tempW)) {
+                        summative.move(tempW, this);
+                        walked = true;
+                    } else if (W && !canWalk(tempW)) {
+                        W = false;
+                        counter = counter + 1;
+                    } else if (canWalk(tempE)) {
+                        summative.move(tempE, this);
+                        walked = true;
+                    } else if (E && !canWalk(tempE)) {
+                        E = false;
+                        counter = counter + 1;
+                    }
+
+                    if (counter == 4) {
+                        walked = true;
+                    }
+                }
             }
             if (Math.abs(destination.x - location.x) <= 1 && Math.abs(destination.y - location.y) <= 1
                     && Math.abs(destination.x - location.x) + Math.abs(destination.y - location.y) < 2) {
                 {
-                    if (summative.terrainGet(destination) == TERRAIN.SEA) {
+                    if (destination == water) {
                         thirst = 0;
                         setDestination();
-                    } else if (isPrey(summative.lifeGet(destination))) {
+                    } else if (destination == food) {
                         hunger = hunger - 30;
                         setDestination();
                         if (summative.lifeGet(destination) instanceof Tree) {
@@ -337,15 +432,19 @@ public abstract class Animal extends Lifeform {
                         } else {
                             summative.assistedSuicide(destination);
                         }
-                    } else if (summative.lifeGet(destination).getMobile()) {
+                    } else if (destination == mate) {
                         hunger = hunger + 30;
                         reproduce();
+                        setDestination();
+                    } else if (destination == murder) {
+                        summative.lifeGet(destination).suicide();
                         setDestination();
                     }
                 }
             }
         }
-        if (hunger > 100 || thirst > 100) {
+        if (hunger > 100 || thirst
+                > 100) {
             suicide();
         } else if (drowning()) {
             suicide();
