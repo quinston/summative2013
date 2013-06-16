@@ -8,8 +8,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
@@ -28,7 +27,7 @@ import summative2013.lifeform.Lifeform;
 import summative2013.lifeform.Tree;
 import summative2013.phenomena.Weather;
 
-public class Summative extends JPanel implements KeyListener {
+public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener {
 
 	private static GraphicsEnvironment ge;
 	private static GraphicsDevice gd;
@@ -41,6 +40,8 @@ public class Summative extends JPanel implements KeyListener {
 	private Rectangle screen;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false;
 	private final int gridSize = 10;
+        private String mouseOnLife = "";
+        private Point mouse = new Point();
         private int bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0, numDays = 0;
 
 	/**
@@ -77,8 +78,9 @@ public class Summative extends JPanel implements KeyListener {
 			}
 		}
 		setFocusable(true);//allows us to actually use the keylistener
-		requestFocusInWindow();
 		addKeyListener(this);//makes keys do something
+                addMouseListener(this);
+                addMouseMotionListener(this);
 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
@@ -95,7 +97,6 @@ public class Summative extends JPanel implements KeyListener {
 			System.exit(-1);
 		}
 	}
-
 	/**
 	 * Types of terrain available
 	 */
@@ -311,6 +312,9 @@ public class Summative extends JPanel implements KeyListener {
             g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,20));
             g.drawString("You are centred at "+(screen.x+screen.width/2)+"," +(screen.y+screen.height/2),getWidth()-420, getHeight()-140);
             g.drawString(numDays+" days have passed since the beginning of time", getWidth()-420, getHeight()-100);
+            if(mouseOnLife != "")
+                g.drawString("The mouse is over a "+mouseOnLife+" at point "+mouse.x+","+mouse.y, getWidth()-420, getHeight()-60);
+                        
         }
         /**
          * Draws the lifeforms in the sim
@@ -329,6 +333,43 @@ public class Summative extends JPanel implements KeyListener {
 				g.drawImage(sprite, x, y, null);
 			}
 		}
+	}
+	/**
+	 * Draws the weather
+	 * @param g 
+	 */
+	public void drawWeather(Graphics g) {
+		for (Weather w : activeWeather) {
+			Area a = w.getArea();
+			Rectangle r = a.getBounds();
+			Weather.WEATHER type = w.getType();
+
+			for (int i = screen.x; i < screen.x + screen.width; i++) {
+				for (int j = screen.y; j < screen.y + screen.height; j++) {
+					if (a.contains(i, j)) {
+						switch (type) {
+							case RAIN:
+								g.setColor(new Color(0, 0, 0, 204));
+								break;
+							case SUN:
+								g.setColor(new Color(255, 206, 0, 204));
+								break;
+						}
+						g.fillRect((i - screen.x) * gridSize, 
+								(j - screen.y) * gridSize, 
+								gridSize, gridSize);
+					}
+				}
+			}
+
+			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
+					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
+				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
+						(int) (r.getCenterY() - screen.y) * 10,
+						64, 64, null);
+			}
+		}
+
 	}
 
 	/**
@@ -502,46 +543,55 @@ public class Summative extends JPanel implements KeyListener {
 		screen.translate(0, 1);//moves centre of field of view
 	}
 
-	/**
-	 * Draws the weather
-	 * @param g 
-	 */
-	public void drawWeather(Graphics g) {
-		for (Weather w : activeWeather) {
-			Area a = w.getArea();
-			Rectangle r = a.getBounds();
-			Weather.WEATHER type = w.getType();
 
-			for (int i = screen.x; i < screen.x + screen.width; i++) {
-				for (int j = screen.y; j < screen.y + screen.height; j++) {
-					if (a.contains(i, j)) {
-						switch (type) {
-							case RAIN:
-								g.setColor(new Color(0, 0, 0, 204));
-								break;
-							case SUN:
-								g.setColor(new Color(255, 206, 0, 204));
-								break;
-						}
-						g.fillRect((i - screen.x) * gridSize, 
-								(j - screen.y) * gridSize, 
-								gridSize, gridSize);
-					}
-				}
-			}
+        @Override
+        public void mouseDragged(MouseEvent e) {
+        }
 
-			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
-					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
-						(int) (r.getCenterY() - screen.y) * 10,
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            //System.out.println("mouseMoved");
+            mouse =new Point(e.getPoint().x/10 + screen.x, e.getPoint().y/10 + screen.y);
+            if(locToLife.containsKey(mouse)){
+                Lifeform l = locToLife.get(mouse);
+                if(l instanceof Bear)
+                    mouseOnLife = "bear";
+                else if(l instanceof Bunny)
+                    mouseOnLife = "bunny";
+                else if(l instanceof Cattle)
+                    mouseOnLife = "cow";
+                else if(l instanceof Grass)
+                    mouseOnLife = "grass";
+                else if(l instanceof Tree)
+                    mouseOnLife = "tree";
+                
+            }
+            else
+                mouseOnLife = "";
+            repaint();
+        }
 
-						64, 64, null);
-			}
-		}
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
 
-	}
-	/**
-	 * Loads the images into a hash map
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
+        /**
+         * Loads the images into a hash map
 	 * @throws IOException 
 	 */
 	public void loadSprites() throws IOException {
