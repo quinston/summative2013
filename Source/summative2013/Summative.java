@@ -241,9 +241,18 @@ public class Summative extends JPanel implements KeyListener {
 			drawTerrain(g);//draws the terrain of the map
 			drawLifeforms(g);
 			drawWeather(g);
+                        drawHUD(g);
 		}
 	}
 
+        public void drawHUD(Graphics g){
+            g.setColor(Color.BLUE);
+            g.fillRect(getWidth()-600, getHeight()-200, 600, 200);
+            g.setColor(Color.WHITE);
+            g.fillRect(getWidth()-580, getHeight()-180, 580, 180);
+            g.setColor(Color.BLACK);
+            g.drawString("There are "+locToLife.size()+" animals alive",getWidth()-560, getHeight()-160);
+        }
 	/**
 	 * Draws terrain, Green for lane, Blue for sea
 	 *
