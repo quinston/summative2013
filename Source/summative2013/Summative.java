@@ -41,7 +41,7 @@ public class Summative extends JPanel implements KeyListener {
 	private Rectangle screen;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false;
 	private final int gridSize = 10;
-        private int bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0;
+        private int bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0, numDays = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -200,41 +200,42 @@ public class Summative extends JPanel implements KeyListener {
 	 * advances the map one iteration
 	 */
 	public void advance() {
-		for (Weather w : activeWeather) {
-			Iterator lifeIt = locToLife.entrySet().iterator();
-			while (lifeIt.hasNext()) {
+            numDays++;
+            for (Weather w : activeWeather) {
+                    Iterator lifeIt = locToLife.entrySet().iterator();
+                    while (lifeIt.hasNext()) {
 
-				Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
+                            Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
 
-				if (w.getArea().contains(pairs.getKey())) {//if we are on the weather
-					pairs.getValue().act(w.getType());//act based on weather
-				}
-			}
-			Iterator terIt = locToTerrain.entrySet().iterator();
-			HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-			while (terIt.hasNext()) {
-				Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
-				if (w.getArea().contains(pairs.getKey())) {
-					if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
-						//radiate water
-						Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-						for (Point p : points) {
-							temp.put(p, TERRAIN.SEA);
-						}
-					}
-					if (w.getType() == Weather.WEATHER.SUN && pairs.getValue() == TERRAIN.LAND) {
-						//radiate land
-						Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-						for (Point p : points) {
-							temp.put(p, TERRAIN.LAND);
-						}
-					}
-				}
-			}
-			for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-				locToTerrain.put(m.getKey(), m.getValue());
-			}
-		}
+                            if (w.getArea().contains(pairs.getKey())) {//if we are on the weather
+                                    pairs.getValue().act(w.getType());//act based on weather
+                            }
+                    }
+                    Iterator terIt = locToTerrain.entrySet().iterator();
+                    HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
+                    while (terIt.hasNext()) {
+                            Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
+                            if (w.getArea().contains(pairs.getKey())) {
+                                    if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
+                                            //radiate water
+                                            Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
+                                            for (Point p : points) {
+                                                    temp.put(p, TERRAIN.SEA);
+                                            }
+                                    }
+                                    if (w.getType() == Weather.WEATHER.SUN && pairs.getValue() == TERRAIN.LAND) {
+                                            //radiate land
+                                            Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
+                                            for (Point p : points) {
+                                                    temp.put(p, TERRAIN.LAND);
+                                            }
+                                    }
+                            }
+                    }
+                    for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+                            locToTerrain.put(m.getKey(), m.getValue());
+                    }
+            }
 	}
 
 	/**
@@ -268,6 +269,10 @@ public class Summative extends JPanel implements KeyListener {
 			}
 		}
 	}
+        /**
+         * Draws a HUD that gives information on what is happening or has happened in the sim
+         * @param g The graphics object that the HUD should be drawn on
+         */
 	public void drawHUD(Graphics g){
             g.setColor(Color.BLUE);
             g.fillRoundRect(getWidth()-600, getHeight()-200, 620, 220, 20, 20);
@@ -302,9 +307,15 @@ public class Summative extends JPanel implements KeyListener {
             g.drawString(""+grassCount, getWidth()-490, getHeight()-65);
             g.drawString(""+treeCount, getWidth()-490, getHeight()-45);
             
-            g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,25));
+            //draws other information onto the HUD
+            g.setFont(new Font(Font.SERIF,Font.ROMAN_BASELINE,20));
             g.drawString("You are centred at "+(screen.x+screen.width/2)+"," +(screen.y+screen.height/2),getWidth()-420, getHeight()-140);
+            g.drawString(numDays+" days have passed since the beginning of time", getWidth()-420, getHeight()-100);
         }
+        /**
+         * Draws the lifeforms in the sim
+         * @param g the graphics onject that the lifeforms should be drawn on
+         */
 	public void drawLifeforms(Graphics g) {  
 		for (Iterator<Map.Entry<Point, Lifeform>> iter 
 				= locToLife.entrySet().iterator(); iter.hasNext();) {
