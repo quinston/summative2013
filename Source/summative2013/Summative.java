@@ -241,6 +241,7 @@ public class Summative extends JPanel implements KeyListener {
 			drawTerrain(g);//draws the terrain of the map
 			drawLifeforms(g);
 			drawWeather(g);
+                        drawHUD(g);
 		}
 	}
 
@@ -258,7 +259,14 @@ public class Summative extends JPanel implements KeyListener {
 			}
 		}
 	}
-	
+	public void drawHUD(Graphics g){
+            g.setColor(Color.BLUE);
+            g.fillRect(getWidth()-600, getHeight()-200, 600, 200);
+            g.setColor(Color.WHITE);
+            g.fillRect(getWidth()-580, getHeight()-180, 580, 180);
+            g.setColor(Color.BLACK);
+            g.drawString("There are "+locToLife.size()+" animals alive\nThere are "+locToGrass.size()+" patches of grass",getWidth()-560, getHeight()-160);
+        }
 	public void drawLifeforms(Graphics g) {  
 		for (Iterator<Map.Entry<Point, Lifeform>> iter 
 				= locToLife.entrySet().iterator(); iter.hasNext();) {
