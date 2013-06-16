@@ -465,7 +465,6 @@ public class Summative extends JPanel implements KeyListener {
 
 			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
 					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				System.out.println(w.toString());
 				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
 						(int) (r.getCenterY() - screen.y) * 10,
 
