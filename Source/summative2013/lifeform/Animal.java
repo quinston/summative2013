@@ -172,7 +172,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<>();
+        ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -193,7 +193,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findVictim(ArrayList<Lifeform> list) {
-        ArrayList<Point> hitList = new ArrayList<>();
+        ArrayList<Point> hitList = new ArrayList<Point>();
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {

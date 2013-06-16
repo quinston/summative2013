@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import summative2013.lifeform.Tree;
 import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel implements KeyListener {
-
     private static GraphicsEnvironment ge;
     private static GraphicsDevice gd;
     private HashMap<Point, Lifeform> locToLife;
@@ -73,7 +73,7 @@ public class Summative extends JPanel implements KeyListener {
 
         Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
         a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
-        activeWeather.add(new summative2013.phenomena.Drought(a));
+        activeWeather.add(new summative2013.phenomena.AirLock(a));
 
         a = new Area(new Rectangle(-30, -60, 20, 69));
         a.add(new Area(new Ellipse2D.Double(-90, -90, 70, 70)));
@@ -85,6 +85,20 @@ public class Summative extends JPanel implements KeyListener {
             System.out.println("Failed to load images.");
             System.exit(-1);
         }
+		
+				//Paint thread
+		(new Thread(new Runnable() {
+
+			public void run() {
+				while (true) {
+					if (System.currentTimeMillis() - refFrame > 16) {
+						pushWeather();
+						repaint();
+						refFrame = System.currentTimeMillis();
+					}
+				}
+			}
+		})).start();
     }
 
     /**
@@ -144,60 +158,79 @@ public class Summative extends JPanel implements KeyListener {
      *
      * @param point The point in which we want to generate some terrain
      */
-    public void mapGen(Point point) {
-        int lands = 0, seas = 0;//count adjacent land, sea
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                synchronized (lock) {
-                    if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
-                        lands++;//add a land for each land within the 3x3 surrounding the block
-                    } else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
-                        seas++;//add a sea for each sea within the 3x3 surrounding block
-                    }
-                }
-            }
-        }
-        //Only land, have a small chance to generate a sea block
-        if (seas == 0) {
-            if (Math.random() < .95) {
-                locToTerrain.put(point, TERRAIN.LAND);
-            } else {
-                locToTerrain.put(point, TERRAIN.SEA);
-            }
-            //Mostly land, but some sea, generate more sea
-        } else if (lands > seas && seas > 0) {
-            if (Math.random() < .95) {
-                locToTerrain.put(point, TERRAIN.LAND);
-            } else {
-                locToTerrain.put(point, TERRAIN.SEA);
-            }
-            //Mostly sea, but some land, generate more land
-        } else if (seas > lands && lands > 0) {
-            if (Math.random() < 0.95) {
-                locToTerrain.put(point, TERRAIN.SEA);
-            } else {
-                locToTerrain.put(point, TERRAIN.LAND);
-            }
-        } else {
-            if (Math.random() < 0.5) {
-                locToTerrain.put(point, TERRAIN.LAND);
-            } else {
-                locToTerrain.put(point, TERRAIN.SEA);
-            }
-        }
-    }
+public void mapGen(Point point) {
+		int lands = 0, seas = 0;//count adjacent land, sea
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
+					lands++;//add a land for each land within the 3x3 surrounding the block
+				} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
+					seas++;//add a sea for each sea within the 3x3 surrounding block
+				}
+			}
+
+		}
+
+		//Only land, have a small chance to generate a sea block
+
+
+		if (seas == 0) {
+			if (Math.random() < .95) {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
+			} else {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
+			}
+			//Mostly land, but some sea, generate more sea
+		} else if (lands > seas && seas > 0) {
+			if (Math.random() < .95) {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
+			} else {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
+			}
+			//Mostly sea, but some land, generate more land
+		} else if (seas > lands && lands > 0) {
+			if (Math.random() < 0.95) {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
+			} else {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
+			}
+		} else {
+			if (Math.random() < 0.5) {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
+			} else {
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
+			}
+		}
+	}
 
     /**
      * advances the map one iteration
      */
     public void advance() {
+		pushWeather();
         for (Weather w : activeWeather) {
             Iterator lifeIt = locToLife.entrySet().iterator();
             while (lifeIt.hasNext()) {
 
                 Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
 
-                if (w.getArea().contains(pairs.getKey())) {//if we are on the weather
+                if (w.contains(pairs.getKey())) {//if we are on the weather
                     pairs.getValue().act(w.getType());//act based on weather
                 }
             }
@@ -205,7 +238,7 @@ public class Summative extends JPanel implements KeyListener {
             HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
             while (terIt.hasNext()) {
                 Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
-                if (w.getArea().contains(pairs.getKey())) {
+                if (w.contains(pairs.getKey())) {
                     if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
                         //radiate water
                         Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
@@ -458,81 +491,123 @@ public class Summative extends JPanel implements KeyListener {
         screen.translate(0, 1);//moves centre of field of view
     }
 
-    /**
-     * Draws the weather
-     *
-     * @param g
-     */
-    public void drawWeather(Graphics g) {
-        for (Weather w : activeWeather) {
-            Area a = w.getArea();
-            Rectangle r = a.getBounds();
-            Weather.WEATHER type = w.getType();
-
-            for (int i = screen.x; i < screen.x + screen.width; i++) {
-                for (int j = screen.y; j < screen.y + screen.height; j++) {
-                    if (a.contains(i, j)) {
-                        switch (type) {
-                            case RAIN:
-                                g.setColor(new Color(0, 0, 0, 204));
-                                break;
-                            case SUN:
-                                g.setColor(new Color(255, 206, 0, 204));
-                                break;
-                        }
-                        g.fillRect((i - screen.x) * gridSize,
-                                (j - screen.y) * gridSize,
-                                gridSize, gridSize);
-                    }
-                }
-            }
-
-            if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
-                    && screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-                g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
-                        (int) (r.getCenterY() - screen.y) * 10,
-                        64, 64, null);
-            }
-        }
-
-    }
-
-    /**
-     * Loads the images into a hash map
-     *
-     * @throws IOException
-     */
-    public void loadSprites() throws IOException {
-        sprites = new HashMap<String, Image>();
-        SpriteAssigner.sprites = sprites;
-        Class c = getClass();
-
-        sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
-                c.getResource("images/weather-showers-scattered.png")));
-
-        sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
-                c.getResource("images/weather-clear.png")));
 
 
-        sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
-                c.getResource("images/waste.png")));
 
-        sprites.put(TERRAIN.SEA.toString(), ImageIO.read(
-                c.getResource("images/sea.png")));
-
-        sprites.put("bear", ImageIO.read(
-                c.getResource("images/216.png")));
-        sprites.put("bunny", ImageIO.read(
-                c.getResource("images/427.png")));
-        sprites.put("cattle", ImageIO.read(
-                c.getResource("images/128.png")));
-        sprites.put("grass", ImageIO.read(
-                c.getResource("images/grassy.png")));
-        sprites.put("tree", ImageIO.read(
-                c.getResource("images/185.png")));
-        sprites.put("vegetable", ImageIO.read(
-                c.getResource("images/420.png")));
-
-    }
     private HashMap<String, Image> sprites;
+
+
+	/**
+	 * Draws the weather
+	 * @param g 
+	 */
+	public void drawWeather(Graphics g) {
+		for (int i = screen.x; i < screen.x + screen.width; i++) {
+			for (int j = screen.y; j < screen.y + screen.height; j++) {
+				switch (getActiveWeather(i, j)) {
+					case CLOUD:
+						g.setColor(new Color(153, 153, 153, 153));
+						break;
+					case RAIN:
+						g.setColor(new Color(33, 33, 33, 153));
+						break;
+					case NIGHT:
+						g.setColor(new Color(0, 0, 62, 153));
+						break;
+					case SUN:
+						g.setColor(new Color(0, 0, 0, 0));
+						break;
+				}
+				g.fillRect((i - screen.x) * gridSize,
+						(j - screen.y) * gridSize,
+						gridSize, gridSize);
+			}
+		}
+
+		for (Weather w : activeWeather) {
+			Point centre = w.getCentre();
+			if (screen.x <= centre.x && centre.x < screen.x + screen.width
+					&& screen.y <= centre.y && centre.y < screen.y + screen.height) {
+				g.drawImage(sprites.get(w.getType().toString()),
+						(int) (centre.x - screen.x) * gridSize,
+						(int) (centre.y - screen.y) * gridSize,
+						64, 64, null);
+			}
+		}
+	}
+
+	/**
+	 * Loads the images into a hash map
+	 * @throws IOException 
+	 */
+	public void loadSprites() throws IOException {
+		sprites = new HashMap<String, Image>();
+		SpriteAssigner.sprites = sprites;
+		Class c = getClass();
+
+		sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
+				c.getResource("images/weather-showers-scattered.png")));
+
+		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
+				c.getResource("images/weather-clear.png")));
+
+		sprites.put(Weather.WEATHER.CLOUD.toString(), ImageIO.read(
+				c.getResource("images/weather-overcast.png")));
+
+
+		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
+				c.getResource("images/waste.png")));
+
+		sprites.put(TERRAIN.SEA.toString(), ImageIO.read(
+				c.getResource("images/sea.png")));
+
+		sprites.put("bear", ImageIO.read(
+				c.getResource("images/216.png")));
+		sprites.put("bunny", ImageIO.read(
+				c.getResource("images/427.png")));
+		sprites.put("cattle", ImageIO.read(
+				c.getResource("images/128.png")));
+		sprites.put("grass", ImageIO.read(
+				c.getResource("images/grassy.png")));
+		sprites.put("tree", ImageIO.read(
+				c.getResource("images/185.png")));
+		sprites.put("vegetable", ImageIO.read(
+				c.getResource("images/420.png")));
+
+
+	}
+
+	/**
+	 * Gets the weather in the mentioned square
+	 * @param x X-coordinate
+	 * @param y Y-coordinate
+	 * @return The weather in the mentioned square
+	 */
+	public Weather.WEATHER getActiveWeather(int x, int y) {
+		Weather.WEATHER ret;
+
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI / dayLengthMillis * System.currentTimeMillis()) > 0.2) {
+			ret = Weather.WEATHER.SUN;
+		} else {
+			ret = Weather.WEATHER.NIGHT;
+		}
+		for (Weather w : activeWeather) {
+			if (w.contains(x, y)) {
+				if (ret == Weather.WEATHER.RAIN) {
+					break;
+				}
+				ret = w.getType();
+			}
+		}
+		return ret;
+	}
+
+	public void pushWeather() {
+		for (Weather w : activeWeather) {
+			w.translate(hourlyWind.x, hourlyWind.y);
+		}
+	}
+	private long dayLengthMillis = 30000;
+	private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
+	private long refFrame = System.currentTimeMillis();
 }
