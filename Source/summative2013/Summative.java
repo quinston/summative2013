@@ -60,8 +60,8 @@ public class Summative extends JPanel implements KeyListener {
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
 		setSize(frame.getSize());//fullscreen the panel
-		screen = new Rectangle(-1 * getWidth() / (2*gridSize), -1 * getHeight() / (2*gridSize), 
-				getWidth() / gridSize, getHeight() / gridSize);//sets up our screen rectangle to define our screen
+		screen = new Rectangle(-1 * getWidth() / (2*gridSize) -1, -1 * getHeight() / (2*gridSize) - 1, 
+				getWidth() / gridSize + 2, getHeight() / gridSize + 2);//sets up our screen rectangle to define our screen
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {
 			for (int j = screen.y; j <= screen.y + screen.height; j++) {
 				mapGen(new Point(i, j));//generate initial point
@@ -250,8 +250,8 @@ public class Summative extends JPanel implements KeyListener {
 	 * @param g The graphics object to draw on
 	 */
 	public void drawTerrain(Graphics g) {
-		for (int i = screen.x; i < screen.x + screen.width; i++) {
-			for (int j = screen.y; j < screen.y + screen.height; j++) {
+		for (int i = screen.x; i <= screen.x + screen.width; i++) {
+			for (int j = screen.y; j <= screen.y + screen.height; j++) {
 				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
 						(i - screen.x) * gridSize, (j - screen.y) * gridSize,
 						gridSize,gridSize,null);
@@ -473,9 +473,6 @@ public class Summative extends JPanel implements KeyListener {
 		}
 
 	}
-	
-	
-
 	/**
 	 * Loads the images into a hash map
 	 * @throws IOException 
