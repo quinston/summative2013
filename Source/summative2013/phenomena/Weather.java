@@ -3,6 +3,8 @@ package summative2013.phenomena;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 
 /**
  * Of the rain and the lightning weather sky torrential climate
@@ -12,8 +14,7 @@ import java.awt.Point;
 public class Weather {
 
     protected Area area;
-    protected WEATHER type;
-	protected Point location;
+    protected WEATHER type;	
 
     /**
      * Creates a weather enum thing
@@ -30,12 +31,30 @@ public class Weather {
 	public Weather(Area area) {
 		this.area = area;
 	}
-
+/*
     public Area getArea() {
         return new Area(area);
     }
-
+*/
     public WEATHER getType() {
         return type;
     }
+	
+	public boolean contains(int x, int y) {
+		return area.contains(x,y);
+	}
+	
+	public boolean contains(Point p) {
+		return area.contains(p);
+	}
+	
+	public void translate(double x, double y) {
+		area.transform(AffineTransform.getTranslateInstance(x,y));
+	}
+	
+	public Point getCentre() {
+		Rectangle r = area.getBounds();
+		return new Point((int) r.getCenterX(),
+				(int) r.getCenterY());
+	}
 }

@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,12 +67,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 grassCount++;
 		locToLife.put(new Point(30,30), new Tree());
                 treeCount++;
-		
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
 		setSize(frame.getSize());//fullscreen the panel
-		screen = new Rectangle(-1 * getWidth() / (2*gridSize) -1, -1 * getHeight() / (2*gridSize) - 1, 
+		screen = new Rectangle(-1 * getWidth() / (2 * gridSize) - 1, -1 * getHeight() / (2 * gridSize) - 1,
 				getWidth() / gridSize + 2, getHeight() / gridSize + 2);//sets up our screen rectangle to define our screen
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {
 			for (int j = screen.y; j <= screen.y + screen.height; j++) {
@@ -91,10 +91,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 
 		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
 		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
-		activeWeather.add(new summative2013.phenomena.Drought(a));
-		
-		a = new Area(new Rectangle(-30,-60,20,69));
-		a.add(new Area(new Ellipse2D.Double(-90,-90,70,70)));
+		activeWeather.add(new summative2013.phenomena.AirLock(a));
+
+		a = new Area(new Rectangle(-30, -60, 20, 69));
+		a.add(new Area(new Ellipse2D.Double(-90, -90, 70, 70)));
 		activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
 		try {
@@ -103,6 +103,20 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			System.out.println("Failed to load images.");
 			System.exit(-1);
 		}
+
+		//Paint thread
+		(new Thread(new Runnable() {
+
+			public void run() {
+				while (true) {
+					if (System.currentTimeMillis() - refFrame > 16) {
+						pushWeather();
+						repaint();
+						refFrame = System.currentTimeMillis();
+					}
+				}
+			}
+		})).start();
 	}
 	/**
 	 * Types of terrain available
@@ -162,41 +176,59 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		int lands = 0, seas = 0;//count adjacent land, sea
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
-				synchronized (lock) {
-					if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
-						lands++;//add a land for each land within the 3x3 surrounding the block
-					} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
-						seas++;//add a sea for each sea within the 3x3 surrounding block
-					}
+				if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
+					lands++;//add a land for each land within the 3x3 surrounding the block
+				} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
+					seas++;//add a sea for each sea within the 3x3 surrounding block
 				}
 			}
+
 		}
+
 		//Only land, have a small chance to generate a sea block
+
+
 		if (seas == 0) {
 			if (Math.random() < .95) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 			//Mostly land, but some sea, generate more sea
 		} else if (lands > seas && seas > 0) {
 			if (Math.random() < .95) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 			//Mostly sea, but some land, generate more land
 		} else if (seas > lands && lands > 0) {
 			if (Math.random() < 0.95) {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			}
 		} else {
 			if (Math.random() < 0.5) {
-				locToTerrain.put(point, TERRAIN.LAND);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.LAND);
+				}
 			} else {
-				locToTerrain.put(point, TERRAIN.SEA);
+				synchronized (lock) {
+					locToTerrain.put(point, TERRAIN.SEA);
+				}
 			}
 		}
 	}
@@ -205,13 +237,14 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public void advance() {
             numDays++;
+            pushWeather();
             for (Weather w : activeWeather) {
                     Iterator lifeIt = locToLife.entrySet().iterator();
                     while (lifeIt.hasNext()) {
 
                             Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
 
-                            if (w.getArea().contains(pairs.getKey())) {//if we are on the weather
+                            if (w.contains(pairs.getKey())) {//if we are on the weather
                                     pairs.getValue().act(w.getType());//act based on weather
                             }
                     }
@@ -219,7 +252,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                     HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
                     while (terIt.hasNext()) {
                             Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
-                            if (w.getArea().contains(pairs.getKey())) {
+                            if (w.contains(pairs.getKey())) {
                                     if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
                                             //radiate water
                                             Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
@@ -260,20 +293,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 else{
                     drawLog(g);
                 }
-	}
-	/**
-	 * Draws terrain, Green for lane, Blue for sea
-	 *
-	 * @param g The graphics object to draw on
-	 */
-	public void drawTerrain(Graphics g) {
-		for (int i = screen.x; i <= screen.x + screen.width; i++) {
-			for (int j = screen.y; j <= screen.y + screen.height; j++) {
-				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
-						(i - screen.x) * gridSize, (j - screen.y) * gridSize,
-						gridSize,gridSize,null);
-			}
-		}
 	}
         /**
          * Draws a HUD that gives information on what is happening or has happened in the sim
@@ -328,60 +347,75 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
             g.drawString("Open log", logButton.x+20, logButton.y+logButton.height - 10);
                         
         }
+	/**
+	 * Draws terrain, Green for lane, Blue for sea
+	 *
+	 * @param g The graphics object to draw on
+	 */
+	public void drawTerrain(Graphics g) {
+		for (int i = screen.x; i <= screen.x + screen.width; i++) {
+			for (int j = screen.y; j <= screen.y + screen.height; j++) {
+				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
+						(i - screen.x) * gridSize, (j - screen.y) * gridSize,
+						gridSize, gridSize, null);
+			}
+		}
+	}
+
         /**
          * Draws the lifeforms in the sim
          * @param g the graphics onject that the lifeforms should be drawn on
          */
-	public void drawLifeforms(Graphics g) {  
-		for (Iterator<Map.Entry<Point, Lifeform>> iter 
-				= locToLife.entrySet().iterator(); iter.hasNext();) {
+	public void drawLifeforms(Graphics g) {
+		for (Iterator<Map.Entry<Point, Lifeform>> iter = locToLife.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry<Point, Lifeform> pair = iter.next();
 			if (screen.contains(pair.getKey())) {
 				// Draw the sprites so that its centre is at the centre
 				// of the grid square
 				Image sprite = pair.getValue().getSprite();
-				int x = (pair.getKey().x - screen.x) * gridSize + gridSize/2 - sprite.getWidth(null)/2;
-				int y = (pair.getKey().y - screen.y) * gridSize + gridSize/2 - sprite.getWidth(null)/2;
+				int x = (pair.getKey().x - screen.x) * gridSize + gridSize / 2 - sprite.getWidth(null) / 2;
+				int y = (pair.getKey().y - screen.y) * gridSize + gridSize / 2 - sprite.getWidth(null) / 2;
 				g.drawImage(sprite, x, y, null);
 			}
 		}
 	}
-	/**
+        /**
 	 * Draws the weather
 	 * @param g 
 	 */
 	public void drawWeather(Graphics g) {
-		for (Weather w : activeWeather) {
-			Area a = w.getArea();
-			Rectangle r = a.getBounds();
-			Weather.WEATHER type = w.getType();
-
-			for (int i = screen.x; i < screen.x + screen.width; i++) {
-				for (int j = screen.y; j < screen.y + screen.height; j++) {
-					if (a.contains(i, j)) {
-						switch (type) {
-							case RAIN:
-								g.setColor(new Color(0, 0, 0, 204));
-								break;
-							case SUN:
-								g.setColor(new Color(255, 206, 0, 204));
-								break;
-						}
-						g.fillRect((i - screen.x) * gridSize, 
-								(j - screen.y) * gridSize, 
-								gridSize, gridSize);
-					}
+		for (int i = screen.x; i < screen.x + screen.width; i++) {
+			for (int j = screen.y; j < screen.y + screen.height; j++) {
+				switch (getActiveWeather(i, j)) {
+					case CLOUD:
+						g.setColor(new Color(153, 153, 153, 153));
+						break;
+					case RAIN:
+						g.setColor(new Color(33, 33, 33, 153));
+						break;
+					case NIGHT:
+						g.setColor(new Color(0, 0, 62, 153));
+						break;
+					case SUN:
+						g.setColor(new Color(0, 0, 0, 0));
+						break;
 				}
-			}
-
-			if (screen.x <= r.getCenterX() && r.getCenterX() < screen.x + screen.width
-					&& screen.y <= r.getCenterY() && r.getCenterY() < screen.y + screen.height) {
-				g.drawImage(sprites.get(w.getType().toString()), (int) (r.getCenterX() - screen.x) * 10,
-						(int) (r.getCenterY() - screen.y) * 10,
-						64, 64, null);
+				g.fillRect((i - screen.x) * gridSize,
+						(j - screen.y) * gridSize,
+						gridSize, gridSize);
 			}
 		}
 
+		for (Weather w : activeWeather) {
+			Point centre = w.getCentre();
+			if (screen.x <= centre.x && centre.x < screen.x + screen.width
+					&& screen.y <= centre.y && centre.y < screen.y + screen.height) {
+				g.drawImage(sprites.get(w.getType().toString()),
+						(int) (centre.x - screen.x) * gridSize,
+						(int) (centre.y - screen.y) * gridSize,
+						64, 64, null);
+			}
+		}
 	}
         /**
          * Draws a log of what has happened so far
@@ -406,6 +440,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         }
 	/**
 	 * Kills the lifeform at a point
+	 *
 	 * @param location the point that has the lifeform there
 	 */
 	public void assistedSuicide(Point location) {
@@ -413,6 +448,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 	/**
 	 * Returns the lifeform at a given point
+	 *
 	 * @param location the point that's lifeform is being checked
 	 * @return The lifeform at point location
 	 */
@@ -421,6 +457,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 	/**
 	 * Returns the type of terrain at a given point
+	 *
 	 * @param location The point at which the terrain is desired
 	 * @return the type of terrain at location
 	 */
@@ -437,6 +474,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 	/**
 	 * Adds in a new baby animal
+	 *
 	 * @param p where the baby animal will be placed
 	 * @param l the baby animal
 	 */
@@ -454,6 +492,15 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 else if(l instanceof Tree)
                     treeCount++;
 	}
+	/**
+	 * Moves the lifeform
+	 */
+	public void move(Point p, Lifeform l) {
+		locToLife.remove(l.getLocation());
+		locToLife.put(p, l);
+		l.setLocation(p);
+	}
+
 	/**
 	 * Unused method
 	 *
@@ -485,7 +532,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			frame.dispose();
 		} else if(keyCode == KeyEvent.VK_ESCAPE){
                     logOpen = false;
-                }
+                }else if (keyCode == KeyEvent.VK_SPACE) {
+			advance();
+		}
 		if (rightPressed) {
 			moveRight();
 		}
@@ -499,8 +548,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			moveDown();
 		}
 		updateMap();//generates map as needed
-		repaint();
-
 	}
 	/**
 	 * Stores when the arrow keys have been released
@@ -634,8 +681,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         @Override
         public void mouseExited(MouseEvent e) {
         }
-        /**
-         * Loads the images into a hash map
+
+
+	
+
+	/**
+	 * Loads the images into a hash map
 	 * @throws IOException 
 	 */
 	public void loadSprites() throws IOException {
@@ -649,13 +700,16 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
 				c.getResource("images/weather-clear.png")));
 
-		
+		sprites.put(Weather.WEATHER.CLOUD.toString(), ImageIO.read(
+				c.getResource("images/weather-overcast.png")));
+
+
 		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
 				c.getResource("images/waste.png")));
-		
-		sprites.put(TERRAIN.SEA.toString(),ImageIO.read(
+
+		sprites.put(TERRAIN.SEA.toString(), ImageIO.read(
 				c.getResource("images/sea.png")));
-		
+
 		sprites.put("bear", ImageIO.read(
 				c.getResource("images/216.png")));
 		sprites.put("bunny", ImageIO.read(
@@ -669,6 +723,41 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		sprites.put("vegetable", ImageIO.read(
 				c.getResource("images/420.png")));
 
+
 	}
+
+	/**
+	 * Gets the weather in the mentioned square
+	 * @param x X-coordinate
+	 * @param y Y-coordinate
+	 * @return The weather in the mentioned square
+	 */
+	public Weather.WEATHER getActiveWeather(int x, int y) {
+		Weather.WEATHER ret;
+
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI / dayLengthMillis * System.currentTimeMillis()) > 0.2) {
+			ret = Weather.WEATHER.SUN;
+		} else {
+			ret = Weather.WEATHER.NIGHT;
+		}
+		for (Weather w : activeWeather) {
+			if (w.contains(x, y)) {
+				if (ret == Weather.WEATHER.RAIN) {
+					break;
+				}
+				ret = w.getType();
+			}
+		}
+		return ret;
+	}
+
+	public void pushWeather() {
+		for (Weather w : activeWeather) {
+			w.translate(hourlyWind.x, hourlyWind.y);
+		}
+	}
+	private long dayLengthMillis = 30000;
 	private HashMap<String, Image> sprites;
+	private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
+	private long refFrame = System.currentTimeMillis();
 }
