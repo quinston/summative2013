@@ -23,6 +23,7 @@ public class Tree extends Vegetable {
         current = capacity;
         maxHealth=100;
         reproTime=50;
+        sight=1;
     }
     
     @Override

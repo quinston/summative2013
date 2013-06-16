@@ -42,6 +42,14 @@ public abstract class Lifeform {
      * Is it an animal
      */
     protected boolean mobile;
+    /**
+     * The closest water
+     */
+    protected Point water;
+    /**
+     * Stores vision range
+     */
+    protected int sight;
 
     /**
      * Default constructor, gives no thirst, (0,0) location
@@ -73,7 +81,8 @@ public abstract class Lifeform {
 
     /**
      * Sets the location of the lifeform
-     * @param p 
+     *
+     * @param p
      */
     public void setLocation(Point p) {
         location = p;
@@ -81,7 +90,8 @@ public abstract class Lifeform {
 
     /**
      * Finds all empty nearby spaces
-     * @return 
+     *
+     * @return
      */
     public Point nearEmpty() {
         Point temp;
@@ -102,16 +112,41 @@ public abstract class Lifeform {
     }
 
     /**
+     * Refreshes nearby terrain
+     */
+    public void findWater() {
+        ArrayList<Point> waterList = new ArrayList<Point>();
+        water = null;
+        for (int x = -sight; x <= sight; x++) {
+            for (int y = -sight; y <= sight; y++) {
+                if (Math.abs(x) + Math.abs(y) <= sight) {
+                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == Summative.TERRAIN.SEA) {
+                        waterList.add(new Point(location.x + x, location.y + y));
+                    }
+                }
+            }
+        }
+        if (waterList.size() > 0) {
+            water = waterList.get(0);
+            for (Point p : waterList) {
+                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(water.x - location.x) + Math.abs(water.y - location.y)) {
+                    water = p;
+                }
+            }
+        }
+    }
+
+    /**
      * Produces a new lifeform, overridden in most of the classes
      */
     public void reproduce() {
     }
-    
+
     /**
-     * Returns the lifeform's sprite. Should be overriden in child classes
-	 * with the body:
-	 * 
-	 * return SpriteAssigner.getSpriteOf(this);
+     * Returns the lifeform's sprite. Should be overriden in child classes with
+     * the body:
+     *
+     * return SpriteAssigner.getSpriteOf(this);
      */
     public abstract Image getSprite();
 }

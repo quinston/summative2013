@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import summative2013.Summative.TERRAIN;
 import summative2013.phenomena.Weather.WEATHER;
 
 /**
@@ -68,24 +69,37 @@ public abstract class Vegetable extends Lifeform {
     public void act(WEATHER weather) {
         if (weather == WEATHER.SUN) {
             regenCounter = regenCounter - 2;
-            sun = sun + 5;
+            sun = sun + 20;
             thirst = thirst + 2;
             reproTime = reproTime - 2;
         } else if (weather == WEATHER.RAIN) {
             regenCounter = regenCounter - 1;
             thirst = thirst - 5;
-            sun = sun - 2;
+            sun = sun - 1;
             reproTime = reproTime - 2;
         } else if (weather == WEATHER.CLOUD) {
             regenCounter = regenCounter - 1;
             thirst = thirst + 1;
             sun = sun - 1;
             reproTime = reproTime - 1;
+        } else if (weather == WEATHER.NIGHT) {
+            regenCounter = regenCounter - 1;
+            thirst = thirst + 1;
+            sun = sun - 1;
+            reproTime = reproTime - 2;
         }
 
+        if (summative.terrainGet(location) == TERRAIN.SEA) {
+            thirst = -1;
+        } else if (Math.abs(water.x - location.x) <= 1 && Math.abs(water.y - location.y) <= 1
+                && Math.abs(water.x - location.x) + Math.abs(water.y - location.y) < 2) {
+            if (thirst > 0) {
+                thirst = 0;
+            }
+        }
         if (sun < 0) {
             alive = false;
-        } else if (thirst > 99) {
+        } else if (thirst > 99 || thirst < -50) {
             alive = false;
         } else if (health < 0) {
             alive = false;
@@ -111,7 +125,8 @@ public abstract class Vegetable extends Lifeform {
 
     /**
      * Changes the health
-     * @param change 
+     *
+     * @param change
      */
     public void changeHealth(int change) {
         health = health + change;
@@ -119,7 +134,8 @@ public abstract class Vegetable extends Lifeform {
 
     /**
      * Changes the current fruit or what have you
-     * @param change 
+     *
+     * @param change
      */
     public void changeCurrent(int change) {
         current = current + change;
@@ -127,7 +143,8 @@ public abstract class Vegetable extends Lifeform {
 
     /**
      * Returns the current fruit
-     * @return 
+     *
+     * @return
      */
     public int getCurrent() {
         return current;

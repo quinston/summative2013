@@ -76,14 +76,6 @@ public abstract class Animal extends Lifeform {
      */
     protected ArrayList<Lifeform> nearbyLife;
     /**
-     * The closest water
-     */
-    protected Point water;
-    /**
-     * Stores vision range
-     */
-    protected int sight;
-    /**
      * Stores nearest prey
      */
     protected Point food;
@@ -111,7 +103,7 @@ public abstract class Animal extends Lifeform {
         depravity = 0;
         knowledge = new ArrayList<Memory>();
         disease = new ArrayList<Disease>();
-		preyList = new ArrayList<Lifeform>();
+        preyList = new ArrayList<Lifeform>();
     }
 
     /**
@@ -127,31 +119,6 @@ public abstract class Animal extends Lifeform {
                     } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
                         nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * Refreshes nearby terrain
-     */
-    public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<Point>();
-        water = null;
-        for (int x = -sight; x <= sight; x++) {
-            for (int y = -sight; y <= sight; y++) {
-                if (Math.abs(x) + Math.abs(y) <= sight) {
-                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == Summative.TERRAIN.SEA) {
-                        waterList.add(new Point(location.x + x, location.y + y));
-                    }
-                }
-            }
-        }
-        if (waterList.size() > 0) {
-            water = waterList.get(0);
-            for (Point p : waterList) {
-                if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(water.x - location.x) + Math.abs(water.y - location.y)) {
-                    water = p;
                 }
             }
         }
@@ -331,45 +298,48 @@ public abstract class Animal extends Lifeform {
         hunger = hunger + 5;
         thirst = thirst + 5;
 
-        if (getDirection(destination) == DIRECTION.NORTH) {
-            location.y = location.y + 1;
-        } else if (getDirection(destination) == DIRECTION.SOUTH) {
-            location.y = location.y - 1;
-        } else if (getDirection(destination) == DIRECTION.WEST) {
-            location.x = location.x - 1;
-        } else if (getDirection(destination) == DIRECTION.EAST) {
-            location.x = location.x + 1;
+        if (Weather == WEATHER.NIGHT) {
         } else {
-        }
-        if (Math.abs(destination.x - location.x) <= 1 && Math.abs(destination.y - location.y) <= 1
-                && Math.abs(destination.x - location.x) + Math.abs(destination.y - location.y) < 2) {
-            {
-                if (summative.terrainGet(destination) == TERRAIN.SEA) {
-                    thirst = 0;
-                } else if (isPrey(summative.lifeGet(destination))) {
-                    hunger = hunger - 30;
-                    if (summative.lifeGet(destination) instanceof Tree) {
-                        Tree temp = (Tree) (summative.lifeGet(destination));
-                        if (temp.getCurrent() <= 0) {
-                            temp.changeHealth(-50);
+            if (getDirection(destination) == DIRECTION.NORTH) {
+                location.y = location.y + 1;
+            } else if (getDirection(destination) == DIRECTION.SOUTH) {
+                location.y = location.y - 1;
+            } else if (getDirection(destination) == DIRECTION.WEST) {
+                location.x = location.x - 1;
+            } else if (getDirection(destination) == DIRECTION.EAST) {
+                location.x = location.x + 1;
+            } else {
+            }
+            if (Math.abs(destination.x - location.x) <= 1 && Math.abs(destination.y - location.y) <= 1
+                    && Math.abs(destination.x - location.x) + Math.abs(destination.y - location.y) < 2) {
+                {
+                    if (summative.terrainGet(destination) == TERRAIN.SEA) {
+                        thirst = 0;
+                    } else if (isPrey(summative.lifeGet(destination))) {
+                        hunger = hunger - 30;
+                        if (summative.lifeGet(destination) instanceof Tree) {
+                            Tree temp = (Tree) (summative.lifeGet(destination));
+                            if (temp.getCurrent() <= 0) {
+                                temp.changeHealth(-50);
+                            } else {
+                                temp.changeCurrent(-1);
+                            }
+                        } else if (isPrey(summative.grassGet(destination))) {
+                            Grass tempg = summative.grassGet(destination);
+                            if (tempg.getCurrent() <= 0) {
+                                tempg.changeHealth(-50);
+                            } else {
+                                tempg.changeCurrent(-1);
+                            }
                         } else {
-                            temp.changeCurrent(-1);
+                            summative.assistedSuicide(destination);
                         }
-                    } else if (isPrey(summative.grassGet(destination))) {
-                        Grass tempg = summative.grassGet(destination);
-                        if (tempg.getCurrent() <= 0) {
-                            tempg.changeHealth(-50);
-                        } else {
-                            tempg.changeCurrent(-1);
+                    } else if (summative.lifeGet(destination).getMobile()) {
+                        if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
+                        {
+                            hunger = hunger + 30;
+                            reproduce();
                         }
-                    } else {
-                        summative.assistedSuicide(destination);
-                    }
-                } else if (summative.lifeGet(destination).getMobile()) {
-                    if (canMate((Animal) (summative.lifeGet(destination)))) //reproduction code
-                    {
-                        hunger = hunger + 30;
-                        reproduce();
                     }
                 }
             }

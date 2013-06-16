@@ -25,6 +25,7 @@ public class Grass extends Vegetable {
 		current = capacity;
 		maxHealth = 1;
 		reproTime = 5;
+                sight =1;
 	}
 
 	/**
