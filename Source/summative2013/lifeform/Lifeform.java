@@ -23,6 +23,14 @@ public abstract class Lifeform {
      */
     protected int thirst;
     /**
+     * Are you diseased?
+     */
+    protected boolean diseased;
+    /**
+     * Stores position on grid
+     */
+    protected Point location;
+    /**
      * Stores the current weather
      */
     protected WEATHER weather;
@@ -34,6 +42,10 @@ public abstract class Lifeform {
      * Stores the image for display
      */
     protected Image icon;
+    /**
+     * The nearby organisms
+     */
+    protected ArrayList<Lifeform> nearbyLife;
     /**
      * Is it an animal
      */
@@ -53,6 +65,7 @@ public abstract class Lifeform {
     public Lifeform() {
         thirst = 50;
         alive = true;
+        sight = 20;
     }
 
     /**
@@ -143,6 +156,24 @@ public abstract class Lifeform {
     }
 
     /**
+     * Refreshes to store all the nearby lifeforms
+     */
+    public void findNearbyLife() {
+        nearbyLife = new ArrayList<>();
+        for (int x = -sight; x <= sight; x++) {
+            for (int y = -sight; y <= sight; y++) {
+                if (Math.abs(x) + Math.abs(y) <= sight) {
+                    if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
+                        nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
+                    } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
+                        nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Produces a new lifeform, overridden in most of the classes
      */
     public void reproduce() {
@@ -155,4 +186,11 @@ public abstract class Lifeform {
      * return SpriteAssigner.getSpriteOf(this);
      */
     public abstract Image getSprite();
+
+    /**
+     * Diseases itself
+     */
+    public void disease() {
+        diseased = true;
+    }
 }

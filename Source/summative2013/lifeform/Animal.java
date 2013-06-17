@@ -72,10 +72,6 @@ public abstract class Animal extends Lifeform {
      */
     protected int depravity;
     /**
-     * The nearby organisms
-     */
-    protected ArrayList<Lifeform> nearbyLife;
-    /**
      * Stores nearest prey
      */
     protected Point food;
@@ -96,10 +92,6 @@ public abstract class Animal extends Lifeform {
      * Stores eating food delicious untermensch inferior prey animals
      */
     protected ArrayList<Lifeform> preyList;
-    /**
-     * Stores how diseased plague leprosy shun contagion SARS level of multiple
-     */
-    protected ArrayList<Disease> disease;
     /**
      * Works at night
      */
@@ -338,6 +330,22 @@ public abstract class Animal extends Lifeform {
      */
     @Override
     public void act(WEATHER Weather) {
+        if (diseased) {
+            int temp = sight;
+            sight = 4;
+            findNearbyLife();
+            for (Lifeform l : nearbyLife) {
+                l.disease();
+            }
+            sight = temp;
+            hunger = hunger + 20;
+            thirst = thirst + 20;
+        } else {
+            if (Math.random() < 0.01) {
+                disease();
+            }
+        }
+
         findNearbyLife();
         findWater();
         findFood(nearbyLife);
