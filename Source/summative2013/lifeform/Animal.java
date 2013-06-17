@@ -97,6 +97,7 @@ public abstract class Animal extends Lifeform {
 	protected boolean nocturnal;
 
 	public Animal() {
+		super();
 		hunger = 50;
 		gender = GENDER.MALE;
 		depravity = 0;
@@ -472,7 +473,8 @@ public abstract class Animal extends Lifeform {
 	public String toString() {
 		return super.toString()
 				+ "\nGender: " + gender
-				+ "\nDestination: " + destination.x + "," + destination.y
+				+ "\nDestination: " + ((destination != null)
+				? destination.x + "," + destination.y : "") 
 				+ "\nHunger: " + hunger + "%";
 	}
 }

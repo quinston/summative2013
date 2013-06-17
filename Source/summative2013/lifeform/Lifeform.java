@@ -66,6 +66,7 @@ public abstract class Lifeform {
         thirst = 50;
         alive = true;
         sight = 20;
+		diseased = false;
     }
 
     /**
@@ -195,7 +196,7 @@ public abstract class Lifeform {
     }
 	
 	public String toString() {
-		return 		getName()
+		return 	getName()
 				+ "\nHealth: " + ((diseased) ? "Diseased" : "Healthy")
 				+ "\nThirst: " + thirst + "%";		
 	}

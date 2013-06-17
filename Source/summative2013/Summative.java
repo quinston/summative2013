@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -62,7 +63,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
-		
+
 		addBear(0, 0);
 		addBunny(0, 10);
 		addCattle(0, 20);
@@ -70,7 +71,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		addGrass(70, 20);
 		addGrass(80, 20);
 		addTree(-30, -30);
-		
+
 		setSize(frame.getSize());//fullscreen the panel
 		screen = new Rectangle(-1 * getWidth() / (2 * gridSize) - 1, -1 * getHeight() / (2 * gridSize) - 1,
 				getWidth() / gridSize + 2, getHeight() / gridSize + 2);//sets up our screen rectangle to define our screen
@@ -159,9 +160,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public void addGrass(int x, int y) {
 		synchronized (lock) {
 			Grass g = new Grass();
-			Point p = new Point(x,y);
+			Point p = new Point(x, y);
 			locToLife.put(p, g);
-			locToGrass.put(p,g);
+			locToGrass.put(p, g);
 			++grassCount;
 		}
 	}
@@ -196,7 +197,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		gd = ge.getDefaultScreenDevice();
-		//gd.setFullScreenWindow(frame);//makes full screen
+		gd.setFullScreenWindow(frame);//makes full screen
 		Summative s = new Summative();
 		frame.add(s);
 		s.requestFocusInWindow();//keyListener activated
@@ -356,12 +357,51 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 						selectedPoint = null;
 					} else {
 						Graphics2D g2 = (Graphics2D) g;
-						g.setColor(Color.red);
+						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(2));
-						g.drawRect(
+						g2.drawRect(
 								(selectedPoint.x - screen.x) * gridSize,
 								(selectedPoint.y - screen.y) * gridSize,
 								gridSize, gridSize);
+
+						g.setColor(new Color(0, 0, 0, 204));
+						int height = 90;
+						g.fillRect(0, getHeight() - height,
+								150, height);
+						g.setColor(Color.WHITE);
+
+						String[] desc = {
+							selectedPoint.x + "," + selectedPoint.y,
+							"Terrain: " + locToTerrain.get(selectedPoint).toString(),
+							"Weather: " + getActiveWeather(selectedPoint.x,
+							selectedPoint.y).toString()
+						};
+						for (int i = 0; i < desc.length; ++i) {
+							g.drawString(desc[i], 0,
+									getHeight() - height + (i + 1) * 12);
+						}
+					}
+				}
+
+				if (selectedLifeform != null) {
+					Point location = getLocation(selectedLifeform);
+					Graphics2D g2 = (Graphics2D) g;
+						g2.setColor(Color.red);
+						g2.setStroke(new BasicStroke(2));
+						g2.drawOval( (location.x - screen.x) * gridSize - gridSize, 
+								(location.y - screen.y) * gridSize - gridSize, 
+								gridSize  * 3, gridSize * 3);
+					
+					g.setColor(new Color(0, 0, 0, 204));
+					int height = 90;
+					g.fillRect(0, getHeight() - height,
+							150, height);
+					g.setColor(Color.WHITE);
+
+					String[] desc = selectedLifeform.toString().split("\n");
+					for (int i = 0; i < desc.length; ++i) {
+						g.drawString(desc[i], 0,
+								getHeight() - height + (i + 1) * 12);
 					}
 				}
 
@@ -555,8 +595,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return The lifeform at point location
 	 */
 	public Lifeform lifeGet(Point location) {
-		synchronized(lock) {
-		return locToLife.get(location);
+		synchronized (lock) {
+			return locToLife.get(location);
 		}
 	}
 
@@ -567,8 +607,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return the type of terrain at location
 	 */
 	public TERRAIN terrainGet(Point location) {
-		synchronized(lock) {
-		return locToTerrain.get(location);
+		synchronized (lock) {
+			return locToTerrain.get(location);
 		}
 	}
 
@@ -578,8 +618,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return The grass object at that point
 	 */
 	public Grass grassGet(Point location) {
-		synchronized(lock) {
-		return locToGrass.get(location);
+		synchronized (lock) {
+			return locToGrass.get(location);
 		}
 	}
 
@@ -726,14 +766,20 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
-		synchronized(lock) {
-		if (locToLife.containsKey(mouse)) {
-			mouseOnLife = locToLife.get(mouse).getName();
 
-		} else {
-				mouseOnLife = "";
-		}
+		synchronized (lock) {
+			if (logButton.contains(e.getPoint())) {
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			} else {
+				mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
+				if (locToLife.containsKey(mouse)) {
+					mouseOnLife = locToLife.get(mouse).getName();
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				} else {
+					mouseOnLife = "";
+					setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+				}
+			}
 		}
 	}
 
@@ -751,13 +797,20 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				selectedPoint = new Point(
 						e.getPoint().x / gridSize + screen.x,
 						e.getPoint().y / gridSize + screen.y);
+				selectedLifeform = null;
+				Lifeform l = locToLife.get(selectedPoint);
+				if (l != null) {
+					selectedLifeform = l;
+					selectedPoint = null;
+				}
 			}
 		}
 	}
 	/**
-	 * Point that is selected. Display info on it.
+	 * Point that is selected. 
 	 */
 	Point selectedPoint;
+	Lifeform selectedLifeform;
 
 	/**
 	 * Called when the mouse is pressed down
@@ -843,20 +896,20 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Weather.WEATHER getActiveWeather(int x, int y) {
 		Weather.WEATHER ret;
 
-		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours/24) > 0) {
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours / 24) > 0) {
 			ret = Weather.WEATHER.SUN;
 		} else {
 			ret = Weather.WEATHER.NIGHT;
 		}
-		synchronized(lock) {
-		for (Weather w : activeWeather) {
-			if (w.contains(x, y)) {
-				if (ret == Weather.WEATHER.RAIN) {
-					break;
+		synchronized (lock) {
+			for (Weather w : activeWeather) {
+				if (w.contains(x, y)) {
+					if (ret == Weather.WEATHER.RAIN) {
+						break;
+					}
+					ret = w.getType();
 				}
-				ret = w.getType();
 			}
-		}
 		}
 		return ret;
 	}
