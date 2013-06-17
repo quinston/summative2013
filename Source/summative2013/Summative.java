@@ -638,6 +638,16 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param g the graphics onject that the lifeforms should be drawn on
 	 */
 	public void drawLifeforms(Graphics g) {
+		for (Map.Entry<Point, Grass> pair : locToGrass.entrySet()) {
+			if (screen.contains(pair.getKey())) {
+				// Draw the sprites so that its centre is at the centre
+				// of the grid square
+				Image sprite = pair.getValue().getSprite();
+				int x = (pair.getKey().x - screen.x) * gridSize ;
+				int y = (pair.getKey().y - screen.y) * gridSize ;
+				g.drawImage(sprite, x, y,gridSize,gridSize,null);
+			}
+		}
 		for (Iterator<Map.Entry<Point, Lifeform>> iter = locToLife.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry<Point, Lifeform> pair = iter.next();
 			if (screen.contains(pair.getKey())) {
