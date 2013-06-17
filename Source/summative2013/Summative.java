@@ -23,6 +23,7 @@ import summative2013.lifeform.Bat;
 import summative2013.phenomena.Weather;
 import java.util.Random;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import summative2013.phenomena.AirLock;
 import summative2013.phenomena.Drizzle;
 import summative2013.phenomena.Drought;
@@ -48,6 +49,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private final int gridSize = 20;
 	private String mouseOnLife = "";
 	private JPanel buttonPanel;
+        private JCheckBox running;
 	private Point mouse = new Point();
 	private JButton addBear, addBunny, addBat, addCattle, addGrass, addTree;
 	private static Summative s;
@@ -100,7 +102,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		logButton = new Rectangle(hud.x + 400, hud.y + 160, 200, 40);
 
 		buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(1, 6));
+		buttonPanel.setLayout(new GridLayout(1, 7));
 
 		addBear = new JButton("Add a bear");
 		addBear.setEnabled(false);
@@ -132,6 +134,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		addGrass.addActionListener(this);
 		buttonPanel.add(addGrass);
 
+                running = new JCheckBox("Toggle Running");
+                buttonPanel.add(running);
+                
 		setLayout(new BorderLayout());
 		add(buttonPanel, BorderLayout.SOUTH);
 
@@ -151,6 +156,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 					if (System.currentTimeMillis() - refFrame > 1000. / FPS) {
 						repaint();
 						refFrame = System.currentTimeMillis();
+                                                if(running.isSelected()){
+                                                    advance();
+                                                }
+                                                s.requestFocusInWindow();
 					}
 				}
 			}
