@@ -6,7 +6,6 @@ import summative2013.Summative;
 import summative2013.Summative.TERRAIN;
 import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
-import summative2013.phenomena.Disease;
 import summative2013.phenomena.Weather.WEATHER;
 import java.util.LinkedList;
 
@@ -101,17 +100,16 @@ public abstract class Animal extends Lifeform {
         hunger = 50;
         gender = GENDER.MALE;
         depravity = 0;
-        knowledge = new ArrayList<Memory>();
-        disease = new ArrayList<Disease>();
-        preyList = new ArrayList<Lifeform>();
+        knowledge = new ArrayList<>();
+        preyList = new ArrayList<>();
     }
 
     /**
      * Refreshes to store all the nearby lifeforms
      */
     public void findNearbyLife() {
-        nearbyLife = new ArrayList<Lifeform>();
-		final Point location = summative.getLocation(this);
+        nearbyLife = new ArrayList<>();
+        final Point location = summative.getLocation(this);
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
@@ -129,7 +127,7 @@ public abstract class Animal extends Lifeform {
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<Point>();
+        ArrayList<Point> foodList = new ArrayList<>();
         food = null;
         for (Lifeform l : list) {
             for (Lifeform m : preyList) {
@@ -145,7 +143,7 @@ public abstract class Animal extends Lifeform {
         }
         if (foodList.size() > 0) {
             food = foodList.get(0);
-			final Point location = summative.getLocation(this);
+            final Point location = summative.getLocation(this);
             for (Point p : foodList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(food.x - location.x) + Math.abs(food.y - location.y)) {
                     food = p;
@@ -170,7 +168,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<Point>();
+        ArrayList<Point> mateList = new ArrayList<>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -182,7 +180,7 @@ public abstract class Animal extends Lifeform {
 
         if (mateList.size() > 0) {
             mate = mateList.get(0);
-			final Point location = summative.getLocation(this);
+            final Point location = summative.getLocation(this);
             for (Point p : mateList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
                     mate = p;
@@ -192,7 +190,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findVictim(ArrayList<Lifeform> list) {
-        ArrayList<Point> hitList = new ArrayList<Point>();
+        ArrayList<Point> hitList = new ArrayList<>();
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {
@@ -202,7 +200,7 @@ public abstract class Animal extends Lifeform {
         if (hitList.size() > 0) {
             murder = hitList.get(0);
             for (Point p : hitList) {
-				final Point location = summative.getLocation(this);
+                final Point location = summative.getLocation(this);
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
                     murder = p;
                 }
@@ -249,7 +247,7 @@ public abstract class Animal extends Lifeform {
      * @return
      */
     public DIRECTION getDirection(Point p) {
-		final Point location = summative.getLocation(this);
+        final Point location = summative.getLocation(this);
         if (p.x == location.x && p.y == location.y) {
             return DIRECTION.CENTER;
         } else if (Math.abs(p.x - location.x) > Math.abs(p.y - location.y)) {
@@ -305,7 +303,7 @@ public abstract class Animal extends Lifeform {
      */
     public boolean drowning() {
         int drownery = 0;
-		final Point location = summative.getLocation(this);
+        final Point location = summative.getLocation(this);
 
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -360,8 +358,8 @@ public abstract class Animal extends Lifeform {
 
         if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
-			final Point location = summative.getLocation(this);
-			
+            final Point location = summative.getLocation(this);
+
             if (getDirection(destination) == DIRECTION.NORTH || destination == null) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
@@ -470,5 +468,4 @@ public abstract class Animal extends Lifeform {
             suicide();
         }
     }
-
 }

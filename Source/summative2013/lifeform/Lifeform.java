@@ -110,7 +110,7 @@ public abstract class Lifeform {
      */
     public Point nearEmpty() {
         Point temp;
-        ArrayList<Point> available = new ArrayList<Point>();
+        ArrayList<> available = new ArrayList<Point>();
         final Point location = summative.getLocation(this);
 
         for (int x = -1; x <= 1; x++) {
@@ -132,7 +132,7 @@ public abstract class Lifeform {
      * Refreshes nearby terrain
      */
     public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<Point>();
+        ArrayList<Point> waterList = new ArrayList<>();
         water = null;
         final Point location = summative.getLocation(this);
 
