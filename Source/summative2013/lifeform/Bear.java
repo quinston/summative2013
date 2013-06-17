@@ -14,8 +14,8 @@ public class Bear extends Animal {
 	
     public Bear() {
 		super();
-        preyList.add(new Tree());
-        preyList.add(new Cattle());
+        preyList.add(Tree.class);
+        preyList.add(Cattle.class);
 		++bearCount;
     }
 	

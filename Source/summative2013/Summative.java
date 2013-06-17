@@ -44,7 +44,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private static JFrame frame;
 	private Rectangle screen, logButton, hud;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
-	private final int gridSize = 10;
+	private final int gridSize = 20;
 	private String mouseOnLife = "";
 	private JPanel buttonPanel;
 	private Point mouse = new Point();
@@ -643,9 +643,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				// Draw the sprites so that its centre is at the centre
 				// of the grid square
 				Image sprite = pair.getValue().getSprite();
-				int x = (pair.getKey().x - screen.x) * gridSize + gridSize / 2 - sprite.getWidth(null) / 2;
-				int y = (pair.getKey().y - screen.y) * gridSize + gridSize / 2 - sprite.getWidth(null) / 2;
-				g.drawImage(sprite, x, y, null);
+				int x = (pair.getKey().x - screen.x) * gridSize ;
+				int y = (pair.getKey().y - screen.y) * gridSize ;
+				g.drawImage(sprite, x, y,gridSize,gridSize,null);
 			}
 		}
 	}

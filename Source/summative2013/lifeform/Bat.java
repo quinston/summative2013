@@ -12,7 +12,7 @@ public class Bat extends Animal {
 	public static int batCount = 0;
     public Bat() {
         super();
-        preyList.add(new Tree());
+        preyList.add(Tree.class);
         nocturnal = true;
 		++batCount;
     }

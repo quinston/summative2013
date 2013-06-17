@@ -90,7 +90,7 @@ public abstract class Animal extends Lifeform {
 	/**
 	 * Stores eating food delicious untermensch inferior prey animals
 	 */
-	protected ArrayList<Lifeform> preyList;
+	protected ArrayList<Class> preyList;
 	/**
 	 * Works at night
 	 */
@@ -102,7 +102,7 @@ public abstract class Animal extends Lifeform {
 		gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
 		depravity = 0;
 		//knowledge = new ArrayList<Memory>();
-		preyList = new ArrayList<Lifeform>();
+		preyList = new ArrayList<Class>();
 	}
 
 	/**
@@ -131,8 +131,8 @@ public abstract class Animal extends Lifeform {
 		ArrayList<Point> foodList = new ArrayList<Point>();
 		food = null;
 		for (Lifeform l : list) {
-			for (Lifeform m : preyList) {
-				if (l.getClass().equals(m.getClass())) {
+			for (Class m : preyList) {
+				if (l.getClass().equals(m)) {
 					if (l instanceof Tree || l instanceof Grass) {
 						Vegetable temp = (Vegetable) l;
 						if (temp.getCurrent() > 0) {
@@ -152,8 +152,8 @@ public abstract class Animal extends Lifeform {
 			}
 		} else {
 			for (Lifeform l : list) {
-				for (Lifeform m : preyList) {
-					if (l.getClass().equals(m.getClass())) {
+				for (Class m : preyList) {
+					if (l.getClass().equals(m)) {
 						if (l instanceof Tree || l instanceof Grass) {
 							foodList.add(l.getLocation());
 						}
@@ -216,8 +216,8 @@ public abstract class Animal extends Lifeform {
 	 * @return
 	 */
 	public boolean isPrey(Lifeform l) {
-		for (Lifeform life : preyList) {
-			if (life.getClass().equals(l.getClass())) {
+		for (Class m : preyList) {
+			if (m.equals(l.getClass())) {
 				return true;
 			}
 		}

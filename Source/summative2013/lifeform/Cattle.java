@@ -14,7 +14,7 @@ public class Cattle extends Animal {
 	
 	public Cattle() {
 		super();
-		preyList.add(new Grass());
+		preyList.add(Grass.class);
 		++cattleCount;
 	}
 	public void suicide() {

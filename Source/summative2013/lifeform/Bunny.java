@@ -12,7 +12,7 @@ public class Bunny extends Animal {
 	public static int bunnyCount = 0;
 	public Bunny() {
 		super();
-		preyList.add(new Grass());
+		preyList.add(Grass.class);
 		++bunnyCount;
 	}
 	
