@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -39,16 +40,15 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
     private static GraphicsEnvironment ge;
     private static GraphicsDevice gd;
-    private JPanel buttonPanel;
-    private JButton addBear, addBunny, addCattle, addGrass, addTree, addBat;
     private HashMap<Point, Lifeform> locToLife;
     private HashMap<Point, Grass> locToGrass;
     private HashMap<Point, TERRAIN> locToTerrain;
-    private HashMap<String, Image> sprites;
     private final Object lock = new Object();
     private ArrayList<Weather> activeWeather;
     private ArrayList<String> events;
     private static JFrame frame;
+    private JPanel buttonPanel;
+    private JButton addBear, addBunny, addBat, addCattle, addGrass, addTree;
     private static Summative s;
     /**
      * rectangles to hold the entire screen, where to click to open the log and
@@ -79,11 +79,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0;
     private int numHours = 0;
-    /**
-     * Wind speed, affects pushWeather
-     */
-    private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
-    private long refFrame = System.currentTimeMillis();
 
     /**
      * Default constructor, Generates a Summative object that is the size of the
@@ -268,6 +263,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         s.requestFocusInWindow();
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
     /**
      * Types of terrain available
      */
@@ -448,21 +447,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     }
 
     /**
-     * Draws terrain, Green for lane, Blue for sea
-     *
-     * @param g The graphics object to draw on
-     */
-    public void drawTerrain(Graphics g) {
-        for (int i = screen.x; i <= screen.x + screen.width; i++) {
-            for (int j = screen.y; j <= screen.y + screen.height; j++) {
-                g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
-                        (i - screen.x) * gridSize, (j - screen.y) * gridSize,
-                        gridSize, gridSize, null);
-            }
-        }
-    }
-
-    /**
      * Right now, I have it so that a square is highlig Draws the lifeforms in
      * the sim
      *
@@ -546,55 +530,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     public void addToLog(String s) {
         events.add(s);
     }
-
-    /**
-     * Kills the lifeform
-     *
-     * @param l the lifeform to kill
-     */
-    public void kill(Lifeform l) {
-        locToLife.remove(getLocation(l));
-    }
-
-    /**
-     * Kills the lifeform at the given point
-     *
-     * @param location the place at which a lifeform is to be killed
-     */
-    public void kill(Point location) {
-        locToLife.remove(location);
-    }
-
-    /**
-     * Returns the lifeform at a given point
-     *
-     * @param location the point that's lifeform is being checked
-     * @return The lifeform at point location
-     */
-    public Lifeform lifeGet(Point location) {
-        return locToLife.get(location);
-    }
-
-    /**
-     * Returns the type of terrain at a given point
-     *
-     * @param location The point at which the terrain is desired
-     * @return the type of terrain at location
-     */
-    public TERRAIN terrainGet(Point location) {
-        return locToTerrain.get(location);
-    }
-
-    /**
-     * Returns the grass at that location
-     *
-     * @param location the point at which we are looking for grass
-     * @return The grass object at that point
-     */
-    public Grass grassGet(Point location) {
-        return locToGrass.get(location);
-    }
-
     /**
      * Adds in a new baby animal
      *
@@ -615,15 +550,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         } else if (l instanceof Tree) {
             treeCount++;
         }
-    }
-
-    /**
-     * Moves the lifeform
-     */
-    public void move(Point p, Lifeform l) {
-        locToLife.remove(l.getLocation());
-        locToLife.put(p, l);
-        l.setLocation(p);
     }
 
     /**
@@ -745,78 +671,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     }
 
     /**
-     * Called when the mouse is dragged
-     *
-     * @param e
-     */
-    @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
-    /**
-     * Checks where the mouse is and prints if there is a lifeform there
-     *
-     * @param e The MouseEvent from moving the mouse
-     */
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
-        if (locToLife.containsKey(mouse)) {
-            Lifeform l = locToLife.get(mouse);
-            if (l instanceof Bear) {
-                synchronized (lock) {
-                    mouseOnLife = "bear";
-                }
-            } else if (l instanceof Bunny) {
-                synchronized (lock) {
-                    mouseOnLife = "bunny";
-                }
-            } else if (l instanceof Cattle) {
-                synchronized (lock) {
-                    mouseOnLife = "cow";
-                }
-            } else if (l instanceof Bat) {
-                synchronized (lock) {
-                    mouseOnLife = "bat";
-                }
-            } else if (l instanceof Grass) {
-                synchronized (lock) {
-                    mouseOnLife = "grass";
-                }
-            } else if (l instanceof Tree) {
-                synchronized (lock) {
-                    mouseOnLife = "tree";
-                }
-            }
-
-        } else {
-            synchronized (lock) {
-                mouseOnLife = "";
-            }
-        }
-    }
-
-    /**
-     * Checks to see if you clicked in one of the "button" rectangles, acts
-     * accordingle
-     *
-     * @param e the MouseEvent from clicking
-     */
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        Point clickPoint = e.getPoint();
-        if (logButton.contains(clickPoint)) {
-            logOpen = true;
-        } else if (!hud.contains(clickPoint)) {
-            synchronized (lock) {
-                selectedPoint = new Point(
-                        clickPoint.x / gridSize + screen.x,
-                        clickPoint.y / gridSize + screen.y);
-            }
-        }
-    }
-
-    /**
      * Called when the mouse is pressed down
      *
      * @param e The MouseEvent fired by pressing the mouse
@@ -853,100 +707,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     }
 
     /**
-     * Loads the images into a hash map
-     *
-     * @throws IOException
-     */
-    public void loadSprites() throws IOException {
-        sprites = new HashMap<String, Image>();
-        SpriteAssigner.sprites = sprites;
-        Class c = getClass();
-
-        sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
-                c.getResource("images/weather-showers-scattered.png")));
-
-        sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
-                c.getResource("images/weather-clear.png")));
-
-        sprites.put(Weather.WEATHER.CLOUD.toString(), ImageIO.read(
-                c.getResource("images/weather-overcast.png")));
-
-
-        sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
-                c.getResource("images/waste.png")));
-
-        sprites.put(TERRAIN.SEA.toString(), ImageIO.read(
-                c.getResource("images/sea.png")));
-
-        sprites.put("bear", ImageIO.read(
-                c.getResource("images/216.png")));
-        sprites.put("bunny", ImageIO.read(
-                c.getResource("images/427.png")));
-        sprites.put("cattle", ImageIO.read(
-                c.getResource("images/128.png")));
-        sprites.put("grass", ImageIO.read(
-                c.getResource("images/grassy.png")));
-        sprites.put("tree", ImageIO.read(
-                c.getResource("images/185.png")));
-        sprites.put("vegetable", ImageIO.read(
-                c.getResource("images/420.png")));
-        sprites.put("bat", ImageIO.read(
-                c.getResource("images/041.png")));
-
-
-    }
-
-    /**
-     * Gets the weather in the mentioned square
-     *
-     * @param x X-coordinate
-     * @param y Y-coordinate
-     * @return The weather in the mentioned square
-     */
-    public Weather.WEATHER getActiveWeather(int x, int y) {
-        Weather.WEATHER ret;
-
-        if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours) > 0) {
-            ret = Weather.WEATHER.SUN;
-        } else {
-            ret = Weather.WEATHER.NIGHT;
-        }
-        for (Weather w : activeWeather) {
-            if (w.contains(x, y)) {
-                if (ret == Weather.WEATHER.RAIN) {
-                    break;
-                }
-                ret = w.getType();
-            }
-        }
-        return ret;
-    }
-
-    /**
      * Moves the clouds a bit
      */
     public void pushWeather() {
         for (Weather w : activeWeather) {
             w.translate(hourlyWind.x, hourlyWind.y);
         }
-    }
-
-    /**
-     * Used to make loops regular
-     */
-    /**
-     * Gets the location of a lifeform
-     *
-     * @param l The lifeform to locate
-     * @return l's location
-     */
-    public Point getLocation(Lifeform l) {
-        for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
-            if (e.getValue() == l) {
-                return e.getKey();
-            }
-        }
-        return null;
     }
 
     /**
@@ -962,89 +728,356 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         }
     }
 
-    /**
-     * advances the map one iteration
-     */
-    public void advance() {
-        numHours++;
-        pushWeather();
-        synchronized (lock) {
-            for (Weather w : activeWeather) {
-                for (Map.Entry<Point, Lifeform> pair : locToLife.entrySet()) {
-                    if (w.contains(pair.getKey())) {//if we are on the weather
-                        pair.getValue().act(w.getType());//act based on weather
-                    }
-                }
+	/**
+	 * advances the map one iteration
+	 */
+	public void advance() {
+		numHours++;
+		pushWeather();
+		synchronized (lock) {
+			for (Weather w : activeWeather) {
+				for (Map.Entry<Point, Lifeform> pair : locToLife.entrySet()) {
+					if (w.contains(pair.getKey())) {//if we are on the weather
+						pair.getValue().act(w.getType());//act based on weather
+					}
+				}
 
-                HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-                for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
-                    if (w.contains(pair.getKey())) {
-                        if (w.getType() == Weather.WEATHER.RAIN && pair.getValue() == TERRAIN.SEA) {
-                            //expand water
-                            Point original = pair.getKey();
-                            Point[] points = {new Point(original.x, original.y),
-                                new Point(original.x - 1, original.y),
-                                new Point(original.x + 1, original.y),
-                                new Point(original.x, original.y - 1),
-                                new Point(original.x, original.y + 1)};
-                            for (Point p : points) {
-                                temp.put(p, TERRAIN.SEA);
-                            }
-                        } else if (w.getType() == Weather.WEATHER.SUN && pair.getValue() == TERRAIN.LAND) {
-                            //radiate land
-                            Point original = pair.getKey();
-                            Point[] points = {new Point(original.x, original.y),
-                                new Point(original.x - 1, original.y),
-                                new Point(original.x + 1, original.y),
-                                new Point(original.x, original.y - 1),
-                                new Point(original.x, original.y + 1)};
-                            for (Point p : points) {
-                                temp.put(p, TERRAIN.LAND);
-                            }
-                        }
-                    }
-                }
-                for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-                    locToTerrain.put(m.getKey(), m.getValue());
-                }
-            }
-        }
-    }
+				HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
+				for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
+					if (w.contains(pair.getKey())) {
+						if (w.getType() == Weather.WEATHER.RAIN && pair.getValue() == TERRAIN.SEA) {
+							//expand water
+							Point original = pair.getKey();
+							Point[] points = {new Point(original.x, original.y),
+								new Point(original.x - 1, original.y),
+								new Point(original.x + 1, original.y),
+								new Point(original.x, original.y - 1),
+								new Point(original.x, original.y + 1)};
+							for (Point p : points) {
+								temp.put(p, TERRAIN.SEA);
+							}
+						} else if (w.getType() == Weather.WEATHER.SUN && pair.getValue() == TERRAIN.LAND) {
+							//radiate land
+							Point original = pair.getKey();
+							Point[] points = {new Point(original.x, original.y),
+								new Point(original.x - 1, original.y),
+								new Point(original.x + 1, original.y),
+								new Point(original.x, original.y - 1),
+								new Point(original.x, original.y + 1)};
+							for (Point p : points) {
+								temp.put(p, TERRAIN.LAND);
+							}
+						}
+					}
+				}
+				for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+					locToTerrain.put(m.getKey(), m.getValue());
+				}
+			}
+		}
+	}
 
-    /**
-     * draws the graphics on the screen
-     *
-     * @param g The graphics object needed
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (!logOpen) {
-            synchronized (lock) {
-                drawTerrain(g);//draws the terrain of the map
+	/**
+	 * draws the graphics on the screen
+	 *
+	 * @param g The graphics object needed
+	 */
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (!logOpen) {
+			synchronized (lock) {
+				drawTerrain(g);//draws the terrain of the map
 
-                if (selectedPoint != null) {
-                    if (!screen.contains(selectedPoint)) {
-                        selectedPoint = null;
-                    } else {
-                        Graphics2D g2 = (Graphics2D) g;
-                        g.setColor(Color.red);
-                        g2.setStroke(new BasicStroke(2));
-                        g.drawRect(
-                                (selectedPoint.x - screen.x) * gridSize,
-                                (selectedPoint.y - screen.y) * gridSize,
-                                gridSize, gridSize);
-                    }
-                }
+				if (selectedPoint != null) {
+					if (!screen.contains(selectedPoint)) {
+						selectedPoint = null;
+					} else {
+						Graphics2D g2 = (Graphics2D) g;
+						g2.setColor(Color.red);
+						g2.setStroke(new BasicStroke(2));
+						g2.drawRect(
+								(selectedPoint.x - screen.x) * gridSize,
+								(selectedPoint.y - screen.y) * gridSize,
+								gridSize, gridSize);
 
-                drawLifeforms(g);
-                drawWeather(g);
-                drawHUD(g);
+						g.setColor(new Color(0, 0, 0, 204));
+						int height = 90;
+						g.fillRect(0, getHeight() - height,
+								150, height);
+						g.setColor(Color.WHITE);
+
+						String[] desc = {
+							selectedPoint.x + "," + selectedPoint.y,
+							"Terrain: " + locToTerrain.get(selectedPoint).toString(),
+							"Weather: " + getActiveWeather(selectedPoint.x,
+							selectedPoint.y).toString()
+						};
+						for (int i = 0; i < desc.length; ++i) {
+							g.drawString(desc[i], 0,
+									getHeight() - height + (i + 1) * 12);
+						}
+					}
+				}
+
+				if (selectedLifeform != null) {
+					Point location = getLocation(selectedLifeform);
+					Graphics2D g2 = (Graphics2D) g;
+						g2.setColor(Color.red);
+						g2.setStroke(new BasicStroke(2));
+						g2.drawOval( (location.x - screen.x) * gridSize - gridSize, 
+								(location.y - screen.y) * gridSize - gridSize, 
+								gridSize  * 3, gridSize * 3);
+					
+					g.setColor(new Color(0, 0, 0, 204));
+					int height = 90;
+					g.fillRect(0, getHeight() - height,
+							150, height);
+					g.setColor(Color.WHITE);
+
+					String[] desc = selectedLifeform.toString().split("\n");
+					for (int i = 0; i < desc.length; ++i) {
+						g.drawString(desc[i], 0,
+								getHeight() - height + (i + 1) * 12);
+					}
+				}
+
+				drawLifeforms(g);
+				drawWeather(g);
+				drawHUD(g);
 
 
-            }
-        } else {
-            drawLog(g);
-        }
-    }
+			}
+		} else {
+			drawLog(g);
+		}
+	}
+	/**
+	 * Draws terrain, Green for lane, Blue for sea
+	 *
+	 * @param g The graphics object to draw on
+	 */
+	public void drawTerrain(Graphics g) {
+		for (int i = screen.x; i <= screen.x + screen.width; i++) {
+			for (int j = screen.y; j <= screen.y + screen.height; j++) {
+				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
+						(i - screen.x) * gridSize, (j - screen.y) * gridSize,
+						gridSize, gridSize, null);
+			}
+		}
+	}
+
+	/**
+	 * Kills the lifeform
+	 *
+	 * @param l the lifeform to kill
+	 */
+	public void kill(Lifeform l) {
+		synchronized (lock) {
+			locToLife.remove(getLocation(l));
+		}
+	}
+
+	/**
+	 * Kills the lifeform at the given point
+	 *
+	 * @param location the place at which a lifeform is to be killed
+	 */
+	public void kill(Point location) {
+		synchronized (lock) {
+			locToLife.remove(location);
+		}
+	}
+
+	/**
+	 * Returns the lifeform at a given point
+	 *
+	 * @param location the point that's lifeform is being checked
+	 * @return The lifeform at point location
+	 */
+	public Lifeform lifeGet(Point location) {
+		synchronized (lock) {
+			return locToLife.get(location);
+		}
+	}
+
+	/**
+	 * Returns the type of terrain at a given point
+	 *
+	 * @param location The point at which the terrain is desired
+	 * @return the type of terrain at location
+	 */
+	public TERRAIN terrainGet(Point location) {
+		synchronized (lock) {
+			return locToTerrain.get(location);
+		}
+	}
+
+	/**
+	 * Returns the grass at that location
+	 * @param location the point at which we are looking for grass
+	 * @return The grass object at that point
+	 */
+	public Grass grassGet(Point location) {
+		synchronized (lock) {
+			return locToGrass.get(location);
+		}
+	}
+
+	/**
+	 * Moves the lifeform
+	 */
+	public void move(Point p, Lifeform l) {
+		synchronized (lock) {
+			locToLife.remove(l.getLocation());
+			locToLife.put(p, l);
+			l.setLocation(p);
+		}
+	}
+
+
+	/**
+	 * Checks where the mouse is and prints if there is a lifeform there
+	 * @param e The MouseEvent from moving the mouse
+	 */
+	@Override
+	public void mouseMoved(MouseEvent e) {
+
+		synchronized (lock) {
+			if (logButton.contains(e.getPoint())) {
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			} else {
+				mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
+				if (locToLife.containsKey(mouse)) {
+					mouseOnLife = locToLife.get(mouse).getName();
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				} else {
+					mouseOnLife = "";
+					setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks to see if you clicked in one of the "button" rectangles, acts accordingle
+	 * @param e the MouseEvent from clicking
+	 */
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		Point clickPoint = e.getPoint();
+		if (logButton.contains(clickPoint)) {
+			logOpen = true;
+		} else if (!hud.contains(clickPoint)) {
+			synchronized (lock) {
+				selectedPoint = new Point(
+						clickPoint.x / gridSize + screen.x,
+						clickPoint.y / gridSize + screen.y);
+				selectedLifeform = null;
+				Lifeform l = locToLife.get(selectedPoint);
+				if (l != null) {
+					selectedLifeform = l;
+					selectedPoint = null;
+				}
+			}
+		}
+	}
+	private Lifeform selectedLifeform;
+
+
+	/**
+	 * Loads the images into a hash map
+	 * @throws IOException 
+	 */
+	public void loadSprites() throws IOException {
+		sprites = new HashMap<String, Image>();
+		SpriteAssigner.sprites = sprites;
+		Class c = getClass();
+
+		sprites.put(Weather.WEATHER.RAIN.toString(), ImageIO.read(
+				c.getResource("images/weather-showers-scattered.png")));
+
+		sprites.put(Weather.WEATHER.SUN.toString(), ImageIO.read(
+				c.getResource("images/weather-clear.png")));
+
+		sprites.put(Weather.WEATHER.CLOUD.toString(), ImageIO.read(
+				c.getResource("images/weather-overcast.png")));
+
+
+		sprites.put(TERRAIN.LAND.toString(), ImageIO.read(
+				c.getResource("images/waste.png")));
+
+		sprites.put(TERRAIN.SEA.toString(), ImageIO.read(
+				c.getResource("images/sea.png")));
+
+		sprites.put("bear", ImageIO.read(
+				c.getResource("images/216.png")));
+		sprites.put("bunny", ImageIO.read(
+				c.getResource("images/427.png")));
+		sprites.put("cattle", ImageIO.read(
+				c.getResource("images/128.png")));
+		sprites.put("grass", ImageIO.read(
+				c.getResource("images/grassy.png")));
+		sprites.put("tree", ImageIO.read(
+				c.getResource("images/185.png")));
+		sprites.put("vegetable", ImageIO.read(
+				c.getResource("images/420.png")));
+		sprites.put("bat", ImageIO.read(
+				c.getResource("images/041.png")));
+
+
+	}
+
+	/**
+	 * Gets the weather in the mentioned square
+	 * @param x X-coordinate
+	 * @param y Y-coordinate
+	 * @return The weather in the mentioned square
+	 */
+	public Weather.WEATHER getActiveWeather(int x, int y) {
+		Weather.WEATHER ret;
+
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours / 24) > 0) {
+			ret = Weather.WEATHER.SUN;
+		} else {
+			ret = Weather.WEATHER.NIGHT;
+		}
+		synchronized (lock) {
+			for (Weather w : activeWeather) {
+				if (w.contains(x, y)) {
+					if (ret == Weather.WEATHER.RAIN) {
+						break;
+					}
+					ret = w.getType();
+				}
+			}
+		}
+		return ret;
+	}
+	/**
+	 * Wind speed, affects pushWeather
+	 */
+	private HashMap<String, Image> sprites;
+	private Point2D.Double hourlyWind = new Point2D.Double(-3, 3);
+	/**
+	 * Used to make loops regular
+	 */
+	private long refFrame = System.currentTimeMillis();
+
+	/**
+	 * Gets the location of a lifeform
+	 *
+	 * @param l The lifeform to locate
+	 * @return l's location
+	 */
+	public Point getLocation(Lifeform l) {
+		synchronized (lock) {
+			for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
+				if (e.getValue() == l) {
+					return e.getKey();
+				}
+			}
+		}
+		return null;
+	}
 }

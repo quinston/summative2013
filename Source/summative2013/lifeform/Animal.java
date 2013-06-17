@@ -44,63 +44,62 @@ public abstract class Animal extends Lifeform {
 		MALE, FEMALE
 	};
 
+
 	/**
 	 * Some kind of direction variable
 	 */
 	public enum DIRECTION {
-        NORTH, SOUTH, EAST, WEST, CENTER
-    };
-    /**
-     * Stores gender
-     */
-    protected GENDER gender;
-    /**
-     * Store the friends happy no fighting membership club
-     */
-    protected LinkedList inGroup;
-    /**
-     * Stores the angry enemies murder hatred villain gang
-     */
-    protected LinkedList outGroup;
-    /**
-     * Stores the location the animal is currently moving to
-     */
-    protected Point destination;
-    /**
-     * Stores how messed up that animal losing its mind crazies asylum bar level
-     */
-    protected int depravity;
-    /**
-     * Stores nearest prey
-     */
-    protected Point food;
-    /**
-     * stores the nearest mate
-     */
-    protected Point mate;
-    /**
-     * The closest potential victim
-     */
-    protected Point murder;
-    /**
-     * Stores past memories and regrets and nostalgic moments in the sun of
-     * childhood glorious
-     */
-    protected ArrayList<Memory> knowledge;
-    /**
-     * Stores eating food delicious untermensch inferior prey animals
-     */
-    protected ArrayList<Lifeform> preyList;
-    /**
-     * stores any diseases that the animal has
-     */
-    protected ArrayList<Disease> disease;
-    /**
-     * Works at night
-     */
-    protected boolean nocturnal;
+
+		NORTH, SOUTH, EAST, WEST, CENTER
+	};
+	/**
+	 * Stores gender
+	 */
+	protected GENDER gender;
+	/**
+	 * Store the friends happy no fighting membership club
+	 */
+	protected LinkedList inGroup;
+	/**
+	 * Stores the angry enemies murder hatred villain gang
+	 */
+	protected LinkedList outGroup;
+	/**
+	 * Stores the location the animal is currently moving to
+	 */
+	protected Point destination;
+	/**
+	 * Stores how messed up that animal losing its mind crazies asylum bar level
+	 */
+	protected int depravity;
+	/**
+	 * Stores nearest prey
+	 */
+	protected Point food;
+	/**
+	 * stores the nearest mate
+	 */
+	protected Point mate;
+	/**
+	 * The closest potential victim
+	 */
+	protected Point murder;
+	/**
+	 * Stores past memories and regrets and nostalgic moments in the sun of
+	 * childhood glorious
+	 */
+	protected ArrayList<Memory> knowledge;
+	/**
+	 * Stores eating food delicious untermensch inferior prey animals
+	 */
+	protected ArrayList<Lifeform> preyList;
+	/**
+	 * Works at night
+	 */
+	protected boolean nocturnal;
 
 	public Animal() {
+		super();
 		hunger = 50;
 		gender = GENDER.MALE;
 		depravity = 0;
