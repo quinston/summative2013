@@ -258,9 +258,9 @@ public abstract class Animal extends Lifeform {
                 return DIRECTION.WEST;
             }
         } else if (p.y > location.y) {
-            return DIRECTION.NORTH;
-        } else {
             return DIRECTION.SOUTH;
+        } else {
+            return DIRECTION.NORTH;
         }
     }
 
@@ -360,12 +360,12 @@ public abstract class Animal extends Lifeform {
         if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
             final Point location = summative.getLocation(this);
-            if (destination == null || getDirection(destination) == DIRECTION.NORTH) {
+            if (destination == null || getDirection(destination) == DIRECTION.SOUTH) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     summative.move(temp, this);
                 }
-            } else if (getDirection(destination) == DIRECTION.SOUTH) {
+            } else if (getDirection(destination) == DIRECTION.NORTH) {
                 Point temp = new Point(location.x, location.y - 1);
                 if (canWalk(temp)) {
                     summative.move(temp, this);
