@@ -106,7 +106,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
-
 			public void run() {
 				while (true) {
 					if (System.currentTimeMillis() - refFrame > 1000. / FPS) {
@@ -589,7 +588,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		} else if (keyCode == KeyEvent.VK_DOWN) {
 			downPressed = true;//check off that down has been pressed
 		} else if (keyCode == KeyEvent.VK_ESCAPE && !logOpen) {
-			frame.dispose();
+			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			logOpen = false;
 		} else if (keyCode == KeyEvent.VK_SPACE) {
@@ -694,28 +693,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public void mouseMoved(MouseEvent e) {
 		mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
 		if (locToLife.containsKey(mouse)) {
-			Lifeform l = locToLife.get(mouse);
-			if (l instanceof Bear) {
-				synchronized (lock) {
-					mouseOnLife = "bear";
-				}
-			} else if (l instanceof Bunny) {
-				synchronized (lock) {
-					mouseOnLife = "bunny";
-				}
-			} else if (l instanceof Cattle) {
-				synchronized (lock) {
-					mouseOnLife = "cow";
-				}
-			} else if (l instanceof Grass) {
-				synchronized (lock) {
-					mouseOnLife = "grass";
-				}
-			} else if (l instanceof Tree) {
-				synchronized (lock) {
-					mouseOnLife = "tree";
-				}
-			}
+			mouseOnLife = locToLife.get(mouse).getName();
 
 		} else {
 			synchronized (lock) {
