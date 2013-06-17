@@ -861,8 +861,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         } else if (!hud.contains(clickPoint)) {
             synchronized (lock) {
                 selectedPoint = new Point(
-                        e.getPoint().x / gridSize + screen.x,
-                        e.getPoint().y / gridSize + screen.y);
+                        clickPoint.x / gridSize + screen.x,
+                        clickPoint.y / gridSize + screen.y);
             }
         }
     }
