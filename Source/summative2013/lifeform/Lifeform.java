@@ -62,7 +62,7 @@ public abstract class Lifeform {
         thirst = 50;
         alive = true;
         sight = 20;
-		diseased = false;
+        diseased = false;
     }
 
     /**
