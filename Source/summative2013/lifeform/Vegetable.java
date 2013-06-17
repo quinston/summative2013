@@ -101,9 +101,9 @@ public abstract class Vegetable extends Lifeform {
             thirst = thirst + 1;
             sun = sun - 1;
         }
-		
-		regenCounter = Math.max(regenCounter,0);
-		reproTime = Math.max(reproTime,0);
+
+        regenCounter = Math.max(regenCounter, 0);
+        reproTime = Math.max(reproTime, 0);
 
         final Point location = summative.getLocation(this);
 
@@ -136,14 +136,13 @@ public abstract class Vegetable extends Lifeform {
                 health = maxHealth;
             }
         }
-        if (reproTime
-                <= 0) {
+        if (reproTime <= 0) {
             reproduce();
         }
-		if (regenTime <= 0) {
-			regenerate();
-		}
-        if (alive = false) {
+        if (regenTime <= 0) {
+            regenerate();
+        }
+        if (alive == false) {
             suicide();
         }
     }
@@ -174,13 +173,12 @@ public abstract class Vegetable extends Lifeform {
     public int getCurrent() {
         return current;
     }
-	
-	public String toString() {
-		return super.toString()
-				+ "\nFood Available: " + current + "/" + capacity
-				+ "\nTime Until Regeneration: " + regenCounter + "h"
-				+ "\nSun Metre: " + sun
-				+ "\nHelath: " + health
-				;
-	}
+
+    public String toString() {
+        return super.toString()
+                + "\nFood Available: " + current + "/" + capacity
+                + "\nTime Until Regeneration: " + regenCounter + "h"
+                + "\nSun Metre: " + sun
+                + "\nHelath: " + health;
+    }
 }
