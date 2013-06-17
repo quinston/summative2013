@@ -21,11 +21,18 @@ public class Bear extends Animal {
         if (nearEmpty() == null) {
             hunger = hunger - 30;
         } else {
-            summative.add(nearEmpty(), new Bear());
+            summative.addBear(nearEmpty().x,nearEmpty().y);
         }
     }
 	
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
 	}
+
+	@Override
+	public String getName() {
+		return "Bear";
+	}
+	
+	
 }

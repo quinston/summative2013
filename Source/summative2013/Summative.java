@@ -1,5 +1,6 @@
 package summative2013;
 
+import java.awt.BasicStroke;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Graphics;
@@ -10,6 +11,8 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -93,6 +96,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     public Summative() {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
         locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
+        locToGrass = new HashMap<Point, Grass>();
         events = new ArrayList<String>();
         addBear(0, 0);
         addBunny(0, 10);
@@ -119,7 +123,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addMouseMotionListener(this);
 
         hud = new Rectangle(getWidth() - 600, getHeight() - 220, 620, 220);
-        logButton = new Rectangle(hud.x+400, hud.y+160, 200, 40);
+        logButton = new Rectangle(hud.x + 400, hud.y + 160, 200, 40);
 
         Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
         a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
@@ -156,7 +160,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addGrass = new JButton("Add some grass");
         addGrass.addActionListener(this);
         buttonPanel.add(addGrass);
-        
+
         setLayout(new BorderLayout());
         add(buttonPanel, BorderLayout.SOUTH);
         try {
@@ -187,40 +191,55 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      * @param x X-coordinate of bear's location
      * @param y Y-coordinate of bear's location
      */
-    private void addBear(int x, int y) {
-        locToLife.put(new Point(x, y), new Bear());
-        ++bearCount;
-        addToLog("Bear spawned at " + x + "," + y);
+    public void addBear(int x, int y) {
+        synchronized (lock) {
+            locToLife.put(new Point(x, y), new Bear());
+            ++bearCount;
+            addToLog("Bear spawned at " + x + "," + y);
+        }
     }
 
-    private void addBat(int x, int y) {
-        locToLife.put(new Point(x, y), new Bat());
-        ++batCount;
-        addToLog("Bat spawned at " + x + "," + y);
+    public void addBat(int x, int y) {
+        synchronized (lock) {
+            locToLife.put(new Point(x, y), new Bat());
+            ++batCount;
+            addToLog("Bat spawned at " + x + "," + y);
+        }
     }
 
-    private void addBunny(int x, int y) {
-        locToLife.put(new Point(x, y), new Bunny());
-        ++bunnyCount;
-        addToLog("Bunny spawned at " + x + "," + y);
+    public void addBunny(int x, int y) {
+        synchronized (lock) {
+            locToLife.put(new Point(x, y), new Bunny());
+            ++bunnyCount;
+            addToLog("Bunny spawned at " + x + "," + y);
+        }
     }
 
-    private void addCattle(int x, int y) {
-        locToLife.put(new Point(x, y), new Cattle());
-        ++cattleCount;
-        addToLog("Cattle spawned at " + x + "," + y);
+    public void addCattle(int x, int y) {
+        synchronized (lock) {
+            locToLife.put(new Point(x, y), new Cattle());
+            ++cattleCount;
+            addToLog("Cattle spawned at " + x + "," + y);
+        }
     }
 
-    private void addGrass(int x, int y) {
-        locToLife.put(new Point(x, y), new Grass());
-        ++grassCount;
-        addToLog("Grass spawned at " + x + "," + y);
+    public void addGrass(int x, int y) {
+        synchronized (lock) {
+            Grass g = new Grass();
+            Point p = new Point(x, y);
+            locToLife.put(p, g);
+            locToGrass.put(p, g);
+            ++grassCount;
+            addToLog("Grass placed at " + x + "," + y);
+        }
     }
 
-    private void addTree(int x, int y) {
-        locToLife.put(new Point(x, y), new Tree());
-        ++treeCount;
-        addToLog("Tree spawned at " + x + "," + y);
+    public void addTree(int x, int y) {
+        synchronized (lock) {
+            locToLife.put(new Point(x, y), new Tree());
+            ++treeCount;
+            addToLog("Tree spawned at " + x + "," + y);
+        }
     }
 
     @Override
@@ -360,133 +379,55 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     }
 
     /**
-     * advances the map one iteration
-     */
-    public void advance() {
-        numHours++;
-        pushWeather();
-        for (Weather w : activeWeather) {
-            Iterator lifeIt = locToLife.entrySet().iterator();
-            while (lifeIt.hasNext()) {
-
-                Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
-
-                if (w.contains(pairs.getKey())) {//if we are on the weather
-                    pairs.getValue().act(w.getType());//act based on weather
-                }
-            }
-            Iterator terIt = locToTerrain.entrySet().iterator();
-            HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-            while (terIt.hasNext()) {
-                Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
-                if (w.contains(pairs.getKey())) {
-                    if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
-                        //radiate water
-                        Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-                        for (Point p : points) {
-                            temp.put(p, TERRAIN.SEA);
-                        }
-                    }
-                    if (w.getType() == Weather.WEATHER.SUN && pairs.getValue() == TERRAIN.LAND) {
-                        //radiate land
-                        Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-                        for (Point p : points) {
-                            temp.put(p, TERRAIN.LAND);
-                        }
-                    }
-                }
-            }
-            for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-                locToTerrain.put(m.getKey(), m.getValue());
-            }
-        }
-    }
-
-    /**
-     * draws the graphics on the screen
-     *
-     * @param g The graphics object needed
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (!logOpen) {
-            synchronized (lock) {
-                drawTerrain(g);//draws the terrain of the map
-
-                if (selectedPoint != null) {
-                    if (!screen.contains(selectedPoint)) {
-                        selectedPoint = null;
-                    } else {
-                        g.setColor(Color.red);
-                        g.drawRect(
-                                (selectedPoint.x + screen.x) * gridSize,
-                                (selectedPoint.y + screen.y) * gridSize,
-                                gridSize, gridSize);
-                    }
-                }
-
-                drawLifeforms(g);
-                drawWeather(g);
-                drawHUD(g);
-
-
-            }
-        } else {
-            drawLog(g);
-        }
-    }
-
-    /**
      * Draws a HUD that gives information on what is happening or has happened
      * in the sim
      *
      * @param g The graphics object that the HUD should be drawn on
      */
     public void drawHUD(Graphics g) {
-        logButton.translate((hud.x+400)-logButton.x, (hud.y+160)-logButton.y);
+        logButton.translate((hud.x + 400) - logButton.x, (hud.y + 160) - logButton.y);
         g.setColor(Color.BLUE);
         g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
         g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(hud.x+20, hud.y+20, hud.width-40, hud.height-40);
+        g.fillRect(hud.x + 20, hud.y + 20, hud.width - 40, hud.height - 40);
         g.setColor(Color.BLACK);
 
         //draw grid to hold frequency table of lifeforms
-        g.drawRect(hud.x+40, hud.y+40, 130, 140);
-        g.drawLine(hud.x+40, hud.y+60, hud.x+170, hud.y+60);
-        g.drawLine(hud.x+40, hud.y+80, hud.x+170, hud.y+80);
-        g.drawLine(hud.x+40, hud.y+100, hud.x+170, hud.y+100);
-        g.drawLine(hud.x+40, hud.y+120, hud.x+170, hud.y+120);
-        g.drawLine(hud.x+40, hud.y+140, hud.x+170, hud.y+140);
-        g.drawLine(hud.x+40, hud.y+160, hud.x+170, hud.y+160);
-        g.drawLine(hud.x+100, hud.y+40, hud.x+100, hud.y+180);
+        g.drawRect(hud.x + 40, hud.y + 40, 130, 140);
+        g.drawLine(hud.x + 40, hud.y + 60, hud.x + 170, hud.y + 60);
+        g.drawLine(hud.x + 40, hud.y + 80, hud.x + 170, hud.y + 80);
+        g.drawLine(hud.x + 40, hud.y + 100, hud.x + 170, hud.y + 100);
+        g.drawLine(hud.x + 40, hud.y + 120, hud.x + 170, hud.y + 120);
+        g.drawLine(hud.x + 40, hud.y + 140, hud.x + 170, hud.y + 140);
+        g.drawLine(hud.x + 40, hud.y + 160, hud.x + 170, hud.y + 160);
+        g.drawLine(hud.x + 100, hud.y + 40, hud.x + 100, hud.y + 180);
         g.setFont(new Font(Font.SERIF, Font.BOLD, 12));
-        g.drawString("Lifeform", hud.x+50, hud.y+55);
-        g.drawString("Frequency", hud.x+110, hud.y+55);
+        g.drawString("Lifeform", hud.x + 50, hud.y + 55);
+        g.drawString("Frequency", hud.x + 110, hud.y + 55);
 
         //fill grid with types of lifeforms
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 12));
-        g.drawString("Bunny", hud.x+50, hud.y+75);
-        g.drawString("Bear", hud.x+50, hud.y+95);
-        g.drawString("Cattle", hud.x+50, hud.y+115);
-        g.drawString("Bat", hud.x+50, hud.y+135);
-        g.drawString("Grass", hud.x+50, hud.y+155);
-        g.drawString("Trees", hud.x+50, hud.y+175);
+        g.drawString("Bunny", hud.x + 50, hud.y + 75);
+        g.drawString("Bear", hud.x + 50, hud.y + 95);
+        g.drawString("Cattle", hud.x + 50, hud.y + 115);
+        g.drawString("Bat", hud.x + 50, hud.y + 135);
+        g.drawString("Grass", hud.x + 50, hud.y + 155);
+        g.drawString("Trees", hud.x + 50, hud.y + 175);
 
         //fill grid with frequencies
-        g.drawString("" + bunnyCount, hud.x+110, hud.y+75);
-        g.drawString("" + bearCount, hud.x+110, hud.y+95);
-        g.drawString("" + cattleCount, hud.x+110, hud.y+115);
-        g.drawString("" + batCount, hud.x+110, hud.y+135);
-        g.drawString("" + grassCount, hud.x+110, hud.y+155);
-        g.drawString("" + treeCount, hud.x+110, hud.y+175);
+        g.drawString("" + bunnyCount, hud.x + 110, hud.y + 75);
+        g.drawString("" + bearCount, hud.x + 110, hud.y + 95);
+        g.drawString("" + cattleCount, hud.x + 110, hud.y + 115);
+        g.drawString("" + batCount, hud.x + 110, hud.y + 135);
+        g.drawString("" + grassCount, hud.x + 110, hud.y + 155);
+        g.drawString("" + treeCount, hud.x + 110, hud.y + 175);
 
         //draws other information onto the HUD
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 16));
-        g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), hud.x+180, hud.y+60);
-        g.drawString(numHours + " hours have passed since the beginning of time", hud.x+180, hud.y+100);
+        g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), hud.x + 180, hud.y + 60);
+        g.drawString(numHours + " hours have passed since the beginning of time", hud.x + 180, hud.y + 100);
         if (mouseOnLife != "") {
-            g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, hud.x+180, hud.y+140);
+            g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, hud.x + 180, hud.y + 140);
         }
 
         g.setColor(Color.BLUE);
@@ -1010,6 +951,92 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             locToLife.remove(getLocation(l));
             locToLife.put(p, l);
+        }
+    }
+
+    /**
+     * advances the map one iteration
+     */
+    public void advance() {
+        numHours++;
+        pushWeather();
+        synchronized (lock) {
+            for (Weather w : activeWeather) {
+                for (Map.Entry<Point, Lifeform> pair : locToLife.entrySet()) {
+                    if (w.contains(pair.getKey())) {//if we are on the weather
+                        pair.getValue().act(w.getType());//act based on weather
+                    }
+                }
+
+                HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
+                for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
+                    if (w.contains(pair.getKey())) {
+                        if (w.getType() == Weather.WEATHER.RAIN && pair.getValue() == TERRAIN.SEA) {
+                            //expand water
+                            Point original = pair.getKey();
+                            Point[] points = {new Point(original.x, original.y),
+                                new Point(original.x - 1, original.y),
+                                new Point(original.x + 1, original.y),
+                                new Point(original.x, original.y - 1),
+                                new Point(original.x, original.y + 1)};
+                            for (Point p : points) {
+                                temp.put(p, TERRAIN.SEA);
+                            }
+                        } else if (w.getType() == Weather.WEATHER.SUN && pair.getValue() == TERRAIN.LAND) {
+                            //radiate land
+                            Point original = pair.getKey();
+                            Point[] points = {new Point(original.x, original.y),
+                                new Point(original.x - 1, original.y),
+                                new Point(original.x + 1, original.y),
+                                new Point(original.x, original.y - 1),
+                                new Point(original.x, original.y + 1)};
+                            for (Point p : points) {
+                                temp.put(p, TERRAIN.LAND);
+                            }
+                        }
+                    }
+                }
+                for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+                    locToTerrain.put(m.getKey(), m.getValue());
+                }
+            }
+        }
+    }
+
+    /**
+     * draws the graphics on the screen
+     *
+     * @param g The graphics object needed
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (!logOpen) {
+            synchronized (lock) {
+                drawTerrain(g);//draws the terrain of the map
+
+                if (selectedPoint != null) {
+                    if (!screen.contains(selectedPoint)) {
+                        selectedPoint = null;
+                    } else {
+                        Graphics2D g2 = (Graphics2D) g;
+                        g.setColor(Color.red);
+                        g2.setStroke(new BasicStroke(2));
+                        g.drawRect(
+                                (selectedPoint.x - screen.x) * gridSize,
+                                (selectedPoint.y - screen.y) * gridSize,
+                                gridSize, gridSize);
+                    }
+                }
+
+                drawLifeforms(g);
+                drawWeather(g);
+                drawHUD(g);
+
+
+            }
+        } else {
+            drawLog(g);
         }
     }
 }

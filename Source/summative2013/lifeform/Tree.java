@@ -30,11 +30,16 @@ public class Tree extends Vegetable {
     public void reproduce() {
         if (nearEmpty() == null) {
         } else {
-            summative.add(nearEmpty(), new Tree());
+            summative.addTree(nearEmpty().x,nearEmpty().y);
         }
     }
 	
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
+	}
+
+	@Override
+	public String getName() {
+		return "Tree";
 	}
 }

@@ -60,11 +60,15 @@ public class Grass extends Vegetable {
 	public void reproduce() {
 		if (nearEmpty() == null) {
 		} else {
-			summative.add(nearEmpty(), new Grass());
+			summative.addGrass(nearEmpty().x,nearEmpty().y);
 		}
 	}
 
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
+	}
+	
+	public String getName() {
+		return "Grass";
 	}
 }

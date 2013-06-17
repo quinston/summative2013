@@ -20,11 +20,16 @@ public class Cattle extends Animal {
 		if (nearEmpty() == null) {
 			hunger = hunger - 30;
 		} else {
-			summative.add(nearEmpty(), new Cattle());
+			summative.addCattle(nearEmpty().x,nearEmpty().y);
 		}
 	}
 
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
+	}
+
+	@Override
+	public String getName() {
+		return "Cattle";
 	}
 }
