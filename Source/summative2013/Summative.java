@@ -40,13 +40,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private ArrayList<Weather> activeWeather;
 	private ArrayList<String> events;
 	private static JFrame frame;
-	private Rectangle screen, logButton;
+	private Rectangle screen, logButton, hud;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
 	;
 	private final int gridSize = 10;
 	private String mouseOnLife = "";
 	private Point mouse = new Point();
-	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, 
+	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
 			treeCount = 0, numHours = 0;
 
 	/**
@@ -57,12 +57,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
 		addBear(0, 0);
-		addBunny(0,10);
-		addCattle(0,20);
-		addGrass(60,20);
-		addGrass(70,20);
-		addGrass(80,20);
-		addTree(-30,-30);
+		addBunny(0, 10);
+		addCattle(0, 20);
+		addGrass(60, 20);
+		addGrass(70, 20);
+		addGrass(80, 20);
+		addTree(-30, -30);
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
@@ -80,6 +80,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		addMouseMotionListener(this);
 
 		logButton = new Rectangle(getWidth() - 200, getHeight() - 40, 200, 40);
+		hud = new Rectangle(getWidth() - 600, getHeight() - 200, 620, 220);
 		events = new ArrayList<String>();
 		events.add("Test0");
 		events.add("Test1");
@@ -101,21 +102,21 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 		//Paint thread
-		(new Thread(new Runnable() {
+		Thread paintThread = (new Thread(new Runnable() {
 
 			public void run() {
 				while (true) {
-					if (System.currentTimeMillis() - refFrame > 1000./FPS) {
+					if (System.currentTimeMillis() - refFrame > 1000. / FPS) {
 						repaint();
 						refFrame = System.currentTimeMillis();
 					}
 				}
 			}
-		})).start();
+		}));
+		paintThread.start();
 	}
-	
 	final int FPS = 60;
-	
+
 	/**
 	 * Adds a new bear at p and increments bear count.
 	 * The rest are similar.
@@ -123,32 +124,32 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param y Y-coordinate of bear's location
 	 */
 	private void addBear(int x, int y) {
-		locToLife.put(new Point(x,y), new Bear());
+		locToLife.put(new Point(x, y), new Bear());
 		++bearCount;
 	}
-	
+
 	private void addBat(int x, int y) {
-		locToLife.put(new Point(x,y), new Bat());
+		locToLife.put(new Point(x, y), new Bat());
 		++batCount;
 	}
-	
+
 	private void addBunny(int x, int y) {
-		locToLife.put(new Point(x,y), new Bunny());
+		locToLife.put(new Point(x, y), new Bunny());
 		++bunnyCount;
 	}
-	
+
 	private void addCattle(int x, int y) {
-		locToLife.put(new Point(x,y), new Cattle());
+		locToLife.put(new Point(x, y), new Cattle());
 		++cattleCount;
 	}
-	
+
 	private void addGrass(int x, int y) {
-		locToLife.put(new Point(x,y), new Grass());
+		locToLife.put(new Point(x, y), new Grass());
 		++grassCount;
 	}
-	
-		private void addTree(int x, int y) {
-		locToLife.put(new Point(x,y), new Tree());
+
+	private void addTree(int x, int y) {
+		locToLife.put(new Point(x, y), new Tree());
 		++treeCount;
 	}
 
@@ -324,9 +325,24 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		if (!logOpen) {
 			synchronized (lock) {
 				drawTerrain(g);//draws the terrain of the map
+
+				if (selectedPoint != null) {
+					if (!screen.contains(selectedPoint)) {
+						selectedPoint = null;
+					} else {
+						g.setColor(Color.red);
+						g.drawRect(
+								(selectedPoint.x - screen.x) * gridSize,
+								(selectedPoint.y - screen.y) * gridSize,
+								gridSize, gridSize);
+					}
+				}
+
 				drawLifeforms(g);
 				drawWeather(g);
 				drawHUD(g);
+
+
 			}
 		} else {
 			drawLog(g);
@@ -339,7 +355,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public void drawHUD(Graphics g) {
 		g.setColor(Color.BLUE);
-		g.fillRoundRect(getWidth() - 600, getHeight() - 200, 620, 220, 20, 20);
+		g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(getWidth() - 580, getHeight() - 180, 580, 180);
 		g.setColor(Color.BLACK);
@@ -403,7 +419,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 	}
 
-	/**
+	/**Right now, I have it so that a square is highlig
 	 * Draws the lifeforms in the sim
 	 * @param g the graphics onject that the lifeforms should be drawn on
 	 */
@@ -697,21 +713,32 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		if (locToLife.containsKey(mouse)) {
 			Lifeform l = locToLife.get(mouse);
 			if (l instanceof Bear) {
-				mouseOnLife = "bear";
+				synchronized (lock) {
+					mouseOnLife = "bear";
+				}
 			} else if (l instanceof Bunny) {
-				mouseOnLife = "bunny";
+				synchronized (lock) {
+					mouseOnLife = "bunny";
+				}
 			} else if (l instanceof Cattle) {
-				mouseOnLife = "cow";
+				synchronized (lock) {
+					mouseOnLife = "cow";
+				}
 			} else if (l instanceof Grass) {
-				mouseOnLife = "grass";
+				synchronized (lock) {
+					mouseOnLife = "grass";
+				}
 			} else if (l instanceof Tree) {
-				mouseOnLife = "tree";
+				synchronized (lock) {
+					mouseOnLife = "tree";
+				}
 			}
 
 		} else {
-			mouseOnLife = "";
+			synchronized (lock) {
+				mouseOnLife = "";
+			}
 		}
-		repaint();
 	}
 
 	/**
@@ -720,10 +747,21 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (logButton.contains(e.getPoint())) {
+		Point clickPoint = e.getPoint();
+		if (logButton.contains(clickPoint)) {
 			logOpen = true;
+		} else if (!hud.contains(clickPoint)) {
+			synchronized (lock) {
+				selectedPoint = new Point(
+						e.getPoint().x / gridSize + screen.x,
+						e.getPoint().y / gridSize + screen.y);
+			}
 		}
 	}
+	/**
+	 * Point that is selected. Display info on it.
+	 */
+	Point selectedPoint;
 
 	/**
 	 * Called when the mouse is pressed down
