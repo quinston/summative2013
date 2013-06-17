@@ -26,7 +26,10 @@ import javax.swing.JButton;
 import summative2013.phenomena.AirLock;
 import summative2013.phenomena.Drizzle;
 import summative2013.phenomena.Drought;
-
+/**
+ * Driver class for the program
+ * @author Stephen
+ */
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener, ActionListener {
 
     private static GraphicsEnvironment ge;
@@ -352,9 +355,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
             }
 
         }
-
         //Only land, have a small chance to generate a sea block
-
 
         if (seas == 0) {
             if (Math.random() < .95) {
@@ -406,47 +407,32 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public void advance() {
         numHours++;
+        HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
         manageWeather();
         pushWeather();
         synchronized (lock) {
-            for (Weather w : activeWeather) {
-                for (Map.Entry<Point, Lifeform> pair : locToLife.entrySet()) {
-                    if (w.contains(pair.getKey())) {//if we are on the weather
-                        pair.getValue().act(w.getType());//act based on weather
-                    }
-                }
-
-                HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-                for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
-                    if (w.contains(pair.getKey())) {
-                        if (w.getType() == Weather.WEATHER.RAIN && pair.getValue() == TERRAIN.SEA) {
-                            //expand water
-                            Point original = pair.getKey();
-                            Point[] points = {new Point(original.x, original.y),
-                                new Point(original.x - 1, original.y),
-                                new Point(original.x + 1, original.y),
-                                new Point(original.x, original.y - 1),
-                                new Point(original.x, original.y + 1)};
-                            for (Point p : points) {
-                                temp.put(p, TERRAIN.SEA);
-                            }
-                        } else if (w.getType() == Weather.WEATHER.SUN && pair.getValue() == TERRAIN.LAND) {
-                            //radiate land
-                            Point original = pair.getKey();
-                            Point[] points = {new Point(original.x, original.y),
-                                new Point(original.x - 1, original.y),
-                                new Point(original.x + 1, original.y),
-                                new Point(original.x, original.y - 1),
-                                new Point(original.x, original.y + 1)};
-                            for (Point p : points) {
-                                temp.put(p, TERRAIN.LAND);
-                            }
+            for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
+                Point original = pair.getKey();
+                int lands = 0, seas = 0;//count adjacent land, sea
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        if (locToTerrain.get(new Point(original.x + x, original.y + y)) != TERRAIN.LAND) {
+                            lands++;//add a land for each land within the 3x3 surrounding the block
+                        } else if (locToTerrain.get(new Point(original.x + x, original.y + y)) != TERRAIN.SEA) {
+                            seas++;//add a sea for each sea within the 3x3 surrounding block
                         }
                     }
                 }
-                for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-                    locToTerrain.put(m.getKey(), m.getValue());
+                if(getActiveWeather(original.x, original.y)==Weather.WEATHER.SUN){
+                    if(Math.random()<0.01&&locToTerrain.get(original)!=TERRAIN.LAND&&lands<seas)
+                        temp.put(original, TERRAIN.LAND);
+                } else if(getActiveWeather(original.x, original.y) == Weather.WEATHER.RAIN){
+                    if(Math.random()<0.01&&locToTerrain.get(original)!=TERRAIN.SEA&&seas<lands)
+                        temp.put(original, TERRAIN.SEA);
                 }
+            }
+            for(Map.Entry<Point,TERRAIN> pair : temp.entrySet() ){
+                locToTerrain.put(pair.getKey(), pair.getValue());
             }
         }
     }
@@ -673,7 +659,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         g.fillRect(0, 0, getWidth(), getHeight());
         g.setColor(Color.BLACK);
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 20));
-        g.drawString("Log of what has happened", 100, 40);
+        g.drawString("Log of what has happened, Press Esc to return", 100, 40);
         for (int i = events.size() - 1; i >= 0; i--) {
             g.drawString(events.get(i), 100, 40 + (events.size() - i) * 40);
         }
