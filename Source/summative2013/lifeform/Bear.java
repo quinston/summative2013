@@ -11,7 +11,7 @@ import static summative2013.lifeform.Lifeform.summative;
 public class Bear extends Animal {
 
     public Bear() {
-		super();
+	super();
         preyList.add(new Tree());
         preyList.add(new Cattle());
     }

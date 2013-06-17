@@ -159,7 +159,7 @@ public abstract class Lifeform {
      * Refreshes to store all the nearby lifeforms
      */
     public void findNearbyLife() {
-        nearbyLife = new ArrayList<>();
+        nearbyLife = new ArrayList<Lifeform>();
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {

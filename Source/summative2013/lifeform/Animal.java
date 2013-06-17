@@ -93,6 +93,10 @@ public abstract class Animal extends Lifeform {
      */
     protected ArrayList<Lifeform> preyList;
     /**
+     * stores any diseases that the animal has
+     */
+    protected ArrayList<Disease> disease;
+    /**
      * Works at night
      */
     protected boolean nocturnal;
