@@ -102,25 +102,30 @@ public abstract class Vegetable extends Lifeform {
             sun = sun - 1;
         }
 
-		final Point location = summative.getLocation(this);
-		
+        final Point location = summative.getLocation(this);
+
         if (summative.terrainGet(location) == TERRAIN.SEA) {
-            thirst = -1;
-        } else if (Math.abs(water.x - location.x) <= 1 && Math.abs(water.y - location.y) <= 1
-                && Math.abs(water.x - location.x) + Math.abs(water.y - location.y) < 2) {
-            if (thirst > 0) {
-                thirst = 0;
+            thirst = -100;
+        } else if (water != null) {
+            if (Math.abs(water.x - location.x) <= 1 && Math.abs(water.y - location.y) <= 1
+                    && Math.abs(water.x - location.x) + Math.abs(water.y - location.y) < 2) {
+                if (thirst > 0) {
+                    thirst = 0;
+                }
             }
         }
-        if (sun < 0) {
+        if (sun
+                < 0) {
             alive = false;
-        } else if (thirst > 99 || thirst < -50) {
+        } else if (thirst > 99 || thirst
+                < -50) {
             alive = false;
-        } else if (health < 0) {
+        } else if (health
+                < 0) {
             alive = false;
         }
-
-        if (health < 0) {
+        if (health
+                < 0) {
             alive = false;
         } else {
             health = health + 5;
@@ -128,11 +133,10 @@ public abstract class Vegetable extends Lifeform {
                 health = maxHealth;
             }
         }
-
-        if (reproTime <= 0) {
+        if (reproTime
+                <= 0) {
             reproduce();
         }
-
         if (alive = false) {
             suicide();
         }

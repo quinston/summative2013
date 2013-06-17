@@ -34,19 +34,20 @@ import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener {
 
-	private static GraphicsEnvironment ge;
-	private static GraphicsDevice gd;
-	private HashMap<Point, Lifeform> locToLife;
-	private HashMap<Point, Grass> locToGrass;
-	private HashMap<Point, TERRAIN> locToTerrain;
-	private final Object lock = new Object();
-	private ArrayList<Weather> activeWeather;
-	private ArrayList<String> events;
-	private static JFrame frame;
-	private Rectangle screen, logButton, hud;
-	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
-	;
+    private static GraphicsEnvironment ge;
+    private static GraphicsDevice gd;
+    private HashMap<Point, Lifeform> locToLife;
+    private HashMap<Point, Grass> locToGrass;
+    private HashMap<Point, TERRAIN> locToTerrain;
+    private final Object lock = new Object();
+    private ArrayList<Weather> activeWeather;
+    private ArrayList<String> events;
+    private static JFrame frame;
+    private Rectangle screen, logButton, hud;
+    private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
+    ;
 	private final int gridSize = 10;
+<<<<<<< HEAD
 	private String mouseOnLife = "";
 	private Point mouse = new Point();
 	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
