@@ -29,6 +29,7 @@ import summative2013.phenomena.Drought;
 
 /**
  * Driver class for the program
+ *
  * @author Stephen
  */
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener, ActionListener {
@@ -235,7 +236,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			if (!locToLife.containsKey(new Point(x, y)) && !locToGrass.containsKey(new Point(x, y))) {
 				Grass g = new Grass();
 				Point p = new Point(x, y);
-				locToLife.put(p, g);
+				//locToLife.put(p, g);
 				locToGrass.put(p, g);
 				//++grassCount;
 				addToLog("Grass placed at " + x + "," + y);
@@ -1179,4 +1180,5 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 	}
 	private final int MAX_WEATHER = 10;
+
 }
