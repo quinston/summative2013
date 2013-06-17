@@ -118,8 +118,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addMouseListener(this);
         addMouseMotionListener(this);
 
-        logButton = new Rectangle(getWidth() - 200, getHeight() - 40, 200, 40);
-        hud = new Rectangle(getWidth() - 600, getHeight() - 200, 620, 220);
+        hud = new Rectangle(getWidth() - 600, getHeight() - 220, 620, 220);
+        logButton = new Rectangle(hud.x+400, hud.y+160, 200, 40);
 
         Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
         a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
@@ -156,7 +156,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addGrass = new JButton("Add some grass");
         addGrass.addActionListener(this);
         buttonPanel.add(addGrass);
-
+        
         setLayout(new BorderLayout());
         add(buttonPanel, BorderLayout.SOUTH);
         try {
@@ -444,48 +444,49 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      * @param g The graphics object that the HUD should be drawn on
      */
     public void drawHUD(Graphics g) {
+        logButton.translate((hud.x+400)-logButton.x, (hud.y+160)-logButton.y);
         g.setColor(Color.BLUE);
         g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
         g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(getWidth() - 580, getHeight() - 180, 580, 180);
+        g.fillRect(hud.x+20, hud.y+20, hud.width-40, hud.height-40);
         g.setColor(Color.BLACK);
 
         //draw grid to hold frequency table of lifeforms
-        g.drawRect(getWidth() - 560, getHeight() - 160, 130, 140);
-        g.drawLine(getWidth() - 560, getHeight() - 140, getWidth() - 430, getHeight() - 140);
-        g.drawLine(getWidth() - 560, getHeight() - 120, getWidth() - 430, getHeight() - 120);
-        g.drawLine(getWidth() - 560, getHeight() - 100, getWidth() - 430, getHeight() - 100);
-        g.drawLine(getWidth() - 560, getHeight() - 80, getWidth() - 430, getHeight() - 80);
-        g.drawLine(getWidth() - 560, getHeight() - 60, getWidth() - 430, getHeight() - 60);
-        g.drawLine(getWidth() - 560, getHeight() - 40, getWidth() - 430, getHeight() - 40);
-        g.drawLine(getWidth() - 500, getHeight() - 160, getWidth() - 500, getHeight() - 20);
+        g.drawRect(hud.x+40, hud.y+40, 130, 140);
+        g.drawLine(hud.x+40, hud.y+60, hud.x+170, hud.y+60);
+        g.drawLine(hud.x+40, hud.y+80, hud.x+170, hud.y+80);
+        g.drawLine(hud.x+40, hud.y+100, hud.x+170, hud.y+100);
+        g.drawLine(hud.x+40, hud.y+120, hud.x+170, hud.y+120);
+        g.drawLine(hud.x+40, hud.y+140, hud.x+170, hud.y+140);
+        g.drawLine(hud.x+40, hud.y+160, hud.x+170, hud.y+160);
+        g.drawLine(hud.x+100, hud.y+40, hud.x+100, hud.y+180);
         g.setFont(new Font(Font.SERIF, Font.BOLD, 12));
-        g.drawString("Lifeform", getWidth() - 550, getHeight() - 145);
-        g.drawString("Frequency", getWidth() - 490, getHeight() - 145);
+        g.drawString("Lifeform", hud.x+50, hud.y+55);
+        g.drawString("Frequency", hud.x+110, hud.y+55);
 
         //fill grid with types of lifeforms
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 12));
-        g.drawString("Bunny", getWidth() - 550, getHeight() - 125);
-        g.drawString("Bear", getWidth() - 550, getHeight() - 105);
-        g.drawString("Cattle", getWidth() - 550, getHeight() - 85);
-        g.drawString("Bat", getWidth() - 550, getHeight() - 65);
-        g.drawString("Grass", getWidth() - 550, getHeight() - 45);
-        g.drawString("Trees", getWidth() - 550, getHeight() - 25);
+        g.drawString("Bunny", hud.x+50, hud.y+75);
+        g.drawString("Bear", hud.x+50, hud.y+95);
+        g.drawString("Cattle", hud.x+50, hud.y+115);
+        g.drawString("Bat", hud.x+50, hud.y+135);
+        g.drawString("Grass", hud.x+50, hud.y+155);
+        g.drawString("Trees", hud.x+50, hud.y+175);
 
         //fill grid with frequencies
-        g.drawString("" + bunnyCount, getWidth() - 490, getHeight() - 125);
-        g.drawString("" + bearCount, getWidth() - 490, getHeight() - 105);
-        g.drawString("" + cattleCount, getWidth() - 490, getHeight() - 85);
-        g.drawString("" + batCount, getWidth() - 490, getHeight() - 65);
-        g.drawString("" + grassCount, getWidth() - 490, getHeight() - 45);
-        g.drawString("" + treeCount, getWidth() - 490, getHeight() - 25);
+        g.drawString("" + bunnyCount, hud.x+110, hud.y+75);
+        g.drawString("" + bearCount, hud.x+110, hud.y+95);
+        g.drawString("" + cattleCount, hud.x+110, hud.y+115);
+        g.drawString("" + batCount, hud.x+110, hud.y+135);
+        g.drawString("" + grassCount, hud.x+110, hud.y+155);
+        g.drawString("" + treeCount, hud.x+110, hud.y+175);
 
         //draws other information onto the HUD
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 16));
-        g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), getWidth() - 420, getHeight() - 140);
-        g.drawString(numHours + " hours have passed since the beginning of time", getWidth() - 420, getHeight() - 100);
+        g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), hud.x+180, hud.y+60);
+        g.drawString(numHours + " hours have passed since the beginning of time", hud.x+180, hud.y+100);
         if (mouseOnLife != "") {
-            g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, getWidth() - 420, getHeight() - 60);
+            g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, hud.x+180, hud.y+140);
         }
 
         g.setColor(Color.BLUE);
@@ -493,7 +494,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         g.setColor(Color.WHITE);
         g.fillRect(logButton.x, logButton.y, logButton.width, logButton.height);
         g.setColor(Color.BLACK);
-        g.drawString("Open log", logButton.x + 20, logButton.y + logButton.height - 10);
+        g.drawString("Open log", logButton.x + 20, logButton.y + 25);
 
     }
 
