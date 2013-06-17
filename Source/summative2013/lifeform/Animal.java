@@ -303,19 +303,7 @@ public abstract class Animal extends Lifeform {
      * @return
      */
     public boolean drowning() {
-        int drownery = 0;
-        final Point location = summative.getLocation(this);
-
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                if (Math.abs(x) + Math.abs(y) <= 1) {
-                    if (summative.terrainGet(new Point(location.x + x, location.y + y)) == TERRAIN.SEA) {
-                        drownery = drownery + 1;
-                    }
-                }
-            }
-        }
-        if (drownery == 5) {
+        if (summative.terrainGet(summative.getLocation(this)) == TERRAIN.SEA) {
             return true;
         } else {
             return false;
@@ -329,6 +317,9 @@ public abstract class Animal extends Lifeform {
      */
     @Override
     public void act(WEATHER Weather) {
+
+        boolean walked = false;
+
         if (diseased) {
             int temp = sight;
             sight = 4;
@@ -363,46 +354,51 @@ public abstract class Animal extends Lifeform {
             if (destination == null || getDirection(destination) == DIRECTION.SOUTH) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
+                    walked = true;
+                    System.out.println("Walkin");
                     summative.move(temp, this);
                 }
             } else if (getDirection(destination) == DIRECTION.NORTH) {
                 Point temp = new Point(location.x, location.y - 1);
                 if (canWalk(temp)) {
+                    walked = true;
                     summative.move(temp, this);
                 }
             } else if (getDirection(destination) == DIRECTION.WEST) {
                 Point temp = new Point(location.x - 1, location.y);
                 if (canWalk(temp)) {
+                    walked = true;
                     summative.move(temp, this);
                 }
             } else if (getDirection(destination) == DIRECTION.EAST) {
                 Point temp = new Point(location.x + 1, location.y);
                 if (canWalk(temp)) {
+                    walked = true;
                     summative.move(temp, this);
                 }
-            } else {
-                Point tempN = new Point(location.x, location.y + 1);
-                Point tempS = new Point(location.x, location.y - 1);
+            }
+            if (walked == false) {
+                Point tempS = new Point(location.x, location.y + 1);
+                Point tempN = new Point(location.x, location.y - 1);
                 Point tempW = new Point(location.x - 1, location.y);
                 Point tempE = new Point(location.x + 1, location.y);
-                boolean walked = false;
-                boolean N = true;
-                boolean W = true;
                 boolean S = true;
+                boolean W = true;
+                boolean N = true;
                 boolean E = true;
                 int counter = 0;
                 while (!walked) {
                     double x = Math.random();
-                    if (x < 0.25 && canWalk(tempN)) {
-                        summative.move(tempN, this);
-                        walked = true;
-                    } else if (N && !canWalk(tempN)) {
-                        N = false;
-                        counter = counter + 1;
-                    } else if (x < 0.5 && canWalk(tempS)) {
+                    if (x < 0.25 && canWalk(tempS)) {
                         summative.move(tempS, this);
                         walked = true;
                     } else if (S && !canWalk(tempS)) {
+                        S = false;
+                        counter = counter + 1;
+                    } else if (x < 0.5 && canWalk(tempN)) {
+                        summative.move(tempN, this);
+                        walked = true;
+                    } else if (N && !canWalk(tempN)) {
                         S = false;
                         counter = counter + 1;
                     } else if (x < 0.75 && canWalk(tempW)) {
@@ -462,8 +458,7 @@ public abstract class Animal extends Lifeform {
                 }
             }
         }
-        if (hunger > 100 || thirst
-                > 100) {
+        if (hunger > 100 || thirst > 100) {
             suicide();
         } else if (drowning()) {
             suicide();
