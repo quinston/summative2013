@@ -72,10 +72,6 @@ public abstract class Animal extends Lifeform {
      */
     protected int depravity;
     /**
-     * The nearby organisms
-     */
-    protected ArrayList<Lifeform> nearbyLife;
-    /**
      * Stores nearest prey
      */
     protected Point food;
@@ -97,10 +93,6 @@ public abstract class Animal extends Lifeform {
      */
     protected ArrayList<Lifeform> preyList;
     /**
-     * Stores how diseased plague leprosy shun contagion SARS level of multiple
-     */
-    protected ArrayList<Disease> disease;
-    /**
      * Works at night
      */
     protected boolean nocturnal;
@@ -109,27 +101,8 @@ public abstract class Animal extends Lifeform {
         hunger = 50;
         gender = GENDER.MALE;
         depravity = 0;
-        knowledge = new ArrayList<Memory>();
-        disease = new ArrayList<Disease>();
-        preyList = new ArrayList<Lifeform>();
-    }
-
-    /**
-     * Refreshes to store all the nearby lifeforms
-     */
-    public void findNearbyLife() {
-        nearbyLife = new ArrayList<Lifeform>();
-        for (int x = -sight; x <= sight; x++) {
-            for (int y = -sight; y <= sight; y++) {
-                if (Math.abs(x) + Math.abs(y) <= sight) {
-                    if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
-                        nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
-                    } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
-                        nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
-                    }
-                }
-            }
-        }
+        knowledge = new ArrayList<>();
+        preyList = new ArrayList<>();
     }
 
     /**
@@ -332,6 +305,22 @@ public abstract class Animal extends Lifeform {
      */
     @Override
     public void act(WEATHER Weather) {
+        if (diseased) {
+            int temp = sight;
+            sight = 4;
+            findNearbyLife();
+            for (Lifeform l : nearbyLife) {
+                l.disease();
+            }
+            sight = temp;
+            hunger = hunger + 20;
+            thirst = thirst + 20;
+        } else {
+            if (Math.random() < 0.01) {
+                disease();
+            }
+        }
+
         findNearbyLife();
         findWater();
         findFood(nearbyLife);

@@ -52,6 +52,7 @@ public abstract class Vegetable extends Lifeform {
         super();
         health = 99;
         sun = 50;
+        sight = 1;
     }
 
     /**
@@ -68,6 +69,18 @@ public abstract class Vegetable extends Lifeform {
      */
     public void act(WEATHER weather) {
         findWater();
+
+        if (diseased) {
+            int temp = sight;
+            sight = 4;
+            findNearbyLife();
+            for (Lifeform l : nearbyLife) {
+                l.disease();
+            }
+            sight = temp;
+            suicide();
+        }
+
         if (weather == WEATHER.SUN) {
             regenCounter = regenCounter - 2;
             sun = sun + 20;
