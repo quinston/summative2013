@@ -731,6 +731,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				c.getResource("images/185.png")));
 		sprites.put("vegetable", ImageIO.read(
 				c.getResource("images/420.png")));
+                sprites.put("bat", ImageIO.read(
+                                c.getResource("imagies/041.png")));
 
 
 	}
