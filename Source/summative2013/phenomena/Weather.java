@@ -11,7 +11,7 @@ import java.awt.geom.AffineTransform;
  *
  * @author 322303413
  */
-public class Weather {
+public abstract class Weather {
 
     protected Area area;
     protected WEATHER type;	
@@ -46,6 +46,10 @@ public class Weather {
 	
 	public boolean contains(Point p) {
 		return area.contains(p);
+	}
+	
+	public boolean intersects(int x, int y, int w, int h) {
+		return area.intersects(x,y,w,h);
 	}
 	
 	public void translate(double x, double y) {

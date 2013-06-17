@@ -32,26 +32,33 @@ import summative2013.lifeform.Lifeform;
 import summative2013.lifeform.Tree;
 import summative2013.lifeform.Bat;
 import summative2013.phenomena.Weather;
+import java.util.Random;
+import summative2013.phenomena.AirLock;
+import summative2013.phenomena.Drizzle;
+import summative2013.phenomena.Drought;
 
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener {
 
-    private static GraphicsEnvironment ge;
-    private static GraphicsDevice gd;
-    private HashMap<Point, Lifeform> locToLife;
-    private HashMap<Point, Grass> locToGrass;
-    private HashMap<Point, TERRAIN> locToTerrain;
-    private final Object lock = new Object();
-    private ArrayList<Weather> activeWeather;
-    private ArrayList<String> events;
-    private static JFrame frame;
-    private Rectangle screen, logButton, hud;
-    private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
-    private final int gridSize = 10;
-    private String mouseOnLife = "";
-    private Point mouse = new Point();
-    private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
-                    treeCount = 0, numHours = 0;
-
+	private static GraphicsEnvironment ge;
+	private static GraphicsDevice gd;
+	private HashMap<Point, Lifeform> locToLife;
+	private HashMap<Point, Grass> locToGrass;
+	private HashMap<Point, TERRAIN> locToTerrain;
+	private final Object lock = new Object();
+	private ArrayList<Weather> activeWeather;
+	private ArrayList<String> events;
+	private static JFrame frame;
+	private Rectangle screen, logButton, hud;
+	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
+	private final int gridSize = 10;
+	private String mouseOnLife = "";
+	private Point mouse = new Point();
+	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
+			treeCount = 0, numHours = 0;
+	private Random rand;
+	// World limits
+	private int outerNegX = 0, outerNegY = 0,
+			outerPosX = 0, outerPosY = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -92,13 +99,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		events.add("Test1");
 		events.add("Test2");
 
-		Area a = (new Area(new Ellipse2D.Double(0, 0, 30, 30)));
-		a.add(new Area(new Ellipse2D.Double(5, 20, 40, 60)));
-		activeWeather.add(new summative2013.phenomena.AirLock(a));
-
-		a = new Area(new Rectangle(-30, -60, 20, 69));
-		a.add(new Area(new Ellipse2D.Double(-90, -90, 70, 70)));
-		activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
 		try {
 			loadSprites();
@@ -120,6 +120,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		}));
 		paintThread.start();
+
+		rand = new Random();
 	}
 	final int FPS = 60;
 
@@ -214,6 +216,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		if (i >= 0) {
 			for (int x = p.x - 1; x <= p.x + 1; x++) {
 				for (int y = p.y - 1; y <= p.y + 1; y++) {
+
+
+
 					Point genPoint = new Point(x, y);
 					if ((x != p.x || y != p.y) && !locToTerrain.containsKey(new Point(x, y))) {//loop through points around
 						mapGen(genPoint);//fit that point
@@ -234,6 +239,17 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		int lands = 0, seas = 0;//count adjacent land, sea
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
+				if (point.x + x < outerNegX) {
+					outerNegX = point.x + x;
+				} else if (point.x + x > outerPosX) {
+					outerPosX = point.x + x;
+				}
+				if (point.y+y < outerNegY) {
+					outerNegY = point.y+y;
+				} else if (point.y+y > outerPosY) {
+					outerPosY = point.y+y;
+				}
+				
 				if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.LAND) {
 					lands++;//add a land for each land within the 3x3 surrounding the block
 				} else if (locToTerrain.get(new Point(point.x + x, point.y + y)) == TERRAIN.SEA) {
@@ -296,6 +312,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public void advance() {
 		numHours++;
+		manageWeather();
 		pushWeather();
 		synchronized (lock) {
 			for (Weather w : activeWeather) {
@@ -386,12 +403,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				if (selectedLifeform != null) {
 					Point location = getLocation(selectedLifeform);
 					Graphics2D g2 = (Graphics2D) g;
-						g2.setColor(Color.red);
-						g2.setStroke(new BasicStroke(2));
-						g2.drawOval( (location.x - screen.x) * gridSize - gridSize, 
-								(location.y - screen.y) * gridSize - gridSize, 
-								gridSize  * 3, gridSize * 3);
-					
+					g2.setColor(Color.red);
+					g2.setStroke(new BasicStroke(2));
+					g2.drawOval((location.x - screen.x) * gridSize - gridSize,
+							(location.y - screen.y) * gridSize - gridSize,
+							gridSize * 3, gridSize * 3);
+
 					g.setColor(new Color(0, 0, 0, 204));
 					int height = 90;
 					g.fillRect(0, getHeight() - height,
@@ -896,7 +913,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Weather.WEATHER getActiveWeather(int x, int y) {
 		Weather.WEATHER ret;
 
-		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours / 24) > 0) {
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours / 48) > 0) {
 			ret = Weather.WEATHER.SUN;
 		} else {
 			ret = Weather.WEATHER.NIGHT;
@@ -918,8 +935,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * Moves the clouds a bit
 	 */
 	public void pushWeather() {
-		for (Weather w : activeWeather) {
-			w.translate(hourlyWind.x, hourlyWind.y);
+		synchronized (lock) {
+			for (Weather w : activeWeather) {
+				w.translate(hourlyWind.x, hourlyWind.y);
+			}
 		}
 	}
 	/**
@@ -960,4 +979,54 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			locToLife.put(p, l);
 		}
 	}
+
+	/**
+	 * Spawns weather until activeWeather is MAX_WEATHER long
+	 * Despawns weather that moves beyond the edge of the generated world
+	 */
+	public void manageWeather() {
+		synchronized (lock) {
+			for (Iterator<Weather> i = activeWeather.iterator();
+					i.hasNext();) {
+				Weather w = i.next();
+				if (!w.intersects(outerNegX, outerNegY,
+						outerPosX - outerNegX, outerPosY - outerNegY)) {
+					i.remove();
+				}
+			}
+
+			for (int i = 0; i < 10 - activeWeather.size(); ++i) {
+				Point weatherCentre = new Point(
+						rand.nextInt(outerPosX - outerNegX + 1) + outerNegX,
+						rand.nextInt(outerPosY - outerNegY + 1) + outerNegY);
+
+
+				Area a = new Area(new Ellipse2D.Double(
+						weatherCentre.x - rand.nextInt(10),
+						weatherCentre.y - rand.nextInt(10),
+						20, 20));
+
+				a.add(new Area(new Ellipse2D.Double(
+						weatherCentre.x - rand.nextInt(10),
+						weatherCentre.y - rand.nextInt(10),
+						20, 20)));
+
+				a.add(new Area(new Ellipse2D.Double(
+						weatherCentre.x - rand.nextInt(10),
+						weatherCentre.y - rand.nextInt(10),
+						20, 20)));
+
+				switch (rand.nextInt(2)) {
+					case 0:
+						activeWeather.add(new AirLock(a));
+						break;
+					case 1:
+						activeWeather.add(new Drizzle(a));
+						break;
+				}
+
+			}
+		}
+	}
+	private final int MAX_WEATHER = 10;
 }
