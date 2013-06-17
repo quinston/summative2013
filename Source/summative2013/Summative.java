@@ -47,7 +47,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private String mouseOnLife = "";
 	private Point mouse = new Point();
 	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, 
-			treeCount = 0, numDays = 0;
+			treeCount = 0, numHours = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -105,8 +105,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 			public void run() {
 				while (true) {
-					if (System.currentTimeMillis() - refFrame > 16) {
-						pushWeather();
+					if (System.currentTimeMillis() - refFrame > 1000./FPS) {
 						repaint();
 						refFrame = System.currentTimeMillis();
 					}
@@ -114,6 +113,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		})).start();
 	}
+	
+	final int FPS = 60;
 	
 	/**
 	 * Adds a new bear at p and increments bear count.
@@ -174,7 +175,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		gd = ge.getDefaultScreenDevice();
-		//gd.setFullScreenWindow(frame);//makes full screen
+		gd.setFullScreenWindow(frame);//makes full screen
 		Summative s = new Summative();
 		frame.add(s);
 		s.repaint();
@@ -273,7 +274,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * advances the map one iteration
 	 */
 	public void advance() {
-		numDays++;
+		numHours++;
 		pushWeather();
 		for (Weather w : activeWeather) {
 			Iterator lifeIt = locToLife.entrySet().iterator();
@@ -371,9 +372,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		g.drawString("" + treeCount, getWidth() - 490, getHeight() - 45);
 
 		//draws other information onto the HUD
-		g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 20));
+		g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 16));
 		g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), getWidth() - 420, getHeight() - 140);
-		g.drawString(numDays + " days have passed since the beginning of time", getWidth() - 420, getHeight() - 100);
+		g.drawString(numHours + " hours have passed since the beginning of time", getWidth() - 420, getHeight() - 100);
 		if (mouseOnLife != "") {
 			g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, getWidth() - 420, getHeight() - 60);
 		}
@@ -593,7 +594,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			logOpen = false;
 		} else if (keyCode == KeyEvent.VK_SPACE) {
-			advance();
+			//advance();
 		}
 		if (rightPressed) {
 			moveRight();
@@ -808,7 +809,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Weather.WEATHER getActiveWeather(int x, int y) {
 		Weather.WEATHER ret;
 
-		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * hoursElapsed) > 0) {
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours) > 0) {
 			ret = Weather.WEATHER.SUN;
 		} else {
 			ret = Weather.WEATHER.NIGHT;
@@ -832,10 +833,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			w.translate(hourlyWind.x, hourlyWind.y);
 		}
 	}
-	/**
-	 * Time in simulation hours elapsed
-	 */
-	private long hoursElapsed = 0;
 	/**
 	 * Wind speed, affects pushWeather
 	 */
