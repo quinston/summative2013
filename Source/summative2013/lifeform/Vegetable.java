@@ -164,4 +164,13 @@ public abstract class Vegetable extends Lifeform {
     public int getCurrent() {
         return current;
     }
+	
+	public String toString() {
+		return super.toString()
+				+ "\nFood Available: " + current + "/" + capacity
+				+ "\nTime Until Regeneration: " + regenCounter + "h"
+				+ "\nSun Metre: " + sun
+				+ "\nHelath: " + health
+				;
+	}
 }

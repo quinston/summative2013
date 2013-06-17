@@ -21,11 +21,17 @@ public class Bat extends Animal {
         if (nearEmpty() == null) {
             hunger = hunger - 30;
         } else {
-            summative.add(nearEmpty(), new Bat());
+            summative.addBat(nearEmpty().x, nearEmpty().y);
         }
     }
 
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
+
+	@Override
+	public String getName() {
+		return "Bat";
+	}
+	
 }

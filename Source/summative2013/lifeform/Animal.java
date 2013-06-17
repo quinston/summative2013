@@ -6,7 +6,6 @@ import summative2013.Summative;
 import summative2013.Summative.TERRAIN;
 import static summative2013.lifeform.Lifeform.summative;
 import summative2013.memory.Memory;
-import summative2013.phenomena.Disease;
 import summative2013.phenomena.Weather.WEATHER;
 import java.util.LinkedList;
 
@@ -96,13 +95,14 @@ public abstract class Animal extends Lifeform {
      * Works at night
      */
     protected boolean nocturnal;
+	
+	
 
     public Animal() {
         hunger = 50;
         gender = GENDER.MALE;
         depravity = 0;
         knowledge = new ArrayList<Memory>();
-        disease = new ArrayList<Disease>();
         preyList = new ArrayList<Lifeform>();
     }
 
@@ -471,4 +471,13 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+	public String toString() {
+		return super.toString()
+				+ "\nGender: " + gender
+				+ "\nDestination: " + destination.x + "," + destination.y
+				+ "\nHunger: " + hunger + "%"
+				;
+	}
+	
+	
 }

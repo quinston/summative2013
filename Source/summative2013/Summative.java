@@ -1,5 +1,6 @@
 package summative2013;
 
+import java.awt.BasicStroke;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Graphics;
@@ -8,6 +9,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -123,32 +126,32 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param x X-coordinate of bear's location
 	 * @param y Y-coordinate of bear's location
 	 */
-	private void addBear(int x, int y) {
+	public void addBear(int x, int y) {
 		locToLife.put(new Point(x, y), new Bear());
 		++bearCount;
 	}
 
-	private void addBat(int x, int y) {
+	public void addBat(int x, int y) {
 		locToLife.put(new Point(x, y), new Bat());
 		++batCount;
 	}
 
-	private void addBunny(int x, int y) {
+	public void addBunny(int x, int y) {
 		locToLife.put(new Point(x, y), new Bunny());
 		++bunnyCount;
 	}
 
-	private void addCattle(int x, int y) {
+	public void addCattle(int x, int y) {
 		locToLife.put(new Point(x, y), new Cattle());
 		++cattleCount;
 	}
 
-	private void addGrass(int x, int y) {
+	public void addGrass(int x, int y) {
 		locToLife.put(new Point(x, y), new Grass());
 		++grassCount;
 	}
 
-	private void addTree(int x, int y) {
+	public void addTree(int x, int y) {
 		locToLife.put(new Point(x, y), new Tree());
 		++treeCount;
 	}
@@ -292,7 +295,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
 				if (w.contains(pairs.getKey())) {
 					if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
-						//radiate water
+						//expand water
 						Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
 						for (Point p : points) {
 							temp.put(p, TERRAIN.SEA);
@@ -329,7 +332,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 					if (!screen.contains(selectedPoint)) {
 						selectedPoint = null;
 					} else {
+						Graphics2D g2 = (Graphics2D) g;
 						g.setColor(Color.red);
+						g2.setStroke(new BasicStroke(2));
 						g.drawRect(
 								(selectedPoint.x - screen.x) * gridSize,
 								(selectedPoint.y - screen.y) * gridSize,
@@ -353,11 +358,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param g The graphics object that the HUD should be drawn on
 	 */
 	public void drawHUD(Graphics g) {
-		g.setColor(Color.BLUE);
+		g.setColor(new Color(0,0,255,128));
 		g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
-		g.setColor(Color.LIGHT_GRAY);
+		g.setColor(new Color(255,255,204,128));
 		g.fillRect(getWidth() - 580, getHeight() - 180, 580, 180);
-		g.setColor(Color.BLACK);
+		g.setColor(new Color(0,0,0,128));
 
 		//draw grid to hold frequency table of lifeforms
 		g.drawRect(getWidth() - 560, getHeight() - 160, 130, 120);
@@ -545,27 +550,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		return locToGrass.get(location);
 	}
 
-	/**
-	 * Adds in a new baby animal
-	 *
-	 * @param p where the baby animal will be placed
-	 * @param l the baby animal
-	 */
-	public void add(Point p, Lifeform l) {
-		locToLife.put(p, l);
-		l.setLocation(p);
-		if (l instanceof Bear) {
-			bearCount++;
-		} else if (l instanceof Bunny) {
-			bunnyCount++;
-		} else if (l instanceof Cattle) {
-			cattleCount++;
-		} else if (l instanceof Grass) {
-			grassCount++;
-		} else if (l instanceof Tree) {
-			treeCount++;
-		}
-	}
 
 	/**
 	 * Moves the lifeform
@@ -609,7 +593,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			logOpen = false;
 		} else if (keyCode == KeyEvent.VK_SPACE) {
-			//advance();
+			advance();
 		}
 		if (rightPressed) {
 			moveRight();
