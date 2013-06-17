@@ -46,6 +46,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     private ArrayList<Weather> activeWeather;
     private ArrayList<String> events;
     private static JFrame frame;
+    private static Summative s;
     /**
      * rectangles to hold the entire screen, where to click to open the log and
      * where the HUD is
@@ -237,6 +238,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         } else if (e.getSource().equals(addGrass)) {
             makeGrass = !makeGrass;
         }
+        s.requestFocusInWindow();
     }
 
     /**
@@ -264,7 +266,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(frame);//makes full screen
 
-        Summative s = new Summative();
+        s = new Summative();
         frame.add(s);
         s.requestFocusInWindow();//keyListener activated
         frame.setVisible(true);
