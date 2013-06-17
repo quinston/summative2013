@@ -9,12 +9,17 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Bat extends Animal {
-
+	public static int batCount = 0;
     public Bat() {
         super();
         preyList.add(new Tree());
         nocturnal = true;
+		++batCount;
     }
+	public void suicide() {
+		--batCount;
+		super.suicide();
+	}
 
     @Override
     public void reproduce() {

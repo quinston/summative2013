@@ -9,10 +9,16 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Bunny extends Animal {
-
+	public static int bunnyCount = 0;
 	public Bunny() {
 		super();
 		preyList.add(new Grass());
+		++bunnyCount;
+	}
+	
+	public void suicide() {
+		--bunnyCount;
+		super.suicide();
 	}
 
 	@Override

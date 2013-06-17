@@ -9,12 +9,20 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Bear extends Animal {
-
+	
+	public static int bearCount = 0;
+	
     public Bear() {
 		super();
         preyList.add(new Tree());
         preyList.add(new Cattle());
+		++bearCount;
     }
+	
+	public void suicide() {
+		--bearCount;
+		super.suicide();
+	}
     
     @Override
     public void reproduce() {

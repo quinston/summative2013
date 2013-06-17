@@ -9,10 +9,17 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Cattle extends Animal {
-
+	
+	public static int cattleCount = 0;
+	
 	public Cattle() {
 		super();
 		preyList.add(new Grass());
+		++cattleCount;
+	}
+	public void suicide() {
+		--cattleCount;
+		super.suicide();
 	}
 
 	@Override

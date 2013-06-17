@@ -24,6 +24,7 @@ public class Tree extends Vegetable {
         maxHealth=100;
         reproTime=50;
         sight=1;
+		++treeCount;
     }
     
     @Override
@@ -31,6 +32,8 @@ public class Tree extends Vegetable {
         if (nearEmpty() == null) {
         } else {
             summative.addTree(nearEmpty().x,nearEmpty().y);
+			
+			reproTime = 960;
         }
     }
 	
@@ -41,5 +44,11 @@ public class Tree extends Vegetable {
 	@Override
 	public String getName() {
 		return "Tree";
+	}
+	
+	public static int treeCount = 0;
+	public void suicide() {
+		--treeCount;
+		super.suicide();
 	}
 }

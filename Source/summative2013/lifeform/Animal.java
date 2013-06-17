@@ -99,9 +99,9 @@ public abstract class Animal extends Lifeform {
 	public Animal() {
 		super();
 		hunger = 50;
-		gender = GENDER.MALE;
+		gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
 		depravity = 0;
-		knowledge = new ArrayList<Memory>();
+		//knowledge = new ArrayList<Memory>();
 		preyList = new ArrayList<Lifeform>();
 	}
 

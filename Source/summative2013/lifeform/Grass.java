@@ -25,7 +25,8 @@ public class Grass extends Vegetable {
 		current = capacity;
 		maxHealth = 1;
 		reproTime = 5;
-                sight =1;
+		sight = 1;
+		++grassCount;
 	}
 
 	/**
@@ -37,7 +38,7 @@ public class Grass extends Vegetable {
 		Point temp;
 		ArrayList<Point> available = new ArrayList<Point>();
 		final Point location = summative.getLocation(this);
-		
+
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
 				temp = new Point(location.x + x, location.y + y);
@@ -60,15 +61,23 @@ public class Grass extends Vegetable {
 	public void reproduce() {
 		if (nearEmpty() == null) {
 		} else {
-			summative.addGrass(nearEmpty().x,nearEmpty().y);
+			summative.addGrass(nearEmpty().x, nearEmpty().y);
+			
+			reproTime = 12;
 		}
 	}
 
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
 	}
-	
+
 	public String getName() {
 		return "Grass";
+	}
+	public static int grassCount = 0;
+
+	public void suicide() {
+		--grassCount;
+		super.suicide();
 	}
 }

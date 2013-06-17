@@ -27,10 +27,6 @@ public abstract class Lifeform {
      */
     protected boolean diseased;
     /**
-     * Stores position on grid
-     */
-    protected Point location;
-    /**
      * Stores the current weather
      */
     protected WEATHER weather;
@@ -161,6 +157,7 @@ public abstract class Lifeform {
      */
     public void findNearbyLife() {
         nearbyLife = new ArrayList<Lifeform>();
+		final Point location = summative.getLocation(this);
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
@@ -177,8 +174,7 @@ public abstract class Lifeform {
     /**
      * Produces a new lifeform, overridden in most of the classes
      */
-    public void reproduce() {
-    }
+    public abstract void reproduce();
 
     /**
      * Returns the lifeform's sprite. Should be overriden in child classes with
