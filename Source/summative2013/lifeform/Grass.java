@@ -36,6 +36,8 @@ public class Grass extends Vegetable {
 	public Point nearEmpty() {
 		Point temp;
 		ArrayList<Point> available = new ArrayList<Point>();
+		final Point location = summative.getLocation(this);
+		
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
 				temp = new Point(location.x + x, location.y + y);
