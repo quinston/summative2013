@@ -100,6 +100,10 @@ public abstract class Animal extends Lifeform {
      * Stores how diseased plague leprosy shun contagion SARS level of multiple
      */
     protected ArrayList<Disease> disease;
+    /**
+     * Works at night
+     */
+    protected boolean nocturnal;
 
     public Animal() {
         hunger = 50;
@@ -346,7 +350,7 @@ public abstract class Animal extends Lifeform {
             setDestination();
         }
 
-        if (Weather == WEATHER.NIGHT) {
+        if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
 			final Point location = summative.getLocation(this);
 			
