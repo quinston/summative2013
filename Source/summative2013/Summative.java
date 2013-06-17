@@ -26,6 +26,7 @@ import summative2013.lifeform.Cattle;
 import summative2013.lifeform.Grass;
 import summative2013.lifeform.Lifeform;
 import summative2013.lifeform.Tree;
+import summative2013.lifeform.Bat;
 import summative2013.phenomena.Weather;
 
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener {
@@ -45,7 +46,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private final int gridSize = 10;
 	private String mouseOnLife = "";
 	private Point mouse = new Point();
-	private int bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0, numDays = 0;
+	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, 
+			treeCount = 0, numDays = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
@@ -54,20 +56,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Summative() {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
-		locToLife.put(new Point(0, 0), new Bear());
-		bearCount++;
-		locToLife.put(new Point(0, 10), new Bunny());
-		bunnyCount++;
-		locToLife.put(new Point(0, 20), new Cattle());
-		cattleCount++;
-		locToLife.put(new Point(60, 20), new Grass());
-		grassCount++;
-		locToLife.put(new Point(70, 20), new Grass());
-		grassCount++;
-		locToLife.put(new Point(80, 20), new Grass());
-		grassCount++;
-		locToLife.put(new Point(30, 30), new Tree());
-		treeCount++;
+		addBear(0, 0);
+		addBunny(0,10);
+		addCattle(0,20);
+		addGrass(60,20);
+		addGrass(70,20);
+		addGrass(80,20);
+		addTree(-30,-30);
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
@@ -118,6 +113,42 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				}
 			}
 		})).start();
+	}
+	
+	/**
+	 * Adds a new bear at p and increments bear count.
+	 * The rest are similar.
+	 * @param x X-coordinate of bear's location
+	 * @param y Y-coordinate of bear's location
+	 */
+	private void addBear(int x, int y) {
+		locToLife.put(new Point(x,y), new Bear());
+		++bearCount;
+	}
+	
+	private void addBat(int x, int y) {
+		locToLife.put(new Point(x,y), new Bat());
+		++batCount;
+	}
+	
+	private void addBunny(int x, int y) {
+		locToLife.put(new Point(x,y), new Bunny());
+		++bunnyCount;
+	}
+	
+	private void addCattle(int x, int y) {
+		locToLife.put(new Point(x,y), new Cattle());
+		++cattleCount;
+	}
+	
+	private void addGrass(int x, int y) {
+		locToLife.put(new Point(x,y), new Grass());
+		++grassCount;
+	}
+	
+		private void addTree(int x, int y) {
+		locToLife.put(new Point(x,y), new Tree());
+		++treeCount;
 	}
 
 	/**
