@@ -585,7 +585,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         } else if (keyCode == KeyEvent.VK_ESCAPE) {
             logOpen = false;
         } else if (keyCode == KeyEvent.VK_SPACE) {
-            //advance();
+            advance();
         }
         if (rightPressed) {
             moveRight();
@@ -832,7 +832,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 					g.setColor(new Color(0, 0, 0, 204));
 					int height = 90;
 					g.fillRect(0, getHeight() - height,
-							150, height);
+							200, height);
 					g.setColor(Color.WHITE);
 
 					String[] desc = selectedLifeform.toString().split("\n");
@@ -942,9 +942,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
-
 		synchronized (lock) {
-			if (logButton.contains(e.getPoint())) {
+			if (logButton.contains(e.getPoint())||e.getPoint().x>getHeight()-25) {
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			} else {
 				mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
