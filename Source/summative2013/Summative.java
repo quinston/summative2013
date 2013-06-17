@@ -63,10 +63,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      * stores if we are showing the log or not
      */
     private boolean logOpen = false;
-    /**
-     * stores which lifeform we are creating
-     */
-    private boolean makeBear = false, makeBunny = false, makeCattle = false, makeGrass = false, makeTree = false, makeBat = false;
     private final int gridSize = 10;
     private final int FPS = 60;
     /**
@@ -186,76 +182,88 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     }
 
     /**
-     * Adds a new bear at p and increments bear count. The rest are similar.
+     * Adds a new bear at point x,y and increments bear count. The rest are similar.
      *
      * @param x X-coordinate of bear's location
      * @param y Y-coordinate of bear's location
      */
     public void addBear(int x, int y) {
         synchronized (lock) {
-            locToLife.put(new Point(x, y), new Bear());
-            ++bearCount;
-            addToLog("Bear spawned at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))){
+                locToLife.put(new Point(x, y), new Bear());
+                ++bearCount;
+                addToLog("Bear spawned at " + x + "," + y);
+            }
         }
     }
 
     public void addBat(int x, int y) {
         synchronized (lock) {
-            locToLife.put(new Point(x, y), new Bat());
-            ++batCount;
-            addToLog("Bat spawned at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))){
+                locToLife.put(new Point(x, y), new Bat());
+                ++batCount;
+                addToLog("Bat spawned at " + x + "," + y);
+            }
         }
     }
 
     public void addBunny(int x, int y) {
         synchronized (lock) {
-            locToLife.put(new Point(x, y), new Bunny());
-            ++bunnyCount;
-            addToLog("Bunny spawned at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))){
+                locToLife.put(new Point(x, y), new Bunny());
+                ++bunnyCount;
+                addToLog("Bunny spawned at " + x + "," + y);
+            }
         }
     }
 
     public void addCattle(int x, int y) {
         synchronized (lock) {
-            locToLife.put(new Point(x, y), new Cattle());
-            ++cattleCount;
-            addToLog("Cattle spawned at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))){
+                locToLife.put(new Point(x, y), new Cattle());
+                ++cattleCount;
+                addToLog("Cattle spawned at " + x + "," + y);
+            }
         }
     }
 
     public void addGrass(int x, int y) {
         synchronized (lock) {
-            Grass g = new Grass();
-            Point p = new Point(x, y);
-            locToLife.put(p, g);
-            locToGrass.put(p, g);
-            ++grassCount;
-            addToLog("Grass placed at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))&&!locToGrass.containsKey(new Point(x,y))){
+                Grass g = new Grass();
+                Point p = new Point(x, y);
+                locToLife.put(p, g);
+                locToGrass.put(p, g);
+                ++grassCount;
+                addToLog("Grass placed at " + x + "," + y);
+            }
         }
     }
 
     public void addTree(int x, int y) {
         synchronized (lock) {
-            locToLife.put(new Point(x, y), new Tree());
-            ++treeCount;
-            addToLog("Tree spawned at " + x + "," + y);
+            if(!locToLife.containsKey(new Point(x,y))){
+                locToLife.put(new Point(x, y), new Tree());
+                ++treeCount;
+                addToLog("Tree spawned at " + x + "," + y);
+            }
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(addBear)) {
-            makeBear = !makeBear;
+            addBear(selectedPoint.x, selectedPoint.y);
         } else if (e.getSource().equals(addBunny)) {
-            makeBunny = !makeBunny;
+            addBunny(selectedPoint.x,selectedPoint.y);
         } else if (e.getSource().equals(addBat)) {
-            makeBat = !makeBat;
+            addBat(selectedPoint.x, selectedPoint.y);
         } else if (e.getSource().equals(addCattle)) {
-            makeCattle = !makeCattle;
+            addCattle(selectedPoint.x, selectedPoint.y);
         } else if (e.getSource().equals(addTree)) {
-            makeTree = !makeTree;
+            addTree(selectedPoint.x, selectedPoint.y);
         } else if (e.getSource().equals(addGrass)) {
-            makeGrass = !makeGrass;
+            addGrass(selectedPoint.x, selectedPoint.y);
         }
         s.requestFocusInWindow();
     }
