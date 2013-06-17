@@ -36,7 +36,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
     private static GraphicsEnvironment ge;
     private static GraphicsDevice gd;
-    private JPanel bigPanel, buttonPanel;
+    private JPanel buttonPanel;
     private JButton addBear, addBunny, addCattle, addGrass, addTree, addBat;
     private HashMap<Point, Lifeform> locToLife;
     private HashMap<Point, Grass> locToGrass;
@@ -128,10 +128,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         a.add(new Area(new Ellipse2D.Double(-90, -90, 70, 70)));
         activeWeather.add(new summative2013.phenomena.Drizzle(a));
 
-        bigPanel = new JPanel();
-        bigPanel.setLayout(new BorderLayout());
-        //bigPanel.add(this, BorderLayout.CENTER);
-
 
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 6));
@@ -160,7 +156,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addGrass.addActionListener(this);
         buttonPanel.add(addGrass);
 
-        bigPanel.add(buttonPanel, BorderLayout.SOUTH);
+        setLayout(new BorderLayout());
+        add(buttonPanel, BorderLayout.SOUTH);
         try {
             loadSprites();
         } catch (IOException e) {
@@ -268,8 +265,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         gd.setFullScreenWindow(frame);//makes full screen
 
         Summative s = new Summative();
-        s.bigPanel.add(s, BorderLayout.CENTER);
-        frame.add(s.bigPanel);
+        frame.add(s);
         s.requestFocusInWindow();//keyListener activated
         frame.setVisible(true);
     }
