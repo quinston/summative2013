@@ -2,7 +2,7 @@ package summative2013;
 
 import java.awt.Image;
 import java.util.HashMap;
-import lifeform.Bat;
+import summative2013.lifeform.Bat;
 import summative2013.lifeform.Bear;
 import summative2013.lifeform.Bunny;
 import summative2013.lifeform.Cattle;
