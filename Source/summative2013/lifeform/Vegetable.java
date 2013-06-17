@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import java.awt.Point;
 import summative2013.Summative.TERRAIN;
 import summative2013.phenomena.Weather.WEATHER;
 
@@ -87,6 +88,8 @@ public abstract class Vegetable extends Lifeform {
             sun = sun - 1;
         }
 
+		final Point location = summative.getLocation(this);
+		
         if (summative.terrainGet(location) == TERRAIN.SEA) {
             thirst = -1;
         } else if (Math.abs(water.x - location.x) <= 1 && Math.abs(water.y - location.y) <= 1

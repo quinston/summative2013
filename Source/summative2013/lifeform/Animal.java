@@ -115,6 +115,7 @@ public abstract class Animal extends Lifeform {
      */
     public void findNearbyLife() {
         nearbyLife = new ArrayList<Lifeform>();
+		final Point location = summative.getLocation(this);
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
@@ -140,7 +141,7 @@ public abstract class Animal extends Lifeform {
                     if (l instanceof Tree || l instanceof Grass) {
                         Vegetable temp = (Vegetable) l;
                         if (temp.getCurrent() > 0) {
-                            foodList.add(l.location);
+                            foodList.add(l.getLocation());
                         }
                     }
                 }
@@ -148,6 +149,7 @@ public abstract class Animal extends Lifeform {
         }
         if (foodList.size() > 0) {
             food = foodList.get(0);
+			final Point location = summative.getLocation(this);
             for (Point p : foodList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(food.x - location.x) + Math.abs(food.y - location.y)) {
                     food = p;
@@ -158,7 +160,7 @@ public abstract class Animal extends Lifeform {
                 for (Lifeform m : preyList) {
                     if (l.getClass().equals(m.getClass())) {
                         if (l instanceof Tree || l instanceof Grass) {
-                            foodList.add(l.location);
+                            foodList.add(l.getLocation());
                         }
                     }
                 }
@@ -177,13 +179,14 @@ public abstract class Animal extends Lifeform {
         for (Lifeform l : list) {
             if (l.getMobile()) {
                 if (canMate((Animal) l)) {
-                    mateList.add(l.location);
+                    mateList.add(l.getLocation());
                 }
             }
         }
 
         if (mateList.size() > 0) {
             mate = mateList.get(0);
+			final Point location = summative.getLocation(this);
             for (Point p : mateList) {
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
                     mate = p;
@@ -197,12 +200,13 @@ public abstract class Animal extends Lifeform {
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {
-                hitList.add(l.location);
+                hitList.add(l.getLocation());
             }
         }
         if (hitList.size() > 0) {
             murder = hitList.get(0);
             for (Point p : hitList) {
+				final Point location = summative.getLocation(this);
                 if (Math.abs(p.x - location.x) + Math.abs(p.y - location.y) < Math.abs(mate.x - location.x) + Math.abs(mate.y - location.y)) {
                     murder = p;
                 }
@@ -249,6 +253,7 @@ public abstract class Animal extends Lifeform {
      * @return
      */
     public DIRECTION getDirection(Point p) {
+		final Point location = summative.getLocation(this);
         if (p.x == location.x && p.y == location.y) {
             return DIRECTION.CENTER;
         } else if (Math.abs(p.x - location.x) > Math.abs(p.y - location.y)) {
@@ -304,6 +309,7 @@ public abstract class Animal extends Lifeform {
      */
     public boolean drowning() {
         int drownery = 0;
+		final Point location = summative.getLocation(this);
 
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -342,6 +348,8 @@ public abstract class Animal extends Lifeform {
 
         if (Weather == WEATHER.NIGHT) {
         } else {
+			final Point location = summative.getLocation(this);
+			
             if (getDirection(destination) == DIRECTION.NORTH || destination == null) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
@@ -430,7 +438,7 @@ public abstract class Animal extends Lifeform {
                                 tempg.changeCurrent(-1);
                             }
                         } else {
-                            summative.assistedSuicide(destination);
+                            summative.kill(destination);
                         }
                     } else if (destination == mate) {
                         hunger = hunger + 30;
@@ -450,4 +458,5 @@ public abstract class Animal extends Lifeform {
             suicide();
         }
     }
+
 }

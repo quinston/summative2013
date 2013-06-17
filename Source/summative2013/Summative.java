@@ -125,7 +125,7 @@ public class Summative extends JPanel implements KeyListener {
 
 		ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		gd = ge.getDefaultScreenDevice();
-		gd.setFullScreenWindow(frame);//makes full screen
+		//gd.setFullScreenWindow(frame);//makes full screen
 		Summative s = new Summative();
 		frame.add(s);
 		s.repaint();
@@ -256,8 +256,11 @@ public class Summative extends JPanel implements KeyListener {
 					}
 				}
 			}
-			for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-				locToTerrain.put(m.getKey(), m.getValue());
+
+			synchronized (lock) {
+				for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+					locToTerrain.put(m.getKey(), m.getValue());
+				}
 			}
 		}
 	}
@@ -318,11 +321,20 @@ public class Summative extends JPanel implements KeyListener {
 	}
 
 	/**
-	 * Kills the lifeform at a point
+	 * Kills the lifeform
 	 *
-	 * @param location the point that has the lifeform there
+	 * @param l the lifeform to kill
 	 */
-	public void assistedSuicide(Point location) {
+	public void kill(Lifeform l) {
+		locToLife.remove(getLocation(l));
+	}
+
+	/**
+	 * Kills the lifeform at the given point
+	 *
+	 * @param location the place at which a lifeform is to be killed
+	 */
+	public void kill(Point location) {
 		locToLife.remove(location);
 	}
 
@@ -582,7 +594,7 @@ public class Summative extends JPanel implements KeyListener {
 	public Weather.WEATHER getActiveWeather(int x, int y) {
 		Weather.WEATHER ret;
 
-		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI / dayLengthMillis * System.currentTimeMillis()) > 0.2) {
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * hoursElapsed) > 0) {
 			ret = Weather.WEATHER.SUN;
 		} else {
 			ret = Weather.WEATHER.NIGHT;
@@ -598,12 +610,51 @@ public class Summative extends JPanel implements KeyListener {
 		return ret;
 	}
 
+	/**
+	 * Moves the clouds a bit
+	 */
 	public void pushWeather() {
 		for (Weather w : activeWeather) {
 			w.translate(hourlyWind.x, hourlyWind.y);
 		}
 	}
-	private long dayLengthMillis = 30000;
+	/**
+	 * Time in simulation hours elapsed
+	 */
+	private long hoursElapsed = 0;
+	/**
+	 * Wind speed, affects pushWeather
+	 */
 	private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
+	/**
+	 * Used to make loops regular
+	 */
 	private long refFrame = System.currentTimeMillis();
+
+	/**
+	 * Gets the location of a lifeform
+	 *
+	 * @param l The lifeform to locate
+	 * @return l's location
+	 */
+	public Point getLocation(Lifeform l) {
+		for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
+			if (e.getValue() == l) {
+				return e.getKey();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Moves a lifeform
+	 * @param l The lifeform to move
+	 * @param p Its new location
+	 */
+	public void moveTo(Lifeform l, Point p) {
+		synchronized (lock) {
+			locToLife.remove(getLocation(l));
+			locToLife.put(p, l);
+		}
+	}
 }

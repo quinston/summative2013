@@ -16,23 +16,30 @@ import summative2013.lifeform.Vegetable;
  * @author quincy
  */
 public class SpriteAssigner {
-	public static HashMap<String,Image> sprites;
+
+	public static HashMap<String, Image> sprites;
+
 	public static Image getSpriteOf(Bear l) {
 		return sprites.get("bear");
 	}
-	public  static Image getSpriteOf(Bunny l) {
+
+	public static Image getSpriteOf(Bunny l) {
 		return sprites.get("bunny");
 	}
+
 	public static Image getSpriteOf(Cattle l) {
 		return sprites.get("cattle");
 	}
+
 	public static Image getSpriteOf(Grass l) {
 		return sprites.get("grass");
 	}
-		public static Image getSpriteOf(Tree l) {
+
+	public static Image getSpriteOf(Tree l) {
 		return sprites.get("tree");
 	}
-			public static Image getSpriteOf(Vegetable l) {
+
+	public static Image getSpriteOf(Vegetable l) {
 		return sprites.get("vegetable");
 	}
 }
