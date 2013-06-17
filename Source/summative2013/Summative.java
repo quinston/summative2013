@@ -45,13 +45,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     private static JFrame frame;
     private Rectangle screen, logButton, hud;
     private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
-    ;
-	private final int gridSize = 10;
-<<<<<<< HEAD
-	private String mouseOnLife = "";
-	private Point mouse = new Point();
-	private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
-			treeCount = 0, numHours = 0;
+    private final int gridSize = 10;
+    private String mouseOnLife = "";
+    private Point mouse = new Point();
+    private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
+                    treeCount = 0, numHours = 0;
 
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
