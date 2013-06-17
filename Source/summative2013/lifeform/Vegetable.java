@@ -67,6 +67,7 @@ public abstract class Vegetable extends Lifeform {
      * Changes variables depending on weather
      */
     public void act(WEATHER weather) {
+        findWater();
         if (weather == WEATHER.SUN) {
             regenCounter = regenCounter - 2;
             sun = sun + 20;
