@@ -51,6 +51,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
                     treeCount = 0, numHours = 0;
 
+
 	/**
 	 * Default constructor, Generates a Summative object that is the size of the
 	 * screen, with a map to fill it
@@ -58,6 +59,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Summative() {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
+		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
+		activeWeather = new ArrayList<Weather>();
+		locToGrass = new HashMap<Point, Grass>();
+		
 		addBear(0, 0);
 		addBunny(0, 10);
 		addCattle(0, 20);
@@ -65,9 +70,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		addGrass(70, 20);
 		addGrass(80, 20);
 		addTree(-30, -30);
-		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
-		activeWeather = new ArrayList<Weather>();
-		locToGrass = new HashMap<Point, Grass>();
+		
 		setSize(frame.getSize());//fullscreen the panel
 		screen = new Rectangle(-1 * getWidth() / (2 * gridSize) - 1, -1 * getHeight() / (2 * gridSize) - 1,
 				getWidth() / gridSize + 2, getHeight() / gridSize + 2);//sets up our screen rectangle to define our screen
@@ -105,6 +108,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
+
 			public void run() {
 				while (true) {
 					if (System.currentTimeMillis() - refFrame > 1000. / FPS) {
@@ -125,33 +129,48 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param y Y-coordinate of bear's location
 	 */
 	public void addBear(int x, int y) {
-		locToLife.put(new Point(x, y), new Bear());
-		++bearCount;
+		synchronized (lock) {
+			locToLife.put(new Point(x, y), new Bear());
+			++bearCount;
+		}
 	}
 
 	public void addBat(int x, int y) {
-		locToLife.put(new Point(x, y), new Bat());
-		++batCount;
+		synchronized (lock) {
+			locToLife.put(new Point(x, y), new Bat());
+			++batCount;
+		}
 	}
 
 	public void addBunny(int x, int y) {
-		locToLife.put(new Point(x, y), new Bunny());
-		++bunnyCount;
+		synchronized (lock) {
+			locToLife.put(new Point(x, y), new Bunny());
+			++bunnyCount;
+		}
 	}
 
 	public void addCattle(int x, int y) {
-		locToLife.put(new Point(x, y), new Cattle());
-		++cattleCount;
+		synchronized (lock) {
+			locToLife.put(new Point(x, y), new Cattle());
+			++cattleCount;
+		}
 	}
 
 	public void addGrass(int x, int y) {
-		locToLife.put(new Point(x, y), new Grass());
-		++grassCount;
+		synchronized (lock) {
+			Grass g = new Grass();
+			Point p = new Point(x,y);
+			locToLife.put(p, g);
+			locToGrass.put(p,g);
+			++grassCount;
+		}
 	}
 
 	public void addTree(int x, int y) {
-		locToLife.put(new Point(x, y), new Tree());
-		++treeCount;
+		synchronized (lock) {
+			locToLife.put(new Point(x, y), new Tree());
+			++treeCount;
+		}
 	}
 
 	/**
@@ -177,7 +196,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		gd = ge.getDefaultScreenDevice();
-		gd.setFullScreenWindow(frame);//makes full screen
+		//gd.setFullScreenWindow(frame);//makes full screen
 		Summative s = new Summative();
 		frame.add(s);
 		s.requestFocusInWindow();//keyListener activated
@@ -277,39 +296,45 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public void advance() {
 		numHours++;
 		pushWeather();
-		for (Weather w : activeWeather) {
-			Iterator lifeIt = locToLife.entrySet().iterator();
-			while (lifeIt.hasNext()) {
-
-				Map.Entry<Point, Lifeform> pairs = (Map.Entry) lifeIt.next();
-
-				if (w.contains(pairs.getKey())) {//if we are on the weather
-					pairs.getValue().act(w.getType());//act based on weather
-				}
-			}
-			Iterator terIt = locToTerrain.entrySet().iterator();
-			HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-			while (terIt.hasNext()) {
-				Map.Entry<Point, TERRAIN> pairs = (Map.Entry) terIt.next();
-				if (w.contains(pairs.getKey())) {
-					if (w.getType() == Weather.WEATHER.RAIN && pairs.getValue() == TERRAIN.SEA) {
-						//expand water
-						Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-						for (Point p : points) {
-							temp.put(p, TERRAIN.SEA);
-						}
-					}
-					if (w.getType() == Weather.WEATHER.SUN && pairs.getValue() == TERRAIN.LAND) {
-						//radiate land
-						Point[] points = {new Point(pairs.getKey().x, pairs.getKey().y), new Point(pairs.getKey().x - 1, pairs.getKey().y), new Point(pairs.getKey().x + 1, pairs.getKey().y), new Point(pairs.getKey().x, pairs.getKey().y - 1), new Point(pairs.getKey().x, pairs.getKey().y + 1)};
-						for (Point p : points) {
-							temp.put(p, TERRAIN.LAND);
-						}
+		synchronized (lock) {
+			for (Weather w : activeWeather) {
+				for (Map.Entry<Point, Lifeform> pair : locToLife.entrySet()) {
+					if (w.contains(pair.getKey())) {//if we are on the weather
+						pair.getValue().act(w.getType());//act based on weather
 					}
 				}
-			}
-			for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
-				locToTerrain.put(m.getKey(), m.getValue());
+
+				HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
+				for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
+					if (w.contains(pair.getKey())) {
+						if (w.getType() == Weather.WEATHER.RAIN && pair.getValue() == TERRAIN.SEA) {
+							//expand water
+							Point original = pair.getKey();
+							Point[] points = {new Point(original.x, original.y),
+								new Point(original.x - 1, original.y),
+								new Point(original.x + 1, original.y),
+								new Point(original.x, original.y - 1),
+								new Point(original.x, original.y + 1)};
+							for (Point p : points) {
+								temp.put(p, TERRAIN.SEA);
+							}
+						} else if (w.getType() == Weather.WEATHER.SUN && pair.getValue() == TERRAIN.LAND) {
+							//radiate land
+							Point original = pair.getKey();
+							Point[] points = {new Point(original.x, original.y),
+								new Point(original.x - 1, original.y),
+								new Point(original.x + 1, original.y),
+								new Point(original.x, original.y - 1),
+								new Point(original.x, original.y + 1)};
+							for (Point p : points) {
+								temp.put(p, TERRAIN.LAND);
+							}
+						}
+					}
+				}
+				for (Map.Entry<Point, TERRAIN> m : temp.entrySet()) {
+					locToTerrain.put(m.getKey(), m.getValue());
+				}
 			}
 		}
 	}
@@ -356,11 +381,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param g The graphics object that the HUD should be drawn on
 	 */
 	public void drawHUD(Graphics g) {
-		g.setColor(new Color(0,0,255,128));
+		g.setColor(new Color(0, 0, 255, 128));
 		g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
-		g.setColor(new Color(255,255,204,128));
+		g.setColor(new Color(255, 255, 204, 128));
 		g.fillRect(getWidth() - 580, getHeight() - 180, 580, 180);
-		g.setColor(new Color(0,0,0,128));
+		g.setColor(new Color(0, 0, 0, 128));
 
 		//draw grid to hold frequency table of lifeforms
 		g.drawRect(getWidth() - 560, getHeight() - 160, 130, 120);
@@ -507,7 +532,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param l the lifeform to kill
 	 */
 	public void kill(Lifeform l) {
-		locToLife.remove(getLocation(l));
+		synchronized (lock) {
+			locToLife.remove(getLocation(l));
+		}
 	}
 
 	/**
@@ -516,7 +543,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param location the place at which a lifeform is to be killed
 	 */
 	public void kill(Point location) {
-		locToLife.remove(location);
+		synchronized (lock) {
+			locToLife.remove(location);
+		}
 	}
 
 	/**
@@ -526,7 +555,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return The lifeform at point location
 	 */
 	public Lifeform lifeGet(Point location) {
+		synchronized(lock) {
 		return locToLife.get(location);
+		}
 	}
 
 	/**
@@ -536,7 +567,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return the type of terrain at location
 	 */
 	public TERRAIN terrainGet(Point location) {
+		synchronized(lock) {
 		return locToTerrain.get(location);
+		}
 	}
 
 	/**
@@ -545,17 +578,20 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return The grass object at that point
 	 */
 	public Grass grassGet(Point location) {
+		synchronized(lock) {
 		return locToGrass.get(location);
+		}
 	}
-
 
 	/**
 	 * Moves the lifeform
 	 */
 	public void move(Point p, Lifeform l) {
-		locToLife.remove(l.getLocation());
-		locToLife.put(p, l);
-		l.setLocation(p);
+		synchronized (lock) {
+			locToLife.remove(l.getLocation());
+			locToLife.put(p, l);
+			l.setLocation(p);
+		}
 	}
 
 	/**
@@ -691,13 +727,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		mouse = new Point(e.getPoint().x / 10 + screen.x, e.getPoint().y / 10 + screen.y);
+		synchronized(lock) {
 		if (locToLife.containsKey(mouse)) {
 			mouseOnLife = locToLife.get(mouse).getName();
 
 		} else {
-			synchronized (lock) {
 				mouseOnLife = "";
-			}
+		}
 		}
 	}
 
@@ -807,11 +843,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Weather.WEATHER getActiveWeather(int x, int y) {
 		Weather.WEATHER ret;
 
-		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours) > 0) {
+		if (Math.sin(2 * Math.PI / 1000 * x + 2 * Math.PI * numHours/24) > 0) {
 			ret = Weather.WEATHER.SUN;
 		} else {
 			ret = Weather.WEATHER.NIGHT;
 		}
+		synchronized(lock) {
 		for (Weather w : activeWeather) {
 			if (w.contains(x, y)) {
 				if (ret == Weather.WEATHER.RAIN) {
@@ -819,6 +856,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				}
 				ret = w.getType();
 			}
+		}
 		}
 		return ret;
 	}
@@ -835,7 +873,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * Wind speed, affects pushWeather
 	 */
 	private HashMap<String, Image> sprites;
-	private Point2D.Double hourlyWind = new Point2D.Double(-0.03, 0.03);
+	private Point2D.Double hourlyWind = new Point2D.Double(-3, 3);
 	/**
 	 * Used to make loops regular
 	 */
@@ -848,9 +886,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @return l's location
 	 */
 	public Point getLocation(Lifeform l) {
-		for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
-			if (e.getValue() == l) {
-				return e.getKey();
+		synchronized (lock) {
+			for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
+				if (e.getValue() == l) {
+					return e.getKey();
+				}
 			}
 		}
 		return null;
