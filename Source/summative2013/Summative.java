@@ -67,12 +67,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public Summative() {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
-        events = new ArrayList<String>();
+        events = new ArrayList<>();
         setLayout(new BorderLayout());
-        locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
-        locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
-        activeWeather = new ArrayList<Weather>();
-        locToGrass = new HashMap<Point, Grass>();
+        locToLife = new HashMap<>();//initializes our point, lifeform hashmap
+        locToTerrain = new HashMap<>();//initializes our point, terrain hashmap
+        activeWeather = new ArrayList<>();
+        locToGrass = new HashMap<>();
 
         /*
          addBear(0, 0);
@@ -242,9 +242,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     public void addGrass(int x, int y) {
         synchronized (lock) {
             if (!locToGrass.containsKey(new Point(x, y))) {
-                Grass g = new Grass();
-                Point p = new Point(x, y);
-                locToGrass.put(p, g);
+                locToGrass.put(new Point(x, y), new Grass());
                 //++grassCount;
                 addToLog("Grass placed at " + x + "," + y);
             }
