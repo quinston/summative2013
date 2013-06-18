@@ -32,7 +32,7 @@ public class Grass extends Vegetable {
     /**
      * Special grass edition of nearEmpty, checks only whether there's grass
      *
-     * @return
+     * @return close by empty blocks
      */
     @Override
     public Point nearEmpty() {
@@ -66,18 +66,26 @@ public class Grass extends Vegetable {
             reproTime = 12;
         }
     }
-
+    /**
+     * 
+     * @return the sprite of Grass
+     */
     @Override
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
-
+    /**
+     * 
+     * @return the name of this lifeform
+     */
     @Override
     public String getName() {
         return "Grass";
     }
     public static int grassCount = 0;
-
+    /**
+     * kills this animal
+     */
     @Override
     public void suicide() {
         --grassCount;

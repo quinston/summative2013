@@ -25,7 +25,9 @@ public class Tree extends Vegetable {
         sight = 1;
         ++treeCount;
     }
-
+    /**
+     * Makes babies
+     */
     @Override
     public void reproduce() {
         if (nearEmpty() == null) {
@@ -34,18 +36,26 @@ public class Tree extends Vegetable {
             reproTime = 100;
         }
     }
-
+    /**
+     * 
+     * @return the sprite of a Tree
+     */
     @Override
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
-
+    /**
+     * 
+     * @return the name of this lifeform
+     */
     @Override
     public String getName() {
         return "Tree";
     }
     public static int treeCount = 0;
-
+    /**
+     * kills this tree
+     */
     @Override
     public void suicide() {
         --treeCount;

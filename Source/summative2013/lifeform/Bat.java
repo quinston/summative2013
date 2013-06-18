@@ -9,18 +9,27 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Bat extends Animal {
-	public static int batCount = 0;
+
+    public static int batCount = 0;
+    /**
+     * Default constructor
+     */
     public Bat() {
         super();
         preyList.add(Tree.class);
         nocturnal = true;
-		++batCount;
+        ++batCount;
     }
-	public void suicide() {
-		--batCount;
-		super.suicide();
-	}
-
+    /**
+     * dead bat
+     */
+    public void suicide() {
+        --batCount;
+        super.suicide();
+    }
+    /**
+     * baby furry fliers
+     */
     @Override
     public void reproduce() {
         if (nearEmpty() == null) {
@@ -29,14 +38,19 @@ public class Bat extends Animal {
             summative.addBat(nearEmpty().x, nearEmpty().y);
         }
     }
-
+    /**
+     * 
+     * @return the sprite of a bat
+     */
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
-
-	@Override
-	public String getName() {
-		return "Bat";
-	}
-	
+    /**
+     * 
+     * @return the name of this species
+     */
+    @Override
+    public String getName() {
+        return "Bat";
+    }
 }

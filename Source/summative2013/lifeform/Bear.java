@@ -5,15 +5,15 @@ import summative2013.SpriteAssigner;
 import static summative2013.lifeform.Lifeform.summative;
 
 /**
- *
- * @author 322303413
+ * Bear class, describes a bear
+ * @author Bobby Chiang
  */
 public class Bear extends Animal {
 
     public static int bearCount = 0;
 
     /**
-     * Constructor
+     * Default Constructor, creates a bear
      */
     public Bear() {
         super();
@@ -45,7 +45,7 @@ public class Bear extends Animal {
 
     /**
      * Returns the image
-     * @return 
+     * @return Sprite for bear
      */
     @Override
     public Image getSprite() {
@@ -54,7 +54,7 @@ public class Bear extends Animal {
 
     /**
      * Returns the name
-     * @return 
+     * @return the Name of the type of animal
      */
     @Override
     public String getName() {
