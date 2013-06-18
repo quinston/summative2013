@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import java.awt.Point;
 import java.awt.Image;
 import summative2013.SpriteAssigner;
 import static summative2013.lifeform.Lifeform.summative;
@@ -28,12 +29,9 @@ public class Bear extends Animal {
      * Reproduces
      */
     @Override
-    public void reproduce() {
-        if (nearEmpty() == null) {
-            hunger = hunger - 30;
-        } else {
-            summative.addBear(nearEmpty().x, nearEmpty().y);
-        }
+    public void reproduce(Point p) {
+            summative.addBear(p.x, p.y);
+        
     }
 
     /**

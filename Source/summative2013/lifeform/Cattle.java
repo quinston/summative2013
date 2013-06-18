@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import java.awt.Point;
 import summative2013.SpriteAssigner;
 import java.awt.Image;
 import static summative2013.lifeform.Lifeform.summative;
@@ -24,12 +25,9 @@ public class Cattle extends Animal {
      * cow babies!
      */
     @Override
-    public void reproduce() {
-        if (nearEmpty() == null) {
-            hunger = hunger - 30;
-        } else {
-            summative.addCattle(nearEmpty().x, nearEmpty().y);
-        }
+    public void reproduce(Point p) {
+            summative.addCattle(p.x, p.y);
+        
     }
     /**
      * 

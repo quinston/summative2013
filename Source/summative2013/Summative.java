@@ -73,6 +73,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		locToTerrain = new HashMap<>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<>();
 		locToGrass = new HashMap<>();
+		moveRequests = new HashMap<>();
 
 		/*
 		 * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
@@ -144,7 +145,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 
-		letThereBeGreenery();
+		//letThereBeGreenery();
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
@@ -342,36 +343,14 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		frame.setVisible(true);
 	}
 
-	/**
-	 * Generates a map that radiates out from an initial point, not used anymore
-	 *
-	 * @param p The point to centre the generation around
-	 * @param x The number of iterations
-	 */
-	public void doMapGen(Point p, int i) {
-		if (i >= 0) {
-			for (int x = p.x - 1; x <= p.x + 1; x++) {
-				for (int y = p.y - 1; y <= p.y + 1; y++) {
 
-
-
-					Point genPoint = new Point(x, y);
-					if ((x != p.x || y != p.y) && !locToTerrain.containsKey(new Point(x, y))) {//loop through points around
-						mapGen(genPoint);//fit that point
-					}
-					doMapGen(genPoint, i - 1);//radiate out
-				}
-
-			}
-		}
-	}
 
 	/**
 	 * Generates what type of land should be at the point
 	 *
 	 * @param point The point in which we want to generate some terrain
 	 */
-	public void mapGen(Point point) {
+	private void mapGen(Point point) {
 		int lands = 0, seas = 0;//count adjacent land, sea
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
@@ -444,7 +423,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * advances the map one iteration
 	 */
-	public void advance() {
+	private void advance() {
 		numHours++;
 		HashMap<Point, TERRAIN> temp = new HashMap<>();
 		//Iterate over copy to prevent concurrent modification
@@ -460,12 +439,14 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		pushWeather();
 		synchronized (lock) {
 			removeDead();
+			moveStuff();
 
 			for (Map.Entry<Point, Lifeform> pair : temp2.entrySet()) {
-				//assert(temp2.size() == locToLife.size());
+				assert(getLocation(pair.getValue()).equals(pair.getKey()));
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 			for (Map.Entry<Point, Grass> pair : temp3.entrySet()) {
+				assert(getLocation(pair.getValue()).equals(pair.getKey()));
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 
@@ -584,7 +565,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @param g The graphics object that the HUD should be drawn on
 	 */
-	public void drawHUD(Graphics g) {
+	private void drawHUD(Graphics g) {
 		logButton.translate((hud.x + 400) - logButton.x, (hud.y + 160) - logButton.y);
 		g.setColor(new Color(0, 0, 255, 180));
 		g.fillRoundRect(hud.x, hud.y, hud.width, hud.height, 20, 20);
@@ -644,7 +625,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @param g The graphics object to draw on
 	 */
-	public void drawTerrain(Graphics g) {
+	private void drawTerrain(Graphics g) {
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {
 			for (int j = screen.y; j <= screen.y + screen.height; j++) {
 				g.drawImage(sprites.get((locToTerrain.get(new Point(i, j))).toString()),
@@ -660,7 +641,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @param g the graphics onject that the lifeforms should be drawn on
 	 */
-	public void drawLifeforms(Graphics g) {
+	private void drawLifeforms(Graphics g) {
 		for (Map.Entry<Point, Grass> pair : locToGrass.entrySet()) {
 			if (screen.contains(pair.getKey())) {
 				// Draw the sprites so that its centre is at the centre
@@ -689,7 +670,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @param g
 	 */
-	public void drawWeather(Graphics g) {
+	private void drawWeather(Graphics g) {
 		for (int i = screen.x; i < screen.x + screen.width; i++) {
 			for (int j = screen.y; j < screen.y + screen.height; j++) {
 				switch (getActiveWeather(i, j)) {
@@ -729,7 +710,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @param g the graphics object to draw on
 	 */
-	public void drawLog(Graphics g) {
+	private void drawLog(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
@@ -779,6 +760,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	public Lifeform lifeGet(Point location) {
 		synchronized (lock) {
 			return locToLife.get(location);
+		}
+	}
+	
+	public boolean emptyAt(Point location) {
+		synchronized(lock) {
+			return locToLife.get(location)==null;
 		}
 	}
 
@@ -898,7 +885,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Generates more map as it becomes visible to the user
 	 */
-	public void updateMap() {
+	private void updateMap() {
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {//runs through x values
 			for (int j = screen.y; j <= screen.y + screen.height; j++) {//runs through y values
 				if (!locToTerrain.containsKey(new Point(i, j)))//do we have a point there?
@@ -912,28 +899,28 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Moves the perspective towards the right
 	 */
-	public void moveRight() {
+	private void moveRight() {
 		screen.translate(1, 0);//moves the perspective
 	}
 
 	/**
 	 * Moves the perspective to the left
 	 */
-	public void moveLeft() {
+	private void moveLeft() {
 		screen.translate(-1, 0);//moves "camera"
 	}
 
 	/**
 	 * Moves the perspective upwards
 	 */
-	public void moveUp() {
+	private void moveUp() {
 		screen.translate(0, -1);//moves viewpoint
 	}
 
 	/**
 	 * Moves the perspective downward
 	 */
-	public void moveDown() {
+	private void moveDown() {
 		screen.translate(0, 1);//moves centre of field of view
 	}
 
@@ -1046,7 +1033,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 *
 	 * @throws IOException
 	 */
-	public void loadSprites() throws IOException {
+	private void loadSprites() throws IOException {
 		sprites = new HashMap<String, Image>();
 		SpriteAssigner.sprites = sprites;
 		Class c = getClass();
@@ -1116,7 +1103,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Moves the clouds a bit
 	 */
-	public void pushWeather() {
+	private void pushWeather() {
 		synchronized (lock) {
 			for (Weather w : activeWeather) {
 				w.translate(hourlyWind.x, hourlyWind.y);
@@ -1181,7 +1168,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * Spawns weather until activeWeather is MAX_WEATHER long Despawns weather
 	 * that moves beyond the edge of the generated world
 	 */
-	public void manageWeather() {
+	private void manageWeather() {
 		synchronized (lock) {
 			for (Iterator<Weather> i = activeWeather.iterator();
 					i.hasNext();) {
@@ -1230,7 +1217,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Adds some plants in random places to start off the sim less barrenly
 	 */
-	public void letThereBeGreenery() {
+	private void letThereBeGreenery() {
 		for (int x = screen.x; x < screen.x + screen.width; ++x) {
 			for (int y = screen.y; y < screen.y + screen.height; ++y) {
 				if (Math.random() < .4) {
@@ -1249,7 +1236,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Remove lifeforms marked as dead from locToLife and locToGrass
 	 */
-	public void removeDead() {
+	private void removeDead() {
 		synchronized (lock) {
 			// Cleans up stuff for deletion
 

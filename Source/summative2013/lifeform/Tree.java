@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import java.awt.Point;
 import summative2013.SpriteAssigner;
 import java.awt.Image;
 import static summative2013.lifeform.Lifeform.summative;
@@ -29,12 +30,8 @@ public class Tree extends Vegetable {
      * Makes babies
      */
     @Override
-    public void reproduce() {
-        if (nearEmpty() == null) {
-        } else {
-            summative.addTree(nearEmpty().x, nearEmpty().y);
-            reproTime = 100;
-        }
+    public void reproduce(Point p) {
+            summative.addTree(p.x, p.y);
     }
     /**
      * 
@@ -58,5 +55,9 @@ public class Tree extends Vegetable {
 	@Override
 	public void decreasePopulation() {
 		--treeCount;
+	}
+	
+	protected int getRefractory() {
+		return 100;
 	}
 }

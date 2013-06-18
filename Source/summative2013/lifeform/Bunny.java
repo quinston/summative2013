@@ -1,5 +1,6 @@
 package summative2013.lifeform;
 
+import java.awt.Point;
 import java.awt.Image;
 import summative2013.SpriteAssigner;
 import static summative2013.lifeform.Lifeform.summative;
@@ -23,12 +24,9 @@ public class Bunny extends Animal {
          * make babies like rabbits!
          */
 	@Override
-	public void reproduce() {
-		if (nearEmpty() == null) {
-			hunger = hunger - 30;
-		} else {
-			summative.addBunny(nearEmpty().x,nearEmpty().y);
-		}
+	public void reproduce(Point p) {
+			summative.addBunny(p.x,p.y);
+		
 	}
         /**
          * 

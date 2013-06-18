@@ -133,7 +133,11 @@ public abstract class Vegetable extends Lifeform {
             }
         }
         if (reproTime <= 0) {
-            reproduce();
+			Point nearbySpace = nearEmpty();
+			if (nearbySpace != null) {
+				reproduce(nearbySpace);
+				reproTime = getRefractory();
+			}
         }
         if (regenTime <= 0) {
             regenerate();
@@ -177,4 +181,10 @@ public abstract class Vegetable extends Lifeform {
                 + "\nSun Metre: " + sun
                 + "\nHelath: " + health;
     }
+	
+	/**
+	 * Gets the length of time needed between reproductions
+	 * @return The length of time needed between reproductions (specific to each species)
+	 */
+	protected abstract int getRefractory();
 }

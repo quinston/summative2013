@@ -114,7 +114,7 @@ public abstract class Lifeform {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 temp = new Point(location.x + x, location.y + y);
-                if (summative.lifeGet(temp) == null && (summative.terrainGet(temp)) == TERRAIN.LAND) {
+                if (summative.emptyAt(temp) && (summative.terrainGet(temp)) == TERRAIN.LAND) {
                     available.add(temp);
                 }
             }
@@ -175,7 +175,7 @@ public abstract class Lifeform {
     /**
      * Produces a new lifeform, overridden in most of the classes
      */
-    public abstract void reproduce();
+    public abstract void reproduce(Point p);
 
     /**
      * Returns the lifeform's sprite. Should be overriden in child classes with

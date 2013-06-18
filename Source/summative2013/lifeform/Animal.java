@@ -284,7 +284,7 @@ public abstract class Animal extends Lifeform {
      * Can this animal walk there? That is, is it empty?
      */
     public boolean canWalk(Point p) {
-        if (summative.lifeGet(p) == null && summative.terrainGet(p) != TERRAIN.SEA) {
+        if (summative.emptyAt(p) && summative.terrainGet(p) != TERRAIN.SEA) {
             return true;
         } else {
             return false;
@@ -441,9 +441,12 @@ public abstract class Animal extends Lifeform {
                             summative.lifeGet(destination).suicide();
                         }
                     } else if (destination == mate) {
-                        hunger = hunger + 30;
-                        reproduce();
-                        setDestination();
+						Point nearbySpace = nearEmpty();
+						if (nearbySpace != null) {
+							hunger = hunger + 30;
+							reproduce(nearbySpace);
+							setDestination();
+						}
                     } else if (destination == murder) {
                         summative.lifeGet(destination).suicide();
                         setDestination();

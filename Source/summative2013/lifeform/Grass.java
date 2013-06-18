@@ -59,12 +59,9 @@ public class Grass extends Vegetable {
      * Grass reproduction
      */
     @Override
-    public void reproduce() {
-        if (nearEmpty() == null) {
-        } else {
-            summative.addGrass(nearEmpty().x, nearEmpty().y);
-            reproTime = 12;
-        }
+    public void reproduce(Point p) {
+            summative.addGrass(p.x, p.y);
+        
     }
     /**
      * 
@@ -87,5 +84,9 @@ public class Grass extends Vegetable {
 	@Override
 	public void decreasePopulation() {
 		--grassCount;
+	}
+	
+	protected int getRefractory() {
+		return 12;
 	}
 }
