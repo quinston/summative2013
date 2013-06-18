@@ -22,6 +22,7 @@ import summative2013.lifeform.Tree;
 import summative2013.lifeform.Bat;
 import summative2013.phenomena.Weather;
 import java.util.Random;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import summative2013.phenomena.AirLock;
@@ -34,6 +35,7 @@ import summative2013.phenomena.Drought;
  * @author Stephen
  */
 public class Summative extends JPanel implements KeyListener, MouseMotionListener, MouseListener, ActionListener {
+
 	private static GraphicsEnvironment ge;
 	private static GraphicsDevice gd;
 	private HashMap<Point, Lifeform> locToLife;
@@ -45,7 +47,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private static JFrame frame;
 	private Rectangle screen, logButton, hud;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
-	private final int gridSize = 20;
+	private final int gridSize = 32;
 	private String mouseOnLife = "";
 	private JPanel buttonPanel;
 	private JCheckBox running;
@@ -142,7 +144,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 
-		//letThereBeGreenery();
+		letThereBeGreenery();
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
@@ -447,6 +449,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		HashMap<Point, TERRAIN> temp = new HashMap<>();
 		//Iterate over copy to prevent concurrent modification
 		//because act() methods will surely modify it.
+		//direct removal of lifeforms from Lifeform classes is
+		//no longer possible
 		HashMap<Point, Lifeform> temp2 = new HashMap<>();
 		temp2.putAll(locToLife);
 		HashMap<Point, Grass> temp3 = new HashMap<>();
@@ -455,12 +459,16 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		manageWeather();
 		pushWeather();
 		synchronized (lock) {
+			removeDead();
+
 			for (Map.Entry<Point, Lifeform> pair : temp2.entrySet()) {
+				//assert(temp2.size() == locToLife.size());
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 			for (Map.Entry<Point, Grass> pair : temp3.entrySet()) {
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
+
 			for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
 				Point original = pair.getKey();
 				int lands = 0, seas = 0;//count adjacent land, sea
@@ -742,36 +750,26 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 
 	/**
-	 * Kills the lifeform
+	 * Deletes the lifeform.
+	 * 
 	 *
 	 * @param l the lifeform to kill
 	 */
+	/*
 	public void kill(Lifeform l) {
-		synchronized (lock) {
-			addToLog(l.getName() + " has died at " + getLocation(l).x + "," + getLocation(l).y);/*
-			if (l instanceof Bear) {
-			Bear.bearCount--;
-			} else if (l instanceof Bunny) {
-			Bunny.bunnyCount--;
-			} else if (l instanceof Bat) {
-			Bat.batCount--;
-			} else if (l instanceof Cattle) {
-			Cattle.cattleCount--;
-			} else if (l instanceof Tree) {
-			Tree.treeCount--;
-			} else if (l instanceof Grass) {
-			Grass.grassCount--;
-			}*/
-			locToLife.remove(getLocation(l));
-			locToGrass.remove(getLocation(l));
-			if (l == selectedLifeform) {
-				selectedLifeform = null;
-			}
-		}
+	synchronized (lock) {
+	addToLog(l.getName() + " has died at " + loc.x + "," + loc.y);
+	if (l instanceof Grass) {
+	locToGrass.remove(loc);
+	} else {
+	locToLife.remove(loc);
 	}
-
-
-
+	if (l == selectedLifeform) {
+	selectedLifeform = null;
+	}
+	}
+	}
+	 */
 	/**
 	 * Returns the lifeform at a given point
 	 *
@@ -811,14 +809,16 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	/**
 	 * Moves the lifeform
 	 */
+	/*
 	public void move(Point p, Lifeform l) {
-		synchronized (lock) {
-			locToLife.remove(l.getLocation());
-			locToLife.put(p, l);
-			l.setLocation(p);
-		}
+	synchronized (lock) {
+	locToLife.remove(l.getLocation());
+	locToLife.put(p, l);
+	l.setLocation(p);
 	}
-
+	}
+	 * 
+	 */
 	/**
 	 * Unused method
 	 *
@@ -1159,17 +1159,23 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 
 	/**
-	 * Moves a lifeform
+	 * Moves a lifeform.
+	 * 
+	 * Actually queues this request to move the lifeform for later.
 	 *
 	 * @param l The lifeform to move
 	 * @param p Its new location
 	 */
 	public void moveTo(Lifeform l, Point p) {
-		synchronized (lock) {
-			locToLife.remove(getLocation(l));
-			locToLife.put(p, l);
-		}
+		moveRequests.put(getLocation(l), p);
 	}
+	/**
+	 * A map of points to points. 
+	 * 
+	 * On each call of advance() move the thing at the key to the thing at
+	 * value.
+	 */
+	HashMap<Point, Point> moveRequests;
 
 	/**
 	 * Spawns weather until activeWeather is MAX_WEATHER long Despawns weather
@@ -1193,19 +1199,19 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 
 				Area a = new Area(new Ellipse2D.Double(
-						weatherCentre.x - rand.nextInt(10),
-						weatherCentre.y - rand.nextInt(10),
-						20, 20));
+						weatherCentre.x - rand.nextInt(100 / gridSize),
+						weatherCentre.y - rand.nextInt(100 / gridSize),
+						2 * 100 / gridSize, 2 * 100 / gridSize));
 
 				a.add(new Area(new Ellipse2D.Double(
-						weatherCentre.x - rand.nextInt(10),
-						weatherCentre.y - rand.nextInt(10),
-						20, 20)));
+						weatherCentre.x - rand.nextInt(100 / gridSize),
+						weatherCentre.y - rand.nextInt(100 / gridSize),
+						2 * 100 / gridSize, 2 * 100 / gridSize)));
 
 				a.add(new Area(new Ellipse2D.Double(
-						weatherCentre.x - rand.nextInt(10),
-						weatherCentre.y - rand.nextInt(10),
-						20, 20)));
+						weatherCentre.x - rand.nextInt(100 / gridSize),
+						weatherCentre.y - rand.nextInt(100 / gridSize),
+						2 * 100 / gridSize, 2 * 100 / gridSize)));
 
 				switch (rand.nextInt(2)) {
 					case 0:
@@ -1236,6 +1242,57 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 						}
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * Remove lifeforms marked as dead from locToLife and locToGrass
+	 */
+	public void removeDead() {
+		synchronized (lock) {
+			// Cleans up stuff for deletion
+
+			for (Iterator<Map.Entry<Point, Lifeform>> i = locToLife.entrySet().iterator();
+					i.hasNext();) {
+				Map.Entry<Point, Lifeform> pair = i.next();
+				if (pair.getValue().isDead()) {
+					Lifeform l = pair.getValue();
+					Point loc = pair.getKey();
+					addToLog(l.getName() + " has died at " + loc.x + "," + loc.y);
+					if (l == selectedLifeform) {
+						selectedLifeform = null;
+					}
+					i.remove();
+				}
+			}
+			for (Iterator<Map.Entry<Point, Grass>> i = locToGrass.entrySet().iterator();
+					i.hasNext();) {
+				Map.Entry<Point, Grass> pair = i.next();
+				if (pair.getValue().isDead()) {
+					Lifeform l = pair.getValue();
+					Point loc = pair.getKey();
+					addToLog(l.getName() + " has died at " + loc.x + "," + loc.y);
+					i.remove();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Iterates through moveRequests, moving everything
+	 * at the key Points to the value Points
+	 */
+	private void moveStuff() {
+		synchronized (lock) {
+			for (Iterator<Map.Entry<Point, Point>> i = moveRequests.entrySet().iterator();
+					i.hasNext();) {
+				Map.Entry<Point, Point> pair = i.next();
+
+				locToLife.put(pair.getValue(), locToLife.remove(pair.getKey()));
+				
+				//Remove the request
+				i.remove();
 			}
 		}
 	}

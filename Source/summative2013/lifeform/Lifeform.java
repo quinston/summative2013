@@ -75,7 +75,7 @@ public abstract class Lifeform {
      */
     public void suicide() {
 		decreasePopulation();
-        summative.kill(this);
+        isDead = true;
     }
 
     /**
@@ -127,7 +127,7 @@ public abstract class Lifeform {
     }
 
     /**
-     * Refreshes nearby terrain
+     * Refreshes knowledge of nearby terrain
      */
     public void findWater() {
         ArrayList<Point> waterList = new ArrayList<>();
@@ -208,4 +208,17 @@ public abstract class Lifeform {
 	 * Reduces the internal population variable of this animal
 	 */
 	protected abstract void decreasePopulation();
+	
+	/**
+	 * Marks that this lifeform is ready for deletion
+	 */
+	private boolean isDead = false;
+	
+	/**
+	 * Checks if this lifeform is ready for deletion
+	 * @return If this lifeform has commited suicide, this is true
+	 */
+	public boolean isDead() {
+		return isDead;
+	}
 }
