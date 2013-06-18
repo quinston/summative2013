@@ -448,6 +448,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         //because act() methods will surely modify it.
         HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
         temp2.putAll(locToLife);
+        HashMap<Point, Grass> temp3 = new HashMap<Point, Grass>();
+        temp3.putAll(locToGrass);
 
         manageWeather();
         pushWeather();
@@ -456,7 +458,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 pair.getValue().act(getActiveWeather(pair.getKey().x,
                         pair.getKey().y));
             }
-
+            for(Map.Entry<Point, Grass> pair: temp3.entrySet()){
+                pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
+            }
             for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
                 Point original = pair.getKey();
                 int lands = 0, seas = 0;//count adjacent land, sea
