@@ -25,16 +25,14 @@ public abstract class Animal extends Lifeform {
      * @return the inGroup
      */
     /*public LinkedList<Animal> getInGroup() {
-        return inGroup;
-    }*/
-
+     return inGroup;
+     }*/
     /**
      * @return the outGroup
      */
     /*public LinkedList<Animal> getOutGroup() {
-        return outGroup;
-    }*/
-
+     return outGroup;
+     }*/
     /**
      * Creates the gender enum thing
      */
@@ -440,7 +438,7 @@ public abstract class Animal extends Lifeform {
                                 tempg.changeCurrent(-1);
                             }
                         } else {
-                            summative.kill(destination);
+                            summative.lifeGet(destination).suicide();
                         }
                     } else if (destination == mate) {
                         hunger = hunger + 30;
