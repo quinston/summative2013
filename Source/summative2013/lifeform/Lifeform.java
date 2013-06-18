@@ -198,8 +198,14 @@ public abstract class Lifeform {
                 + "\nThirst: " + thirst + "%";
     }
 
-
+	/**
+	 * Gets the name of the lifeform
+	 * @return  The name of the lifeform
+	 */
     public abstract String getName();
 	
-	public abstract void decreasePopulation();
+	/**
+	 * Reduces the internal population variable of this animal
+	 */
+	protected abstract void decreasePopulation();
 }

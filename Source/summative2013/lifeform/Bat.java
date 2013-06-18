@@ -20,13 +20,7 @@ public class Bat extends Animal {
         nocturnal = true;
         ++batCount;
     }
-    /**
-     * dead bat
-     */
-    public void suicide() {
-        --batCount;
-        super.suicide();
-    }
+
     /**
      * baby furry fliers
      */
