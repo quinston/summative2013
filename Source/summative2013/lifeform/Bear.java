@@ -22,14 +22,7 @@ public class Bear extends Animal {
         ++bearCount;
     }
 
-    /**
-     * Kills itself
-     */
-    @Override
-    public void suicide() {
-        --bearCount;
-        super.suicide();
-    }
+
 
     /**
      * Reproduces
@@ -60,4 +53,9 @@ public class Bear extends Animal {
     public String getName() {
         return "Bear";
     }
+
+	@Override
+	public void decreasePopulation() {
+		--bearCount;
+	}
 }

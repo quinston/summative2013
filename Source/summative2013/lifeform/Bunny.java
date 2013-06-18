@@ -18,14 +18,7 @@ public class Bunny extends Animal {
 		preyList.add(Grass.class);
 		++bunnyCount;
 	}
-	/**
-         * no more bunny
-         */
-        @Override
-	public void suicide() {
-		--bunnyCount;
-		super.suicide();
-	}
+
         /**
          * make babies like rabbits!
          */
@@ -52,5 +45,10 @@ public class Bunny extends Animal {
 	@Override
 	public String getName() {
 		return "Bunny";
+	}
+
+	@Override
+	public void decreasePopulation() {
+		--bunnyCount;
 	}
 }

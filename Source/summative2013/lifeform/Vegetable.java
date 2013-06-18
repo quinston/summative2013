@@ -85,7 +85,7 @@ public abstract class Vegetable extends Lifeform {
         if (weather == WEATHER.SUN) {
             regenCounter = regenCounter - 2;
             sun = sun + 20;
-            thirst = thirst + 2;
+            thirst = thirst + 1;
             reproTime = reproTime - 2;
         } else if (weather == WEATHER.RAIN) {
             regenCounter = regenCounter - 1;

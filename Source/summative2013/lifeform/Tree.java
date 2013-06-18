@@ -53,12 +53,10 @@ public class Tree extends Vegetable {
         return "Tree";
     }
     public static int treeCount = 0;
-    /**
-     * kills this tree
-     */
-    @Override
-    public void suicide() {
-        --treeCount;
-        super.suicide();
-    }
+
+
+	@Override
+	public void decreasePopulation() {
+		--treeCount;
+	}
 }

@@ -25,16 +25,14 @@ public abstract class Animal extends Lifeform {
      * @return the inGroup
      */
     /*public LinkedList<Animal> getInGroup() {
-        return inGroup;
-    }*/
-
+     return inGroup;
+     }*/
     /**
      * @return the outGroup
      */
     /*public LinkedList<Animal> getOutGroup() {
-        return outGroup;
-    }*/
-
+     return outGroup;
+     }*/
     /**
      * Creates the gender enum thing
      */
@@ -101,6 +99,10 @@ public abstract class Animal extends Lifeform {
      */
     public Animal() {
         super();
+        findNearbyLife();
+        findWater();
+        findFood(nearbyLife);
+        findMate(nearbyLife);
         setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
@@ -201,7 +203,7 @@ public abstract class Animal extends Lifeform {
      */
     public boolean isPrey(Lifeform l) {
         for (Class m : preyList) {
-            if (m.equals(l.getClass())) {
+            if (l.getClass().equals(m)) {
                 return true;
             }
         }
@@ -212,28 +214,16 @@ public abstract class Animal extends Lifeform {
      * Sets the destination of the animal
      */
     public void setDestination() {
-        if (thirst < 50 && hunger < 50 && mate != null) {
-            if (Math.random() < 1) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
-        } else if (thirst >= hunger && water != null) {
+        if (thirst > 50 && water != null) {
             destination = water;
-        } else {
+        } else if (hunger > 50 && food != null) {
             destination = food;
+        } else if (mate != null) {
+            destination = mate;
         }
 
         if (destination == null) {
-            if (water != null) {
-                destination = water;
-            } else if (food != null) {
-                destination = food;
-            } else if (mate != null) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
+            destination = water;
         }
     }
 
@@ -347,29 +337,31 @@ public abstract class Animal extends Lifeform {
         if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
             final Point location = summative.getLocation(this);
-            if (destination == null || getDirection(destination) == DIRECTION.SOUTH) {
+
+            if (destination == null) {
+            } else if (getDirection(destination) == DIRECTION.SOUTH) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             } else if (getDirection(destination) == DIRECTION.NORTH) {
                 Point temp = new Point(location.x, location.y - 1);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             } else if (getDirection(destination) == DIRECTION.WEST) {
                 Point temp = new Point(location.x - 1, location.y);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation(temp);
                 }
             } else if (getDirection(destination) == DIRECTION.EAST) {
                 Point temp = new Point(location.x + 1, location.y);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             }
             if (walked == false) {
@@ -385,25 +377,25 @@ public abstract class Animal extends Lifeform {
                 while (!walked) {
                     double x = Math.random();
                     if (x < 0.25 && canWalk(tempS)) {
-                        summative.move(tempS, this);
+                        setLocation(tempS);
                         walked = true;
                     } else if (S && !canWalk(tempS)) {
                         S = false;
                         counter = counter + 1;
                     } else if (x < 0.5 && canWalk(tempN)) {
-                        summative.move(tempN, this);
+                        setLocation(tempN);
                         walked = true;
                     } else if (N && !canWalk(tempN)) {
                         S = false;
                         counter = counter + 1;
                     } else if (x < 0.75 && canWalk(tempW)) {
-                        summative.move(tempW, this);
+                        setLocation( tempW);
                         walked = true;
                     } else if (W && !canWalk(tempW)) {
                         W = false;
                         counter = counter + 1;
                     } else if (canWalk(tempE)) {
-                        summative.move(tempE, this);
+                        setLocation( tempE);
                         walked = true;
                     } else if (E && !canWalk(tempE)) {
                         E = false;
@@ -432,7 +424,7 @@ public abstract class Animal extends Lifeform {
                             } else {
                                 temp.changeCurrent(-1);
                             }
-                        } else if (isPrey(summative.grassGet(destination))) {
+                        } else if (preyList.contains(Grass.class) && summative.lifeGet(destination) instanceof Grass) {
                             Grass tempg = summative.grassGet(destination);
                             if (tempg.getCurrent() <= 0) {
                                 tempg.changeHealth(-50);
@@ -440,7 +432,7 @@ public abstract class Animal extends Lifeform {
                                 tempg.changeCurrent(-1);
                             }
                         } else {
-                            summative.kill(destination);
+                            summative.lifeGet(destination).suicide();
                         }
                     } else if (destination == mate) {
                         hunger = hunger + 30;

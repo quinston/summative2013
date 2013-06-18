@@ -19,13 +19,7 @@ public class Cattle extends Animal {
         preyList.add(Grass.class);
         ++cattleCount;
     }
-    /**
-     * kills the cow
-     */
-    public void suicide() {
-        --cattleCount;
-        super.suicide();
-    }
+
     /**
      * cow babies!
      */
@@ -53,4 +47,9 @@ public class Cattle extends Animal {
     public String getName() {
         return "Cattle";
     }
+
+	@Override
+	public void decreasePopulation() {
+		--cattleCount;
+	}
 }
