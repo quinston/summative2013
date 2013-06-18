@@ -107,14 +107,14 @@ public abstract class Animal extends Lifeform {
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
         depravity = 0;
-        preyList = new ArrayList<>();
+        preyList = new ArrayList<Class>();
     }
 
     /**
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<>();
+        ArrayList<Point> foodList = new ArrayList<Point>();
         food = null;
         for (Lifeform l : list) {
             for (Class m : preyList) {
@@ -155,7 +155,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<>();
+        ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -177,7 +177,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findVictim(ArrayList<Lifeform> list) {
-        ArrayList<Point> hitList = new ArrayList<>();
+        ArrayList<Point> hitList = new ArrayList<Point>();
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass())) {

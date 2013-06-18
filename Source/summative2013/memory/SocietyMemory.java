@@ -83,9 +83,4 @@ public class SocietyMemory extends Memory {
     public boolean isForgotten() {
         return object == null;
     }
-
-    @Override
-    public void affect(Animal a) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }
