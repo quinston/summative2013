@@ -96,6 +96,9 @@ public abstract class Animal extends Lifeform {
      */
     protected boolean nocturnal;
 
+    /**
+     * Constructor
+     */
     public Animal() {
         super();
         setDestination();

@@ -12,6 +12,9 @@ public class Bear extends Animal {
 
     public static int bearCount = 0;
 
+    /**
+     * Constructor
+     */
     public Bear() {
         super();
         preyList.add(Tree.class);
@@ -19,12 +22,18 @@ public class Bear extends Animal {
         ++bearCount;
     }
 
+    /**
+     * Kills itself
+     */
     @Override
     public void suicide() {
         --bearCount;
         super.suicide();
     }
 
+    /**
+     * Reproduces
+     */
     @Override
     public void reproduce() {
         if (nearEmpty() == null) {
@@ -34,11 +43,19 @@ public class Bear extends Animal {
         }
     }
 
+    /**
+     * Returns the image
+     * @return 
+     */
     @Override
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
 
+    /**
+     * Returns the name
+     * @return 
+     */
     @Override
     public String getName() {
         return "Bear";
