@@ -288,7 +288,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         disableAddButtons();
         s.requestFocusInWindow();
     }
-
+    /**
+     * enables all the buttons to add lifeforms
+     */
     private void enableAddButtons() {
         addBat.setEnabled(true);
         addBear.setEnabled(true);
@@ -297,7 +299,9 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addGrass.setEnabled(true);
         addTree.setEnabled(true);
     }
-
+    /**
+     * disables all the buttons to add lifeforms
+     */
     private void disableAddButtons() {
         addBat.setEnabled(false);
         addBear.setEnabled(false);
