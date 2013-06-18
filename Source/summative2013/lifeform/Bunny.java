@@ -16,6 +16,7 @@ public class Bunny extends Animal {
 		++bunnyCount;
 	}
 	
+        @Override
 	public void suicide() {
 		--bunnyCount;
 		super.suicide();
@@ -30,6 +31,7 @@ public class Bunny extends Animal {
 		}
 	}
 
+        @Override
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
 	}

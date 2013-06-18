@@ -98,38 +98,18 @@ public abstract class Animal extends Lifeform {
 
     public Animal() {
         super();
-        setDestination();
+        this.setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
         depravity = 0;
-        preyList = new ArrayList<Class>();
+        preyList = new ArrayList<>();
     }
-
-    /**
-     * Refreshes to store all the nearby lifeforms
-     */
-    public void findNearbyLife() {
-        nearbyLife = new ArrayList<Lifeform>();
-        final Point location = summative.getLocation(this);
-        for (int x = -sight; x <= sight; x++) {
-            for (int y = -sight; y <= sight; y++) {
-                if (Math.abs(x) + Math.abs(y) <= sight) {
-                    if (summative.lifeGet(new Point(location.x + x, location.y + y)) != null) {
-                        nearbyLife.add(summative.lifeGet(new Point(location.x + x, location.y + y)));
-                    } else if (summative.grassGet(new Point(location.x + x, location.y + y)) != null) {
-                        nearbyLife.add(summative.grassGet(new Point(location.x + x, location.y + y)));
-                    }
-                }
-            }
-        }
-    }
-
 
     /**
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<Point>();
+        ArrayList<Point> foodList = new ArrayList<>();
         food = null;
         for (Lifeform l : list) {
             for (Class m : preyList) {
@@ -170,7 +150,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<Point>();
+        ArrayList<Point> mateList = new ArrayList<>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -192,7 +172,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findVictim(ArrayList<Lifeform> list) {
-        ArrayList<Point> hitList = new ArrayList<Point>();
+        ArrayList<Point> hitList = new ArrayList<>();
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {
@@ -210,22 +190,20 @@ public abstract class Animal extends Lifeform {
         }
     }
 
-
-	/**
-	 * Checks if the lifeform is prey
-	 *
-	 * @param l
-	 * @return
-	 */
-	public boolean isPrey(Lifeform l) {
-		for (Class m : preyList) {
-			if (m.equals(l.getClass())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+    /**
+     * Checks if the lifeform is prey
+     *
+     * @param l
+     * @return
+     */
+    public boolean isPrey(Lifeform l) {
+        for (Class m : preyList) {
+            if (m.equals(l.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Sets the destination of the animal
@@ -468,6 +446,12 @@ public abstract class Animal extends Lifeform {
         }
     }
 
+    /**
+     * Prints some info about the animal
+     *
+     * @return
+     */
+    @Override
     public String toString() {
         return super.toString()
                 + "\nGender: " + gender

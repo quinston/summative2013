@@ -9,34 +9,36 @@ import static summative2013.lifeform.Lifeform.summative;
  * @author 322303413
  */
 public class Cattle extends Animal {
-	
-	public static int cattleCount = 0;
-	
-	public Cattle() {
-		super();
-		preyList.add(Grass.class);
-		++cattleCount;
-	}
-	public void suicide() {
-		--cattleCount;
-		super.suicide();
-	}
 
-	@Override
-	public void reproduce() {
-		if (nearEmpty() == null) {
-			hunger = hunger - 30;
-		} else {
-			summative.addCattle(nearEmpty().x,nearEmpty().y);
-		}
-	}
+    public static int cattleCount = 0;
 
-	public Image getSprite() {
-		return SpriteAssigner.getSpriteOf(this);
-	}
+    public Cattle() {
+        super();
+        preyList.add(Grass.class);
+        ++cattleCount;
+    }
 
-	@Override
-	public String getName() {
-		return "Cattle";
-	}
+    public void suicide() {
+        --cattleCount;
+        super.suicide();
+    }
+
+    @Override
+    public void reproduce() {
+        if (nearEmpty() == null) {
+            hunger = hunger - 30;
+        } else {
+            summative.addCattle(nearEmpty().x, nearEmpty().y);
+        }
+    }
+
+    @Override
+    public Image getSprite() {
+        return SpriteAssigner.getSpriteOf(this);
+    }
+
+    @Override
+    public String getName() {
+        return "Cattle";
+    }
 }

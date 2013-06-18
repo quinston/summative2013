@@ -157,7 +157,7 @@ public abstract class Lifeform {
      */
     public void findNearbyLife() {
         nearbyLife = new ArrayList<Lifeform>();
-		final Point location = summative.getLocation(this);
+        final Point location = summative.getLocation(this);
         for (int x = -sight; x <= sight; x++) {
             for (int y = -sight; y <= sight; y++) {
                 if (Math.abs(x) + Math.abs(y) <= sight) {
@@ -190,11 +190,12 @@ public abstract class Lifeform {
     public void disease() {
         diseased = true;
     }
-	
-	public String toString() {
-		return 	getName()
-				+ "\nHealth: " + ((diseased) ? "Diseased" : "Healthy")
-				+ "\nThirst: " + thirst + "%";		
-	}
-	public abstract String getName() ;
+
+    public String toString() {
+        return getName()
+                + "\nHealth: " + ((diseased) ? "Diseased" : "Healthy")
+                + "\nThirst: " + thirst + "%";
+    }
+
+    public abstract String getName();
 }
