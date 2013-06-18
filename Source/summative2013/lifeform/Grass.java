@@ -63,7 +63,6 @@ public class Grass extends Vegetable {
         if (nearEmpty() == null) {
         } else {
             summative.addGrass(nearEmpty().x, nearEmpty().y);
-
             reproTime = 12;
         }
     }

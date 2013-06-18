@@ -89,7 +89,7 @@ public abstract class Vegetable extends Lifeform {
             reproTime = reproTime - 2;
         } else if (weather == WEATHER.RAIN) {
             regenCounter = regenCounter - 1;
-            thirst = thirst - 5;
+            thirst = thirst - 10;
             sun = sun - 1;
             reproTime = reproTime - 2;
         } else if (weather == WEATHER.CLOUD) {
@@ -121,7 +121,7 @@ public abstract class Vegetable extends Lifeform {
                 < 0) {
             alive = false;
         } else if (thirst > 99 || thirst
-                < -50) {
+                < -99) {
             alive = false;
         } else if (health
                 < 0) {

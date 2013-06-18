@@ -212,13 +212,25 @@ public abstract class Animal extends Lifeform {
         if (thirst < 50 && hunger < 50 && mate != null) {
             if (Math.random() < .5) {
                 destination = mate;
-            } else {
+            } else if (murder != null) {
                 destination = murder;
             }
         } else if (thirst >= hunger && water != null) {
             destination = water;
         } else {
             destination = food;
+        }
+
+        if (destination == null) {
+            if (water != null) {
+                destination = water;
+            } else if (food != null) {
+                destination = food;
+            } else if (mate != null) {
+                destination = mate;
+            } else if (murder != null) {
+                destination = murder;
+            }
         }
     }
 
@@ -336,7 +348,6 @@ public abstract class Animal extends Lifeform {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     walked = true;
-                    System.out.println("Walkin");
                     summative.move(temp, this);
                 }
             } else if (getDirection(destination) == DIRECTION.NORTH) {

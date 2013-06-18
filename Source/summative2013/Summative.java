@@ -443,22 +443,21 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public void advance() {
         numHours++;
-        HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
+        HashMap<Point, TERRAIN> temp = new HashMap<>();
         //Iterate over copy to prevent concurrent modification
         //because act() methods will surely modify it.
-        HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
+        HashMap<Point, Lifeform> temp2 = new HashMap<>();
         temp2.putAll(locToLife);
-        HashMap<Point, Grass> temp3 = new HashMap<Point, Grass>();
+        HashMap<Point, Grass> temp3 = new HashMap<>();
         temp3.putAll(locToGrass);
 
         manageWeather();
         pushWeather();
         synchronized (lock) {
             for (Map.Entry<Point, Lifeform> pair : temp2.entrySet()) {
-                pair.getValue().act(getActiveWeather(pair.getKey().x,
-                        pair.getKey().y));
+                pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
             }
-            for(Map.Entry<Point, Grass> pair: temp3.entrySet()){
+            for (Map.Entry<Point, Grass> pair : temp3.entrySet()) {
                 pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
             }
             for (Map.Entry<Point, TERRAIN> pair : locToTerrain.entrySet()) {
@@ -746,18 +745,19 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     public void kill(Lifeform l) {
         synchronized (lock) {
             addToLog(l.getName() + " has died at " + getLocation(l).x + "," + getLocation(l).y);
-            if(l instanceof Bear)
+            if (l instanceof Bear) {
                 Bear.bearCount--;
-            else if (l instanceof Bunny)
+            } else if (l instanceof Bunny) {
                 Bunny.bunnyCount--;
-            else if (l instanceof Bat)
+            } else if (l instanceof Bat) {
                 Bat.batCount--;
-            else if(l instanceof Cattle)
+            } else if (l instanceof Cattle) {
                 Cattle.cattleCount--;
-            else if(l instanceof Tree)
+            } else if (l instanceof Tree) {
                 Tree.treeCount--;
-            else if(l instanceof Grass)
+            } else if (l instanceof Grass) {
                 Grass.grassCount--;
+            }
             locToLife.remove(getLocation(l));
             if (l == selectedLifeform) {
                 selectedLifeform = null;

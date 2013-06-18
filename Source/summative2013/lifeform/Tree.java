@@ -31,8 +31,7 @@ public class Tree extends Vegetable {
         if (nearEmpty() == null) {
         } else {
             summative.addTree(nearEmpty().x, nearEmpty().y);
-
-            reproTime = 960;
+            reproTime = 100;
         }
     }
 
