@@ -129,7 +129,7 @@ public abstract class Lifeform {
      * Refreshes nearby terrain
      */
     public void findWater() {
-        ArrayList<Point> waterList = new ArrayList<Point>();
+        ArrayList<Point> waterList = new ArrayList<>();
         water = null;
         final Point location = summative.getLocation(this);
 

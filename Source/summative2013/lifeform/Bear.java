@@ -19,6 +19,7 @@ public class Bear extends Animal {
         ++bearCount;
     }
 
+    @Override
     public void suicide() {
         --bearCount;
         super.suicide();
@@ -33,6 +34,7 @@ public class Bear extends Animal {
         }
     }
 
+    @Override
     public Image getSprite() {
         return SpriteAssigner.getSpriteOf(this);
     }
