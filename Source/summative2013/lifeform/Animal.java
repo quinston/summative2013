@@ -99,6 +99,10 @@ public abstract class Animal extends Lifeform {
      */
     public Animal() {
         super();
+        findNearbyLife();
+        findWater();
+        findFood(nearbyLife);
+        findMate(nearbyLife);
         setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
@@ -210,28 +214,16 @@ public abstract class Animal extends Lifeform {
      * Sets the destination of the animal
      */
     public void setDestination() {
-        if (thirst < 50 && hunger < 50 && mate != null) {
-            if (Math.random() < 1) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
-        } else if (thirst >= hunger && water != null) {
+        if (thirst > 50 && water != null) {
             destination = water;
-        } else {
+        } else if (hunger > 50 && food != null) {
             destination = food;
+        } else if (mate != null) {
+            destination = mate;
         }
 
         if (destination == null) {
-            if (water != null) {
-                destination = water;
-            } else if (food != null) {
-                destination = food;
-            } else if (mate != null) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
+            destination = water;
         }
     }
 
@@ -345,7 +337,9 @@ public abstract class Animal extends Lifeform {
         if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
             final Point location = summative.getLocation(this);
-            if (destination == null || getDirection(destination) == DIRECTION.SOUTH) {
+
+            if (destination == null) {
+            } else if (getDirection(destination) == DIRECTION.SOUTH) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     walked = true;
