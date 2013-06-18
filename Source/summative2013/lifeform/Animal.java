@@ -98,7 +98,7 @@ public abstract class Animal extends Lifeform {
 
     public Animal() {
         super();
-        this.setDestination();
+        setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
         depravity = 0;
