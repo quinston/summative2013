@@ -83,12 +83,9 @@ public class Grass extends Vegetable {
         return "Grass";
     }
     public static int grassCount = 0;
-    /**
-     * kills this animal
-     */
-    @Override
-    public void suicide() {
-        --grassCount;
-        super.suicide();
-    }
+
+	@Override
+	public void decreasePopulation() {
+		--grassCount;
+	}
 }

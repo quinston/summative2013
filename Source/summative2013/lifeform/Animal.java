@@ -203,7 +203,7 @@ public abstract class Animal extends Lifeform {
      */
     public boolean isPrey(Lifeform l) {
         for (Class m : preyList) {
-            if (m.equals(l.getClass())) {
+            if (l.getClass().equals(m)) {
                 return true;
             }
         }
@@ -343,25 +343,25 @@ public abstract class Animal extends Lifeform {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             } else if (getDirection(destination) == DIRECTION.NORTH) {
                 Point temp = new Point(location.x, location.y - 1);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             } else if (getDirection(destination) == DIRECTION.WEST) {
                 Point temp = new Point(location.x - 1, location.y);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation(temp);
                 }
             } else if (getDirection(destination) == DIRECTION.EAST) {
                 Point temp = new Point(location.x + 1, location.y);
                 if (canWalk(temp)) {
                     walked = true;
-                    summative.move(temp, this);
+                    setLocation( temp);
                 }
             }
             if (walked == false) {
@@ -377,25 +377,25 @@ public abstract class Animal extends Lifeform {
                 while (!walked) {
                     double x = Math.random();
                     if (x < 0.25 && canWalk(tempS)) {
-                        summative.move(tempS, this);
+                        setLocation(tempS);
                         walked = true;
                     } else if (S && !canWalk(tempS)) {
                         S = false;
                         counter = counter + 1;
                     } else if (x < 0.5 && canWalk(tempN)) {
-                        summative.move(tempN, this);
+                        setLocation(tempN);
                         walked = true;
                     } else if (N && !canWalk(tempN)) {
                         S = false;
                         counter = counter + 1;
                     } else if (x < 0.75 && canWalk(tempW)) {
-                        summative.move(tempW, this);
+                        setLocation( tempW);
                         walked = true;
                     } else if (W && !canWalk(tempW)) {
                         W = false;
                         counter = counter + 1;
                     } else if (canWalk(tempE)) {
-                        summative.move(tempE, this);
+                        setLocation( tempE);
                         walked = true;
                     } else if (E && !canWalk(tempE)) {
                         E = false;
