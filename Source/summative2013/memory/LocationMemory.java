@@ -49,7 +49,9 @@ public class LocationMemory extends Memory {
 	public boolean isForgotten() {
 		return terrain == null;
 	}
-	
+	/**
+         * forgets this memory
+         */
 	protected void forget() {
 		terrain = null;
 	}

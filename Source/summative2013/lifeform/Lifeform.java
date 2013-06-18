@@ -103,7 +103,7 @@ public abstract class Lifeform {
     /**
      * Finds all empty nearby spaces
      *
-     * @return
+     * @return a point that is adjacent and empty
      */
     public Point nearEmpty() {
         Point temp;

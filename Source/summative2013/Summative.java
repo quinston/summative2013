@@ -744,7 +744,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public void kill(Lifeform l) {
         synchronized (lock) {
-            addToLog(l.getName() + " has died at " + getLocation(l).x + "," + getLocation(l).y);
+            addToLog(l.getName() + " has died at " + getLocation(l).x + "," + getLocation(l).y);/*
             if (l instanceof Bear) {
                 Bear.bearCount--;
             } else if (l instanceof Bunny) {
@@ -757,7 +757,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
                 Tree.treeCount--;
             } else if (l instanceof Grass) {
                 Grass.grassCount--;
-            }
+            }*/
             locToLife.remove(getLocation(l));
             if (l == selectedLifeform) {
                 selectedLifeform = null;

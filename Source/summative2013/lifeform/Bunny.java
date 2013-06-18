@@ -10,18 +10,25 @@ import static summative2013.lifeform.Lifeform.summative;
  */
 public class Bunny extends Animal {
 	public static int bunnyCount = 0;
+        /**
+         * default constructor
+         */
 	public Bunny() {
 		super();
 		preyList.add(Grass.class);
 		++bunnyCount;
 	}
-	
+	/**
+         * no more bunny
+         */
         @Override
 	public void suicide() {
 		--bunnyCount;
 		super.suicide();
 	}
-
+        /**
+         * make babies like rabbits!
+         */
 	@Override
 	public void reproduce() {
 		if (nearEmpty() == null) {
@@ -30,12 +37,18 @@ public class Bunny extends Animal {
 			summative.addBunny(nearEmpty().x,nearEmpty().y);
 		}
 	}
-
+        /**
+         * 
+         * @return the sprite of a Bunny
+         */
         @Override
 	public Image getSprite() {
 		return SpriteAssigner.getSpriteOf(this);
 	}
-
+        /**
+         * 
+         * @return the name of this lifeform
+         */
 	@Override
 	public String getName() {
 		return "Bunny";

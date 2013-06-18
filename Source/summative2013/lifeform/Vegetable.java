@@ -8,7 +8,7 @@ import summative2013.phenomena.Weather.WEATHER;
  * Parent class of immobile food generating autotrophic benevolent food chain
  * base
  *
- * @author 322303413
+ * @author Bobby Chiang
  */
 public abstract class Vegetable extends Lifeform {
 
@@ -146,7 +146,7 @@ public abstract class Vegetable extends Lifeform {
     /**
      * Changes the health
      *
-     * @param change
+     * @param change the difference in health
      */
     public void changeHealth(int change) {
         health = health + change;
@@ -155,7 +155,7 @@ public abstract class Vegetable extends Lifeform {
     /**
      * Changes the current fruit or what have you
      *
-     * @param change
+     * @param change the number of new/eaten fruit
      */
     public void changeCurrent(int change) {
         current = current + change;
@@ -164,7 +164,7 @@ public abstract class Vegetable extends Lifeform {
     /**
      * Returns the current fruit
      *
-     * @return
+     * @return the current fruit
      */
     public int getCurrent() {
         return current;
