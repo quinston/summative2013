@@ -75,14 +75,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         locToGrass = new HashMap<Point, Grass>();
 
         /*
-         addBear(0, 0);
-         addBunny(0, 10);
-         addCattle(0, 20);
-         addGrass(60, 20);
-         addGrass(70, 20);
-         addGrass(80, 20);
-         addTree(-30, -30);
-         * */
+         * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
+         * addGrass(70, 20); addGrass(80, 20); addTree(-30, -30);
+         *
+         */
 
 
         setSize(frame.getSize());//fullscreen the panel
@@ -150,6 +146,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
         //Paint thread
         Thread paintThread = (new Thread(new Runnable() {
+
             public void run() {
                 while (true) {
                     if (System.currentTimeMillis() - refFrame > 1000. / FPS) {
@@ -290,6 +287,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         disableAddButtons();
         s.requestFocusInWindow();
     }
+
     /**
      * enables all the buttons to add lifeforms
      */
@@ -301,6 +299,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         addGrass.setEnabled(true);
         addTree.setEnabled(true);
     }
+
     /**
      * disables all the buttons to add lifeforms
      */
@@ -1148,9 +1147,17 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public Point getLocation(Lifeform l) {
         synchronized (lock) {
-            for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
-                if (e.getValue() == l) {
-                    return e.getKey();
+            if (!(l instanceof Grass)) {
+                for (Map.Entry<Point, Lifeform> e : locToLife.entrySet()) {
+                    if (e.getValue() == l) {
+                        return e.getKey();
+                    }
+                }
+            } else {
+                for (Map.Entry<Point, Grass> e : locToGrass.entrySet()) {
+                    if (e.getValue() == l) {
+                        return e.getKey();
+                    }
                 }
             }
         }
