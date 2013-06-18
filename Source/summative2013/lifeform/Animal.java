@@ -98,7 +98,7 @@ public abstract class Animal extends Lifeform {
 
     public Animal() {
         super();
-        this.setDestination();
+        setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
         depravity = 0;
@@ -322,10 +322,10 @@ public abstract class Animal extends Lifeform {
         findFood(nearbyLife);
         findMate(nearbyLife);
 
-        hunger = hunger + 5;
-        thirst = thirst + 5;
+        hunger = hunger + 1;
+        thirst = thirst + 1;
 
-        if (hunger > 80 || thirst > 80) {
+        if (hunger > 70 || thirst > 70) {
             setDestination();
         }
 
