@@ -37,8 +37,9 @@ public class SocietyMemory extends Memory {
      * Updates the in-group and out-group lists of the target Animal.
      *
      * @param a Animal to affect
-     *//*
+     */
     public void affect(Animal a) {
+		/*
         LinkedList<Animal> inGroup = a.getInGroup(),
                 outGroup = a.getOutGroup();
 
@@ -57,8 +58,8 @@ public class SocietyMemory extends Memory {
 
 
         Collections.swap(outGroup, inGroup.indexOf(object),
-                Math.max(outGroup.indexOf(object) - score, 0));
-    }*/
+                Math.max(outGroup.indexOf(object) - score, 0));*/
+    }
 
     /**
      * Increases or decreases the score by a random amount in

@@ -61,4 +61,9 @@ public class Tree extends Vegetable {
         --treeCount;
         super.suicide();
     }
+
+	@Override
+	public void decreasePopulation() {
+		--treeCount;
+	}
 }

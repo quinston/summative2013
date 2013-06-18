@@ -53,4 +53,9 @@ public class Cattle extends Animal {
     public String getName() {
         return "Cattle";
     }
+
+	@Override
+	public void decreasePopulation() {
+		--cattleCount;
+	}
 }

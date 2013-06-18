@@ -201,7 +201,7 @@ public abstract class Animal extends Lifeform {
      */
     public boolean isPrey(Lifeform l) {
         for (Class m : preyList) {
-            if (m.equals(l.getClass())) {
+            if (l.getClass().equals(m)) {
                 return true;
             }
         }

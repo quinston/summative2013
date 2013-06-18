@@ -53,4 +53,9 @@ public class Bunny extends Animal {
 	public String getName() {
 		return "Bunny";
 	}
+
+	@Override
+	public void decreasePopulation() {
+		--bunnyCount;
+	}
 }

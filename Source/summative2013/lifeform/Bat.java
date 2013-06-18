@@ -53,4 +53,11 @@ public class Bat extends Animal {
     public String getName() {
         return "Bat";
     }
+
+	@Override
+	public void decreasePopulation() {
+		--batCount;
+	}
+	
+	
 }

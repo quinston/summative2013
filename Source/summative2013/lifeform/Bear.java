@@ -60,4 +60,9 @@ public class Bear extends Animal {
     public String getName() {
         return "Bear";
     }
+
+	@Override
+	public void decreasePopulation() {
+		--bearCount;
+	}
 }

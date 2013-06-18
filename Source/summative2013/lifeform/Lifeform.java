@@ -74,6 +74,7 @@ public abstract class Lifeform {
      * Suicide
      */
     public void suicide() {
+		decreasePopulation();
         summative.kill(this);
     }
 
@@ -197,5 +198,8 @@ public abstract class Lifeform {
                 + "\nThirst: " + thirst + "%";
     }
 
+
     public abstract String getName();
+	
+	public abstract void decreasePopulation();
 }
