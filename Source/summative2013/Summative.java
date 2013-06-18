@@ -67,13 +67,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public Summative() {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
-		events = new ArrayList<>();
+		events = new ArrayList<String>();
 		setLayout(new BorderLayout());
-		locToLife = new HashMap<>();//initializes our point, lifeform hashmap
-		locToTerrain = new HashMap<>();//initializes our point, terrain hashmap
-		activeWeather = new ArrayList<>();
-		locToGrass = new HashMap<>();
-		moveRequests = new HashMap<>();
+		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
+		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
+		activeWeather = new ArrayList<Weather>();
+		locToGrass = new HashMap<Point, Grass>();
 
 		/*
 		 * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
@@ -425,14 +424,14 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	private void advance() {
 		numHours++;
-		HashMap<Point, TERRAIN> temp = new HashMap<>();
+		HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
 		//Iterate over copy to prevent concurrent modification
 		//because act() methods will surely modify it.
 		//direct removal of lifeforms from Lifeform classes is
 		//no longer possible
-		HashMap<Point, Lifeform> temp2 = new HashMap<>();
+		HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
 		temp2.putAll(locToLife);
-		HashMap<Point, Grass> temp3 = new HashMap<>();
+		HashMap<Point, Grass> temp3 = new HashMap<Point, Grass>();
 		temp3.putAll(locToGrass);
 
 		manageWeather();

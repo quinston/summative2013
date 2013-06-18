@@ -99,18 +99,22 @@ public abstract class Animal extends Lifeform {
      */
     public Animal() {
         super();
+        findNearbyLife();
+        findWater();
+        findFood(nearbyLife);
+        findMate(nearbyLife);
         setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
         depravity = 0;
-        preyList = new ArrayList<>();
+        preyList = new ArrayList<Class>();
     }
 
     /**
      * Finds the closest prey
      */
     public void findFood(ArrayList<Lifeform> list) {
-        ArrayList<Point> foodList = new ArrayList<>();
+        ArrayList<Point> foodList = new ArrayList<Point>();
         food = null;
         for (Lifeform l : list) {
             for (Class m : preyList) {
@@ -151,7 +155,7 @@ public abstract class Animal extends Lifeform {
      * @param list
      */
     public void findMate(ArrayList<Lifeform> list) {
-        ArrayList<Point> mateList = new ArrayList<>();
+        ArrayList<Point> mateList = new ArrayList<Point>();
         mate = null;
         for (Lifeform l : list) {
             if (l.getMobile()) {
@@ -173,7 +177,7 @@ public abstract class Animal extends Lifeform {
     }
 
     public void findVictim(ArrayList<Lifeform> list) {
-        ArrayList<Point> hitList = new ArrayList<>();
+        ArrayList<Point> hitList = new ArrayList<Point>();
         murder = null;
         for (Lifeform l : list) {
             if (l.getClass().equals(this.getClass())) {
@@ -194,8 +198,8 @@ public abstract class Animal extends Lifeform {
     /**
      * Checks if the lifeform is prey
      *
-     * @param l
-     * @return
+     * @param l the lifeform we want to eat
+     * @return if it is prey
      */
     public boolean isPrey(Lifeform l) {
         for (Class m : preyList) {
@@ -210,36 +214,24 @@ public abstract class Animal extends Lifeform {
      * Sets the destination of the animal
      */
     public void setDestination() {
-        if (thirst < 50 && hunger < 50 && mate != null) {
-            if (Math.random() < 1) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
-        } else if (thirst >= hunger && water != null) {
+        if (thirst > 50 && water != null) {
             destination = water;
-        } else {
+        } else if (hunger > 50 && food != null) {
             destination = food;
+        } else if (mate != null) {
+            destination = mate;
         }
 
         if (destination == null) {
-            if (water != null) {
-                destination = water;
-            } else if (food != null) {
-                destination = food;
-            } else if (mate != null) {
-                destination = mate;
-            } else if (murder != null) {
-                destination = murder;
-            }
+            destination = water;
         }
     }
 
     /**
      * Gives the direction in which the point is located relative to the animal
      *
-     * @param p
-     * @return
+     * @param p the Point we are going to
+     * @return the Direction to get there
      */
     public DIRECTION getDirection(Point p) {
         final Point location = summative.getLocation(this);
@@ -261,7 +253,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns the animal's gender
      *
-     * @return
+     * @return the Gender of the animal
      */
     public GENDER getGender() {
         return gender;
@@ -270,8 +262,8 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns whether the animal can mate with the specified lifeform
      *
-     * @param l
-     * @return
+     * @param l the lifeform to mate with
+     * @return Can we mate?
      */
     public boolean canMate(Animal l) {
         if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
@@ -294,7 +286,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns whether or not the animal is drowning
      *
-     * @return
+     * @return if we are drowning
      */
     public boolean drowning() {
         if (summative.terrainGet(summative.getLocation(this)) == TERRAIN.SEA) {
@@ -345,7 +337,9 @@ public abstract class Animal extends Lifeform {
         if (Weather == WEATHER.NIGHT && !nocturnal) {
         } else {
             final Point location = summative.getLocation(this);
-            if (destination == null || getDirection(destination) == DIRECTION.SOUTH) {
+
+            if (destination == null) {
+            } else if (getDirection(destination) == DIRECTION.SOUTH) {
                 Point temp = new Point(location.x, location.y + 1);
                 if (canWalk(temp)) {
                     walked = true;
@@ -464,7 +458,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Prints some info about the animal
      *
-     * @return
+     * @return a String representing the animal
      */
     @Override
     public String toString() {
