@@ -117,18 +117,14 @@ public abstract class Vegetable extends Lifeform {
                 }
             }
         }
-        if (sun
-                < 0) {
+        if (sun < 0) {
             alive = false;
-        } else if (thirst > 99 || thirst
-                < -99) {
+        } else if (thirst > 99 || thirst < -99) {
             alive = false;
-        } else if (health
-                < 0) {
+        } else if (health < 0) {
             alive = false;
         }
-        if (health
-                < 0) {
+        if (health < 0) {
             alive = false;
         } else {
             health = health + 5;

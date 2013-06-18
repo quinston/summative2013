@@ -53,8 +53,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     private Point mouse = new Point();
     private JButton addBear, addBunny, addBat, addCattle, addGrass, addTree;
     private static Summative s;
-    //private int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0,
-    //		treeCount = 0;
+    public int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0;
     private int numHours = 0;
     private Random rand;
     // World limits
@@ -67,12 +66,12 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
      */
     public Summative() {
         Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
-        events = new ArrayList<String>();
+        events = new ArrayList<>();
         setLayout(new BorderLayout());
-        locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
-        locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
-        activeWeather = new ArrayList<Weather>();
-        locToGrass = new HashMap<Point, Grass>();
+        locToLife = new HashMap<>();//initializes our point, lifeform hashmap
+        locToTerrain = new HashMap<>();//initializes our point, terrain hashmap
+        activeWeather = new ArrayList<>();
+        locToGrass = new HashMap<>();
 
         /*
          * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
@@ -176,7 +175,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             if (!locToLife.containsKey(new Point(x, y))) {
                 locToLife.put(new Point(x, y), new Bear());
-                //++bearCount;
+                ++bearCount;
                 addToLog("Bear spawned at " + x + "," + y);
             }
         }
@@ -192,7 +191,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             if (!locToLife.containsKey(new Point(x, y))) {
                 locToLife.put(new Point(x, y), new Bat());
-                //++batCount;
+                ++batCount;
                 addToLog("Bat spawned at " + x + "," + y);
             }
         }
@@ -208,7 +207,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             if (!locToLife.containsKey(new Point(x, y))) {
                 locToLife.put(new Point(x, y), new Bunny());
-                //++bunnyCount;
+                ++bunnyCount;
                 addToLog("Bunny spawned at " + x + "," + y);
             }
         }
@@ -224,7 +223,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             if (!locToLife.containsKey(new Point(x, y))) {
                 locToLife.put(new Point(x, y), new Cattle());
-                //++cattleCount;
+                ++cattleCount;
                 addToLog("Cattle spawned at " + x + "," + y);
             }
         }
@@ -239,10 +238,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
     public void addGrass(int x, int y) {
         synchronized (lock) {
             if (!locToGrass.containsKey(new Point(x, y))) {
-                Grass g = new Grass();
-                Point p = new Point(x, y);
-                locToGrass.put(p, g);
-                //++grassCount;
+                locToGrass.put(new Point(x, y), new Grass());
+                ++grassCount;
                 addToLog("Grass placed at " + x + "," + y);
             }
         }
@@ -258,7 +255,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         synchronized (lock) {
             if (!locToLife.containsKey(new Point(x, y))) {
                 locToLife.put(new Point(x, y), new Tree());
-                //++treeCount;
+                ++treeCount;
                 addToLog("Tree spawned at " + x + "," + y);
             }
         }
@@ -617,7 +614,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
         g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 16));
         g.drawString("You are centred at " + (screen.x + screen.width / 2) + "," + (screen.y + screen.height / 2), hud.x + 180, hud.y + 60);
         g.drawString(numHours + " hours have passed since the beginning of time", hud.x + 180, hud.y + 100);
-        if (mouseOnLife != "") {
+        if (mouseOnLife.equals("")) {
             g.drawString("The mouse is over a " + mouseOnLife + " at point " + mouse.x + "," + mouse.y, hud.x + 180, hud.y + 140);
         }
 
