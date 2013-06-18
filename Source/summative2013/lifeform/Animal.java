@@ -24,16 +24,16 @@ public abstract class Animal extends Lifeform {
     /**
      * @return the inGroup
      */
-    public LinkedList<Animal> getInGroup() {
+    /*public LinkedList<Animal> getInGroup() {
         return inGroup;
-    }
+    }*/
 
     /**
      * @return the outGroup
      */
-    public LinkedList<Animal> getOutGroup() {
+    /*public LinkedList<Animal> getOutGroup() {
         return outGroup;
-    }
+    }*/
 
     /**
      * Creates the gender enum thing
@@ -57,11 +57,11 @@ public abstract class Animal extends Lifeform {
     /**
      * Store the friends happy no fighting membership club
      */
-    protected LinkedList inGroup;
+    //protected LinkedList inGroup;
     /**
      * Stores the angry enemies murder hatred villain gang
      */
-    protected LinkedList outGroup;
+    //protected LinkedList outGroup;
     /**
      * Stores the location the animal is currently moving to
      */
@@ -175,7 +175,7 @@ public abstract class Animal extends Lifeform {
         ArrayList<Point> hitList = new ArrayList<>();
         murder = null;
         for (Lifeform l : list) {
-            if (l.getClass().equals(this.getClass()) && outGroup.indexOf(l) != -1) {
+            if (l.getClass().equals(this.getClass())) {
                 hitList.add(l.getLocation());
             }
         }
@@ -210,7 +210,7 @@ public abstract class Animal extends Lifeform {
      */
     public void setDestination() {
         if (thirst < 50 && hunger < 50 && mate != null) {
-            if (Math.random() < .5) {
+            if (Math.random() < 1) {
                 destination = mate;
             } else if (murder != null) {
                 destination = murder;
