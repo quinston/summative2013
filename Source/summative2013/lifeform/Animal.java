@@ -196,8 +196,8 @@ public abstract class Animal extends Lifeform {
     /**
      * Checks if the lifeform is prey
      *
-     * @param l
-     * @return
+     * @param l the lifeform we want to eat
+     * @return if it is prey
      */
     public boolean isPrey(Lifeform l) {
         for (Class m : preyList) {
@@ -240,8 +240,8 @@ public abstract class Animal extends Lifeform {
     /**
      * Gives the direction in which the point is located relative to the animal
      *
-     * @param p
-     * @return
+     * @param p the Point we are going to
+     * @return the Direction to get there
      */
     public DIRECTION getDirection(Point p) {
         final Point location = summative.getLocation(this);
@@ -263,7 +263,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns the animal's gender
      *
-     * @return
+     * @return the Gender of the animal
      */
     public GENDER getGender() {
         return gender;
@@ -272,8 +272,8 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns whether the animal can mate with the specified lifeform
      *
-     * @param l
-     * @return
+     * @param l the lifeform to mate with
+     * @return Can we mate?
      */
     public boolean canMate(Animal l) {
         if (l.getClass() == this.getClass() && l.getGender() != this.getGender()) {
@@ -296,7 +296,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Returns whether or not the animal is drowning
      *
-     * @return
+     * @return if we are drowning
      */
     public boolean drowning() {
         if (summative.terrainGet(summative.getLocation(this)) == TERRAIN.SEA) {
@@ -463,7 +463,7 @@ public abstract class Animal extends Lifeform {
     /**
      * Prints some info about the animal
      *
-     * @return
+     * @return a String representing the animal
      */
     @Override
     public String toString() {
