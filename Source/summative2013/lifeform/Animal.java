@@ -432,7 +432,7 @@ public abstract class Animal extends Lifeform {
                             } else {
                                 temp.changeCurrent(-1);
                             }
-                        } else if (isPrey(summative.grassGet(destination))) {
+                        } else if (preyList.contains(Grass.class) && summative.lifeGet(destination) instanceof Grass) {
                             Grass tempg = summative.grassGet(destination);
                             if (tempg.getCurrent() <= 0) {
                                 tempg.changeHealth(-50);
