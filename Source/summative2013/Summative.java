@@ -73,6 +73,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
+		moveRequests = new HashMap<Point, Point>();
 
 		/*
 		 * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
@@ -342,8 +343,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		frame.setVisible(true);
 	}
 
-
-
 	/**
 	 * Generates what type of land should be at the point
 	 *
@@ -425,27 +424,37 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private void advance() {
 		numHours++;
 		HashMap<Point, TERRAIN> temp = new HashMap<Point, TERRAIN>();
-		//Iterate over copy to prevent concurrent modification
-		//because act() methods will surely modify it.
-		//direct removal of lifeforms from Lifeform classes is
-		//no longer possible
-		HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
-		temp2.putAll(locToLife);
-		HashMap<Point, Grass> temp3 = new HashMap<Point, Grass>();
-		temp3.putAll(locToGrass);
+
 
 		manageWeather();
 		pushWeather();
+
 		synchronized (lock) {
+			
 			removeDead();
 			moveStuff();
+			
+			//Iterate over copy to prevent concurrent modification
+			//because act() methods will surely modify it.
+			HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
+			temp2.putAll(locToLife);
+			HashMap<Point, Grass> temp3 = new HashMap<Point, Grass>();
+			temp3.putAll(locToGrass);
+
 
 			for (Map.Entry<Point, Lifeform> pair : temp2.entrySet()) {
-				assert(getLocation(pair.getValue()).equals(pair.getKey()));
+				assert(pair.getKey() != null);
+				assert(temp2.get(pair.getKey()) != null);
+				assert(locToLife.get(pair.getKey()) != null);
+				assert (getLocation(pair.getValue())
+						//.equals(pair.getKey()));
+						!= null);
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 			for (Map.Entry<Point, Grass> pair : temp3.entrySet()) {
-				assert(getLocation(pair.getValue()).equals(pair.getKey()));
+				assert(pair.getKey() != null);
+				assert (getLocation(pair.getValue())
+						!= null);
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 
@@ -761,10 +770,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			return locToLife.get(location);
 		}
 	}
-	
+
 	public boolean emptyAt(Point location) {
-		synchronized(lock) {
-			return locToLife.get(location)==null;
+		synchronized (lock) {
+			return locToLife.get(location) == null;
 		}
 	}
 
@@ -1141,6 +1150,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				}
 			}
 		}
+		System.out.println(l.isDead());
 		return null;
 	}
 
@@ -1153,6 +1163,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param p Its new location
 	 */
 	public void moveTo(Lifeform l, Point p) {
+		assert(p != null);
 		moveRequests.put(getLocation(l), p);
 	}
 	/**
@@ -1276,7 +1287,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				Map.Entry<Point, Point> pair = i.next();
 
 				locToLife.put(pair.getValue(), locToLife.remove(pair.getKey()));
-				
+
 				//Remove the request
 				i.remove();
 			}

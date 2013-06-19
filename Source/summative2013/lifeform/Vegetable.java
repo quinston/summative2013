@@ -69,6 +69,8 @@ public abstract class Vegetable extends Lifeform {
      * Changes variables depending on weather
      */
     public void act(WEATHER weather) {
+		Point pp = summative.getLocation(this);
+		assert(pp!=null);
         findWater();
 
         if (diseased) {
