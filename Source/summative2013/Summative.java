@@ -145,7 +145,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 
-		//letThereBeGreenery();
+		letThereBeGreenery();
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
@@ -430,10 +430,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		pushWeather();
 
 		synchronized (lock) {
-			
+
 			removeDead();
 			moveStuff();
-			
+
 			//Iterate over copy to prevent concurrent modification
 			//because act() methods will surely modify it.
 			HashMap<Point, Lifeform> temp2 = new HashMap<Point, Lifeform>();
@@ -443,16 +443,16 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 
 			for (Map.Entry<Point, Lifeform> pair : temp2.entrySet()) {
-				assert(pair.getKey() != null);
-				assert(temp2.get(pair.getKey()) != null);
-				assert(locToLife.get(pair.getKey()) != null);
+				assert (pair.getKey() != null);
+				assert (temp2.get(pair.getKey()) != null);
+				assert (locToLife.get(pair.getKey()) != null);
 				assert (getLocation(pair.getValue())
 						//.equals(pair.getKey()));
 						!= null);
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
 			}
 			for (Map.Entry<Point, Grass> pair : temp3.entrySet()) {
-				assert(pair.getKey() != null);
+				assert (pair.getKey() != null);
 				assert (getLocation(pair.getValue())
 						!= null);
 				pair.getValue().act(getActiveWeather(pair.getKey().x, pair.getKey().y));
@@ -475,7 +475,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 						temp.put(original, TERRAIN.LAND);
 					}
 				} else if (getActiveWeather(original.x, original.y) == Weather.WEATHER.RAIN) {
-					if (Math.random() < 0.1 && locToTerrain.get(original) != TERRAIN.SEA && seas < lands) {
+					if (Math.random() < 0.5 && locToTerrain.get(original) != TERRAIN.SEA && seas < lands) {
 						temp.put(original, TERRAIN.SEA);
 					}
 				}
@@ -665,6 +665,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			if (screen.contains(pair.getKey())) {
 				// Draw the sprites so that its centre is at the centre
 				// of the grid square
+				assert (pair.getValue() != null);
 				Image sprite = pair.getValue().getSprite();
 				int x = (pair.getKey().x - screen.x) * gridSize;
 				int y = (pair.getKey().y - screen.y) * gridSize;
@@ -1163,7 +1164,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 * @param p Its new location
 	 */
 	public void moveTo(Lifeform l, Point p) {
-		assert(p != null);
+		assert (p != null);
 		moveRequests.put(getLocation(l), p);
 	}
 	/**
@@ -1285,8 +1286,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			for (Iterator<Map.Entry<Point, Point>> i = moveRequests.entrySet().iterator();
 					i.hasNext();) {
 				Map.Entry<Point, Point> pair = i.next();
-
-				locToLife.put(pair.getValue(), locToLife.remove(pair.getKey()));
+				//May have been removed by removeDead
+				if (locToLife.containsKey(pair.getKey())) {
+					locToLife.put(pair.getValue(), locToLife.remove(pair.getKey()));
+				}
 
 				//Remove the request
 				i.remove();

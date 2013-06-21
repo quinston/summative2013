@@ -99,10 +99,6 @@ public abstract class Animal extends Lifeform {
      */
     public Animal() {
         super();
-        findNearbyLife();
-        findWater();
-        findFood(nearbyLife);
-        findMate(nearbyLife);
         setDestination();
         hunger = 50;
         gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE;
@@ -432,7 +428,13 @@ public abstract class Animal extends Lifeform {
                                 tempg.changeCurrent(-1);
                             }
                         } else {
-                            summative.lifeGet(destination).suicide();
+							Animal hunted = (Animal) summative.lifeGet(destination);
+							if (summative.lifeGet(destination) != null) {
+								summative.lifeGet(destination).suicide();
+							}
+							else {
+								destination = null;
+							}
                         }
                     } else if (destination == mate) {
 						Point nearbySpace = nearEmpty();
