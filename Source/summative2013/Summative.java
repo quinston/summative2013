@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -25,6 +26,8 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import summative2013.phenomena.AirLock;
 import summative2013.phenomena.Drizzle;
 import summative2013.phenomena.Drought;
@@ -43,7 +46,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private HashMap<Point, TERRAIN> locToTerrain;
 	private final Object lock = new Object();
 	private ArrayList<Weather> activeWeather;
-	private ArrayList<String> events;
+	private LinkedList<String> events;
 	private static JFrame frame;
 	private Rectangle screen, logButton, hud;
 	private boolean upPressed = false, downPressed = false, rightPressed = false, leftPressed = false, logOpen = false;
@@ -67,13 +70,18 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public Summative() {
 		Lifeform.summative = this;//sets the panel for all of the lifeforms to be this
-		events = new ArrayList<String>();
+		events = new LinkedList<String>();
+
 		setLayout(new BorderLayout());
 		locToLife = new HashMap<Point, Lifeform>();//initializes our point, lifeform hashmap
 		locToTerrain = new HashMap<Point, TERRAIN>();//initializes our point, terrain hashmap
 		activeWeather = new ArrayList<Weather>();
 		locToGrass = new HashMap<Point, Grass>();
 		moveRequests = new HashMap<Point, Point>();
+
+		sp = new JScrollPane();
+		add(sp, BorderLayout.SOUTH);
+		sp.setVisible(false);
 
 		/*
 		 * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
@@ -82,6 +90,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		 */
 
 		setSize(frame.getSize());//fullscreen the panel
+		sp.setSize(getWidth(), getHeight() * 5 / 7);
+
 		screen = new Rectangle(-1 * getWidth() / (2 * gridSize) - 1, -1 * getHeight() / (2 * gridSize) - 1,
 				getWidth() / gridSize + 2, getHeight() / gridSize + 2);//sets up our screen rectangle to define our screen
 		for (int i = screen.x; i <= screen.x + screen.width; i++) {
@@ -484,6 +494,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 				locToTerrain.put(pair.getKey(), pair.getValue());
 			}
 		}
+		
+		updateLog();
 	}
 
 	/**
@@ -715,23 +727,22 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	}
 
 	/**
-	 * Draws a log of what has happened so far
+	 * Draws a sp of what has happened so far
 	 *
 	 * @param g the graphics object to draw on
 	 */
 	private void drawLog(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
+
 		g.setColor(Color.BLACK);
 		g.setFont(new Font(Font.SERIF, Font.ROMAN_BASELINE, 20));
-		g.drawString("Log of what has happened, Press Esc to return", 100, 40);
-		for (int i = events.size() - 1; i >= 0; i--) {
-			g.drawString(events.get(i), 100, 40 + (events.size() - i) * 40);
-		}
+		g.drawString("Log of what has happened, Press Esc to return", 100,
+				getHeight() * 6 / 7);
 	}
 
 	/**
-	 * Adds a string to be added to the log of events
+	 * Adds a string to be added to the sp of events
 	 *
 	 * @param s The string representing what happened
 	 */
@@ -843,10 +854,13 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			upPressed = true;//check off that up has been pressed
 		} else if (keyCode == KeyEvent.VK_DOWN) {
 			downPressed = true;//check off that down has been pressed
-		} else if (keyCode == KeyEvent.VK_ESCAPE && !logOpen) {
-			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
-			logOpen = false;
+			if (!logOpen) {
+				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+			} else {
+				logOpen = false;
+				sp.setVisible(false);
+			}
 		} else if (keyCode == KeyEvent.VK_SPACE) {
 			advance();
 		}
@@ -978,6 +992,8 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		Point clickPoint = e.getPoint();
 		if (logButton.contains(clickPoint)) {
 			logOpen = true;
+
+			sp.setVisible(true);
 		} else if (!hud.contains(clickPoint)) {
 			synchronized (lock) {
 				selectedPoint = new Point(
@@ -1296,4 +1312,34 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 			}
 		}
 	}
+
+	/**
+	 * Updates the log scrollbar with the newest events.
+	 * 
+	 * Removes the 
+	 */
+	private void updateLog() {
+		//Remove extraneous head elements
+		
+		int size = events.size();
+		for (int i = 0; i < size - maxLogSize; ++i) {
+			events.poll();
+		}
+		
+		//Update textarea text
+		String s = "";
+		for (Iterator i = events.iterator(); i.hasNext();) {
+			s += i.next() + "\n";
+		}
+
+		JTextArea a = new JTextArea(s);
+		sp.setViewportView(a);
+		sp.getVerticalScrollBar().setValue(
+					sp.getVerticalScrollBar().getMaximum());
+	}
+	/**
+	 * Events to store before kicking out old elements.
+	 */
+	private long maxLogSize = 1024;
+	private JScrollPane sp;
 }
