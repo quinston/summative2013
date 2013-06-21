@@ -193,6 +193,9 @@ public abstract class Lifeform {
      */
     public void disease() {
         diseased = true;
+		Point location = summative.getLocation(this);
+		summative.addToLog(getName() + " at " + location.x + "," + location.y 
+				+ " caught Jay's Plague.");
     }
 
     public String toString() {

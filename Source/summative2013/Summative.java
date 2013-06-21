@@ -177,7 +177,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 
 		rand = new Random();
 	}
-	final int FPS = 60;
+	final int FPS = 4;
 
 	/**
 	 * Adds a new bear at point x,y and increments bear count.

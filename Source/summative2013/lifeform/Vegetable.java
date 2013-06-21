@@ -78,7 +78,7 @@ public abstract class Vegetable extends Lifeform {
             sight = 4;
             findNearbyLife();
             for (Lifeform l : nearbyLife) {
-                l.disease();
+				l.disease();
             }
             sight = temp;
             suicide();
