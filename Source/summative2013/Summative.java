@@ -59,7 +59,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private static Summative s;
 	//public int batCount = 0, bearCount = 0, bunnyCount = 0, cattleCount = 0, grassCount = 0, treeCount = 0;
 	private int numHours = 0;
-	private Random rand;
+	public Random rand;
 	// World limits
 	private int outerNegX = 0, outerNegY = 0,
 			outerPosX = 0, outerPosY = 0;
@@ -82,12 +82,10 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		sp = new JScrollPane();
 		add(sp, BorderLayout.SOUTH);
 		sp.setVisible(false);
+		
+		
+		rand = new Random();
 
-		/*
-		 * addBear(0, 0); addBunny(0, 10); addCattle(0, 20); addGrass(60, 20);
-		 * addGrass(70, 20); addGrass(80, 20); addTree(-30, -30);
-		 *
-		 */
 
 		setSize(frame.getSize());//fullscreen the panel
 		sp.setSize(getWidth(), getHeight() * 5 / 7);
@@ -155,7 +153,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}
 
 
-		letThereBeGreenery();
+		letThereBeLife();
 
 		//Paint thread
 		Thread paintThread = (new Thread(new Runnable() {
@@ -175,7 +173,6 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 		}));
 		paintThread.start();
 
-		rand = new Random();
 	}
 	final int FPS = 4;
 
@@ -328,7 +325,7 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public enum TERRAIN {
 
-		LAND, SEA
+		LAND, SEA, UNKNOWN
 	}
 
 	/**
@@ -797,7 +794,11 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	 */
 	public TERRAIN terrainGet(Point location) {
 		synchronized (lock) {
-			return locToTerrain.get(location);
+			TERRAIN t = locToTerrain.get(location);
+			if (t == null) {
+				return TERRAIN.UNKNOWN;
+			}
+			return t;
 		}
 	}
 
@@ -1242,17 +1243,32 @@ public class Summative extends JPanel implements KeyListener, MouseMotionListene
 	private final int MAX_WEATHER = 10;
 
 	/**
-	 * Adds some plants in random places to start off the sim less barrenly
+	 * Adds life in random places to start off the sim less barrenly
 	 */
-	private void letThereBeGreenery() {
+	private void letThereBeLife() {
 		for (int x = screen.x; x < screen.x + screen.width; ++x) {
 			for (int y = screen.y; y < screen.y + screen.height; ++y) {
 				if (Math.random() < .4) {
 					if (locToTerrain.get(new Point(x, y)) != TERRAIN.SEA) {
-						if (Math.random() < .2) {
-							addTree(x, y);
-						} else {
-							addGrass(x, y);
+						switch (rand.nextInt(6)) {
+							case 0:
+								addGrass(x,y);
+								break;
+							case 1:
+								addBat(x,y);
+								break;
+							case 2:
+								addBear(x,y);
+								break;
+							case 3:
+								addBunny(x,y);
+								break;
+							case 4:
+								addCattle(x,y);
+								break;
+							case 5:
+								addTree(x,y);
+								break;
 						}
 					}
 				}

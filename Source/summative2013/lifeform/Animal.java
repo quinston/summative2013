@@ -272,7 +272,7 @@ public abstract class Animal extends Lifeform {
      * Can this animal walk there? That is, is it empty?
      */
     public boolean canWalk(Point p) {
-        if (summative.emptyAt(p) && summative.terrainGet(p) != TERRAIN.SEA) {
+        if (summative.emptyAt(p) && summative.terrainGet(p) == TERRAIN.LAND) {
             return true;
         } else {
             return false;
